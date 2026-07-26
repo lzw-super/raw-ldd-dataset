@@ -34,6 +34,7 @@ from datasets.sid_synthetic_train import (
 )
 from models.ELD_models import UNetSeeInDark
 from noise.sid_noise_synthesis import synthesize_sid_noise
+from tools.calculate_model_info import calculate_model_info, format_model_info
 
 
 def parse_args() -> argparse.Namespace:
@@ -51,7 +52,6 @@ def parse_args() -> argparse.Namespace:
         config = loaded
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.set_defaults(**config)
     parser.add_argument("--config", default=preliminary.config)
     parser.add_argument("--patch-dir", default="/home/shared_files/dataset/SID/Sony_train_long_patches")
     parser.add_argument("--pair-list", default="/home/shared_files/dataset/SID/Sony_train_list.txt")
@@ -98,6 +98,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--keep-checkpoints", type=int, default=3)
     parser.add_argument("--log-every", type=int, default=20)
+    # Apply YAML values after arguments are declared. Otherwise each
+    # add_argument(default=...) call overwrites the value loaded from YAML.
+    # Explicit command-line options still take precedence during parse_args().
+    parser.set_defaults(**config)
     return parser.parse_args()
 
 
@@ -295,6 +299,12 @@ def main() -> None:
     (output_dir / "config.json").write_text(json.dumps(vars(args), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     model = UNetSeeInDark(in_nc=4, out_nc=4, nf=32).to(device)
+    model_info = calculate_model_info(model, (1, 4, args.patch_size, args.patch_size), device)
+    (output_dir / "model_info.json").write_text(
+        json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(format_model_info(model_info))
     optimizer = Adam(model.parameters(), lr=args.learning_rate, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
     scheduler = build_scheduler(optimizer, args.epochs * steps_per_epoch, args.warmup_epochs * steps_per_epoch)
     scaler = torch.cuda.amp.GradScaler(enabled=bool(args.amp))
@@ -349,6 +359,7 @@ def main() -> None:
             "train_l1": epoch_l1 / max(1, epoch_samples),
             "learning_rate": scheduler.get_last_lr()[0],
             "seconds": time.perf_counter() - epoch_start,
+            "model_info": model_info,
         }
         if args.validate_steps and (epoch % args.validate_every == 0 or epoch == args.epochs):
             metrics.update(synthetic_validate(model, val_loader, args, device))

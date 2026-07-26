@@ -178,11 +178,42 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 ```text
 experiments/sid_sony_raw_dynamic/
 ├── config.json
+├── model_info.json
 ├── metrics.jsonl
 └── checkpoints/
     ├── latest.pth
     └── epoch_XXXX.pth
 ```
+
+训练启动时会根据实际 `patch_size` 自动统计一次 U-Net 信息并打印到终端。
+完整结果单独保存到 `model_info.json`，同时写入 `metrics.jsonl` 的每条 epoch
+记录，包括参数量、可训练参数量、FP32 权重大小、MACs 和 FLOPs。
+
+也可以不启动训练，单独运行统计脚本：
+
+```bash
+conda run --no-capture-output -n LED-ICCV23 \
+  python tools/calculate_model_info.py \
+  --input-shape 1 4 512 512 \
+  --device cuda:0 \
+  --output-json worklog/unet_model_info.json
+```
+
+若训练进程是在加入自动统计功能之前启动的，可以在不中断训练的情况下，
+把一条 `record_type=model_info` 元数据追加到已有日志：
+
+```bash
+conda run --no-capture-output -n LED-ICCV23 \
+  python tools/calculate_model_info.py \
+  --checkpoint experiments/sid_sony_raw_dynamic/checkpoints/latest.pth \
+  --device cuda:1 \
+  --output-json experiments/sid_sony_raw_dynamic/model_info.json \
+  --metrics-jsonl experiments/sid_sony_raw_dynamic/metrics.jsonl
+```
+
+这里采用 `1 MAC = 1 次乘加 ≈ 2 FLOPs` 的口径，只统计卷积、反卷积和
+全连接层；激活、池化、拼接、裁剪和补边等少量操作不计入，因此与采用
+“1 MAC = 1 FLOP”口径的软件相比，FLOPs 数值会相差约两倍。
 
 ### 4.5 中断恢复
 
