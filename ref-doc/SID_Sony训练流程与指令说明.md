@@ -6,15 +6,16 @@
 
 |数据|本地位置|用途|
 |---|---|---|
-|SID long RAW 的预打包 patch|`/home/shared_files/dataset/SID/Sony_train_long_patches`|clean target|
-|SID 原始 long/short RAW|`/home/shared_files/dataset/SID/Sony`|读取 EXIF、官方真实配对评估|
+|SID 完整 long RAW|`/home/shared_files/dataset/SID/Sony/long`|动态裁剪 clean target|
+|SID 原始 short RAW|`/home/shared_files/dataset/SID/Sony/short`|仅用于官方真实配对评估|
 |LLD Sony A7S II 暗帧|`biasframe_et_1_30/ISO*/`|真实 signal-independent noise|
 |PMN dark shading|`resources/SonyA7S2/`|训练、评估中去除空间偏置|
 
 训练索引只保留 SID 文件名前缀为 `0` 的训练场景，避免与前缀 `1`/`2` 的官方测试、验证样本泄漏。当前本地索引包含：
 
-- 161 个 clean 场景；
-- 1,288 个 `4×512×512` packed RAW patch；
+- 161 个训练 clean 场景，每个 epoch 动态裁 8 个 patch；
+- 20 个前缀 `2` 的独立 synthetic validation 场景；
+- 每个 epoch 共 1,288 个 `4×512×512` packed RAW patch；
 - 25 个训练 ISO；
 - 260 张 LLD 暗帧（ISO100 有 20 张，其余每档 10 张）。
 
@@ -23,9 +24,10 @@
 ## 2. 端到端训练数据流
 
 ```text
-SID train long packed RAW (clean target)
+SID train full-resolution long RAW
     └─ 归一化：(DN - 512) / (16383 - 512)
-       └─ 随机选择 ratio：100 / 250 / 300
+       └─ 每个 epoch 重新动态裁剪 packed 512×512 patch
+          └─ 随机选择 ratio：100 / 250 / 300
 
 LLD 同 ISO 暗帧
     └─ 减去 black level 512 和 PMN dark shading
@@ -97,9 +99,14 @@ conda run --no-capture-output -n LED-ICCV23 \
   python tools/build_sid_train_index.py
 ```
 
-作用：扫描本地 `.npz` packed patch，选择前缀 `0` 的样本；读取对应 long RAW 的 EXIF ISO；生成 `infos/SID_train_clean_patches.json`。
+作用：扫描完整 long RAW，读取 EXIF ISO，生成：
 
-预期输出为 `1288 patches from 161 train scenes`。索引中包含绝对路径，因此换机器或移动数据目录后应重新执行。
+```text
+infos/SID_train_clean_raw.json       # 161 个前缀 0 训练场景
+infos/SID_validation_clean_raw.json  # 20 个前缀 2 验证场景
+```
+
+索引中包含绝对路径，因此换机器或移动数据目录后应重新执行。
 
 ### 4.2 校验数据与噪声模块
 
@@ -153,9 +160,9 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 |---|---:|---|
 |`epochs`|1000|论文主训练轮数|
 |`batch_size`|1|11GB 显存下的 packed 512 patch batch|
-|`num_workers`|2|并发读取 NPZ/MAT，减少 GPU 等待|
+|`num_workers`|2|并发读取 ARW/MAT，减少 GPU 等待|
 |`patch_size`|512|packed RAW 域大小，对应 mosaic 1024×1024|
-|`crops_per_image`|1|本地 NPZ 已预先准备 8 个 patch，不能再次设为 8|
+|`crops_per_image`|8|每张完整 long RAW 每个 epoch 动态抽取 8 个新 patch|
 |`ratios`|100/250/300|均匀采样 SID 三个评估倍率|
 |`synthesis`|`ratio_aware`|主噪声合成方式|
 |`k_scale`|0.1|得到 `K=ISO/1000`|
@@ -164,12 +171,12 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 |`amp`|false|初次严格复现关闭混合精度|
 |`keep_checkpoints`|3|仅保留最近三个编号 checkpoint，控制磁盘占用|
 
-每 epoch 为 1,288 step。实测一轮约 86 秒，因此 1,000 轮理论上约需 24 小时；实际时间会受 GPU 竞争和磁盘读取影响。
+每 epoch 为 1,288 step。完整 RAW 会由有界 LRU cache 缓存；实际时间会受 GPU 竞争、rawpy 解码和磁盘读取影响。
 
 每轮都会更新：
 
 ```text
-experiments/sid_sony_ratio_aware/
+experiments/sid_sony_raw_dynamic/
 ├── config.json
 ├── metrics.jsonl
 └── checkpoints/
@@ -184,7 +191,7 @@ experiments/sid_sony_ratio_aware/
 ```bash
 conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
   --config configs/train_sid_sony.yaml \
-  --resume experiments/sid_sony_ratio_aware/checkpoints/latest.pth
+  --resume experiments/sid_sony_raw_dynamic/checkpoints/latest.pth
 ```
 
 不要把 `--steps-per-epoch 8` 之类短冒烟 run 的 checkpoint 恢复到正式 1,288 step/epoch、1,000 epoch 训练中，因为学习率调度总步数不同。
@@ -196,10 +203,10 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 ```bash
 for ratio in 100 250 300; do
   conda run --no-capture-output -n LED-ICCV23 python test_denoise_sideld.py \
-    --cp-dir experiments/sid_sony_ratio_aware/checkpoints/latest.pth \
+    --cp-dir experiments/sid_sony_raw_dynamic/checkpoints/latest.pth \
     --testset-type sid --eval-ratio "$ratio" \
     --num-workers 2 \
-    --result-json "experiments/sid_sony_ratio_aware/sid_x${ratio}.json"
+    --result-json "experiments/sid_sony_raw_dynamic/sid_x${ratio}.json"
 done
 ```
 
@@ -232,7 +239,34 @@ done
 
 1. 不要用 SID short RAW 作为主训练损失输入，否则就变成 paired supervised training。
 2. 不要把 dark residual 或带噪输入的下界裁为 0；负值是有效噪声信息。
-3. 不要使用 NPZ 内记录的 `white_level=15360` 替代官方流程的 `16383`；训练和评估统一采用 `black=512`、`white=16383`。
+3. 训练和评估统一采用 `black=512`、`white=16383`；旧 NPZ 路径仅保留为诊断兼容模式。
 4. 不要把暗帧 residual 再次减去 black level；PMN 模式中它已按 `D_raw - 512 - DS` 计算。
 5. `paper_literal` 仅作消融，必须使用独立实验目录。
 6. 正式训练前确认磁盘空间；checkpoint 含优化器状态，单个约 89MB。
+
+## 7. 固定 NPZ 过拟合问题与修复
+
+早期复现使用 1,288 个预裁 NPZ patch，并在 1,000 个 epoch 中反复循环同一批空间区域；synthetic validation 又复用了训练 manifest 的前 4 个 patch。结果是网络记住了固定 clean 内容：
+
+- 旧日志 synthetic PSNR 约 48 dB；
+- 同一 checkpoint 在前缀 `2` 的 20 个未见完整 RAW 场景上，三档 synthetic 平均仅 23.54 dB；
+- 真实 SID 全量约为 ×100 29.61 dB、×250 28.78 dB、×300 27.57 dB。
+
+修复包括：
+
+1. clean source 改为 161 张完整 long RAW；
+2. 每个 epoch 为每张图重新随机裁 8 个 patch；
+3. synthetic validation 改为 20 张前缀 `2` 的独立 long RAW；
+4. validation 默认覆盖 20 个不同场景；
+5. 新增 `tools/evaluate_synthetic_checkpoint.py`，用于对固定 checkpoint 做独立三倍率 synthetic 评估。
+
+使用旧 epoch 690 权重进行仅 1,280 step 的动态 RAW 诊断微调后：
+
+|指标|旧固定 NPZ checkpoint|动态 RAW 短微调|
+|---|---:|---:|
+|held-out synthetic 平均 PSNR|23.54 dB|33.10 dB|
+|真实 SID ×100（完整 40 张）|29.61 dB|41.19 dB / 0.9480 SSIM|
+|真实 SID ×250（完整 40 张）|28.78 dB|39.11 dB / 0.9165 SSIM|
+|真实 SID ×300（完整 49 张）|27.57 dB|35.81 dB / 0.8891 SSIM|
+
+上表的真实 SID 数值已覆盖完整的 40/40/49 张配对。动态 RAW 模型只是从旧 epoch 690 权重继续进行 1,280 step 的诊断微调，不是最终论文复现模型；但独立 synthetic 与真实域指标同时显著上升，已经验证了修复方向。正式结果仍应从随机初始化运行完整动态 RAW 配置。

@@ -27,7 +27,11 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import yaml
 
-from datasets.sid_synthetic_train import SIDSyntheticTrainDataset, build_sid_patch_manifest
+from datasets.sid_synthetic_train import (
+    SIDSyntheticTrainDataset,
+    build_sid_patch_manifest,
+    build_sid_raw_manifest,
+)
 from models.ELD_models import UNetSeeInDark
 from noise.sid_noise_synthesis import synthesize_sid_noise
 
@@ -52,7 +56,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--patch-dir", default="/home/shared_files/dataset/SID/Sony_train_long_patches")
     parser.add_argument("--pair-list", default="/home/shared_files/dataset/SID/Sony_train_list.txt")
     parser.add_argument("--sid-long-dir", default="/home/shared_files/dataset/SID/Sony/long")
-    parser.add_argument("--manifest", default="infos/SID_train_clean_patches.json")
+    parser.add_argument("--clean-source", choices=["raw", "packed"], default="raw")
+    parser.add_argument("--manifest", default="infos/SID_train_clean_raw.json")
+    parser.add_argument("--val-manifest", default="infos/SID_validation_clean_raw.json")
     parser.add_argument("--rebuild-manifest", action="store_true")
     parser.add_argument("--dark-root", default="biasframe_et_1_30")
     parser.add_argument("--pmn-resource-dir", default="resources/SonyA7S2")
@@ -65,9 +71,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--num-workers", type=int, default=2)
     parser.add_argument("--patch-size", type=int, default=512)
-    # ``Sony_train_long_patches`` already contains the eight pre-cropped
-    # patches per SID long image, so this must stay at one for that source.
-    parser.add_argument("--crops-per-image", type=int, default=1, help="Repeats per prepacked clean patch")
+    parser.add_argument(
+        "--crops-per-image",
+        type=int,
+        default=8,
+        help="Dynamic crops per full RAW; use 1 only for the legacy packed source",
+    )
     parser.add_argument("--ratios", type=int, nargs="+", default=[100, 250, 300])
     parser.add_argument("--clean-cache-size", type=int, default=32)
     parser.add_argument("--dark-cache-size", type=int, default=2)
@@ -228,8 +237,22 @@ def main() -> None:
 
     manifest_path = Path(args.manifest)
     if args.rebuild_manifest or not manifest_path.is_file():
-        manifest = build_sid_patch_manifest(args.patch_dir, args.pair_list, manifest_path, args.sid_long_dir)
-        print(f"Built manifest with {manifest['summary']['records']} training patches")
+        if args.clean_source == "raw":
+            manifest = build_sid_raw_manifest(args.sid_long_dir, manifest_path, scene_prefixes=("0",))
+            print(f"Built raw training manifest with {manifest['summary']['records']} scenes")
+        else:
+            manifest = build_sid_patch_manifest(args.patch_dir, args.pair_list, manifest_path, args.sid_long_dir)
+            print(f"Built packed training manifest with {manifest['summary']['records']} patches")
+
+    val_manifest_path = Path(args.val_manifest)
+    if args.clean_source == "raw" and (args.rebuild_manifest or not val_manifest_path.is_file()):
+        val_manifest = build_sid_raw_manifest(args.sid_long_dir, val_manifest_path, scene_prefixes=("2",))
+        print(f"Built held-out raw validation manifest with {val_manifest['summary']['records']} scenes")
+    elif args.clean_source == "packed" and not val_manifest_path.is_file():
+        # Packed mode is kept only for reproducing/diagnosing the old fixed
+        # patch run. It has no independent synthetic validation split.
+        val_manifest_path = manifest_path
+        print("Warning: packed clean source reuses its training manifest for synthetic validation")
 
     train_dataset = SIDSyntheticTrainDataset(
         manifest_path,
@@ -242,9 +265,11 @@ def main() -> None:
         dark_cache_size=args.dark_cache_size,
         augment=True,
         seed=args.seed,
+        clean_source=args.clean_source,
+        allowed_scene_prefixes=("0",),
     )
     val_dataset = SIDSyntheticTrainDataset(
-        manifest_path,
+        val_manifest_path,
         args.dark_root,
         args.pmn_resource_dir,
         patch_size=args.patch_size,
@@ -254,6 +279,8 @@ def main() -> None:
         dark_cache_size=1,
         augment=False,
         seed=args.seed + 10000,
+        clean_source=args.clean_source,
+        allowed_scene_prefixes=("2",) if args.clean_source == "raw" else ("0",),
     )
     train_loader = make_loader(train_dataset, args, shuffle=True, workers=args.num_workers)
     val_loader = make_loader(val_dataset, args, shuffle=False, workers=0)

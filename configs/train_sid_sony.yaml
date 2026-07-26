@@ -3,19 +3,21 @@
 patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
 pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
 sid_long_dir: /home/shared_files/dataset/SID/Sony/long
-manifest: infos/SID_train_clean_patches.json
+clean_source: raw
+manifest: infos/SID_train_clean_raw.json
+val_manifest: infos/SID_validation_clean_raw.json
 dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
-output_dir: experiments/sid_sony_ratio_aware
+output_dir: experiments/sid_sony_raw_dynamic
 epochs: 1000
 steps_per_epoch: null
 batch_size: 1
 num_workers: 2
 patch_size: 512
-# The local NPZ source already has eight 512x512 crops per long RAW.
-crops_per_image: 1
+# Draw eight new random patches from every full-resolution long RAW per epoch.
+crops_per_image: 8
 ratios: [100, 250, 300]
-clean_cache_size: 32
+clean_cache_size: 16
 dark_cache_size: 2
 synthesis: ratio_aware
 k_scale: 0.1
@@ -28,7 +30,7 @@ amp: false
 device: cuda:0
 seed: 1
 validate_every: 10
-validate_steps: 4
+validate_steps: 20
 save_every: 10
 keep_checkpoints: 3
 log_every: 20

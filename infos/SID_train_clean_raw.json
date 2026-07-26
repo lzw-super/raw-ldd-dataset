@@ -1,0 +1,1170 @@
+{
+  "format_version": 2,
+  "source_type": "full_sid_long_raw",
+  "source_long_dir": "/home/shared_files/dataset/SID/Sony/long",
+  "iso_source": "EXIF ISO of each SID long RAW",
+  "selection": "SID Sony long RAW scene prefixes ['0']",
+  "records": [
+    {
+      "scene_id": "00001",
+      "long_name": "00001_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00001_00_10s.ARW"
+    },
+    {
+      "scene_id": "00002",
+      "long_name": "00002_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00002_00_10s.ARW"
+    },
+    {
+      "scene_id": "00004",
+      "long_name": "00004_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00004_00_10s.ARW"
+    },
+    {
+      "scene_id": "00009",
+      "long_name": "00009_00_10s.ARW",
+      "iso": 500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00009_00_10s.ARW"
+    },
+    {
+      "scene_id": "00010",
+      "long_name": "00010_00_10s.ARW",
+      "iso": 500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00010_00_10s.ARW"
+    },
+    {
+      "scene_id": "00012",
+      "long_name": "00012_00_10s.ARW",
+      "iso": 500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00012_00_10s.ARW"
+    },
+    {
+      "scene_id": "00013",
+      "long_name": "00013_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00013_00_10s.ARW"
+    },
+    {
+      "scene_id": "00014",
+      "long_name": "00014_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00014_00_10s.ARW"
+    },
+    {
+      "scene_id": "00015",
+      "long_name": "00015_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00015_00_10s.ARW"
+    },
+    {
+      "scene_id": "00017",
+      "long_name": "00017_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00017_00_10s.ARW"
+    },
+    {
+      "scene_id": "00018",
+      "long_name": "00018_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00018_00_10s.ARW"
+    },
+    {
+      "scene_id": "00019",
+      "long_name": "00019_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00019_00_10s.ARW"
+    },
+    {
+      "scene_id": "00021",
+      "long_name": "00021_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00021_00_10s.ARW"
+    },
+    {
+      "scene_id": "00023",
+      "long_name": "00023_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00023_00_10s.ARW"
+    },
+    {
+      "scene_id": "00024",
+      "long_name": "00024_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00024_00_10s.ARW"
+    },
+    {
+      "scene_id": "00026",
+      "long_name": "00026_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00026_00_10s.ARW"
+    },
+    {
+      "scene_id": "00027",
+      "long_name": "00027_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00027_00_10s.ARW"
+    },
+    {
+      "scene_id": "00028",
+      "long_name": "00028_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00028_00_10s.ARW"
+    },
+    {
+      "scene_id": "00029",
+      "long_name": "00029_00_10s.ARW",
+      "iso": 320,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00029_00_10s.ARW"
+    },
+    {
+      "scene_id": "00031",
+      "long_name": "00031_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00031_00_10s.ARW"
+    },
+    {
+      "scene_id": "00033",
+      "long_name": "00033_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00033_00_10s.ARW"
+    },
+    {
+      "scene_id": "00036",
+      "long_name": "00036_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00036_00_10s.ARW"
+    },
+    {
+      "scene_id": "00037",
+      "long_name": "00037_00_10s.ARW",
+      "iso": 1000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00037_00_10s.ARW"
+    },
+    {
+      "scene_id": "00038",
+      "long_name": "00038_00_10s.ARW",
+      "iso": 800,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00038_00_10s.ARW"
+    },
+    {
+      "scene_id": "00039",
+      "long_name": "00039_00_10s.ARW",
+      "iso": 500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00039_00_10s.ARW"
+    },
+    {
+      "scene_id": "00041",
+      "long_name": "00041_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00041_00_10s.ARW"
+    },
+    {
+      "scene_id": "00042",
+      "long_name": "00042_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00042_00_10s.ARW"
+    },
+    {
+      "scene_id": "00043",
+      "long_name": "00043_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00043_00_10s.ARW"
+    },
+    {
+      "scene_id": "00044",
+      "long_name": "00044_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00044_00_10s.ARW"
+    },
+    {
+      "scene_id": "00046",
+      "long_name": "00046_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00046_00_10s.ARW"
+    },
+    {
+      "scene_id": "00047",
+      "long_name": "00047_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00047_00_10s.ARW"
+    },
+    {
+      "scene_id": "00048",
+      "long_name": "00048_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00048_00_10s.ARW"
+    },
+    {
+      "scene_id": "00049",
+      "long_name": "00049_00_10s.ARW",
+      "iso": 1600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00049_00_10s.ARW"
+    },
+    {
+      "scene_id": "00050",
+      "long_name": "00050_00_10s.ARW",
+      "iso": 5000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00050_00_10s.ARW"
+    },
+    {
+      "scene_id": "00051",
+      "long_name": "00051_00_10s.ARW",
+      "iso": 2000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00051_00_10s.ARW"
+    },
+    {
+      "scene_id": "00052",
+      "long_name": "00052_00_10s.ARW",
+      "iso": 1600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00052_00_10s.ARW"
+    },
+    {
+      "scene_id": "00053",
+      "long_name": "00053_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00053_00_10s.ARW"
+    },
+    {
+      "scene_id": "00056",
+      "long_name": "00056_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00056_00_10s.ARW"
+    },
+    {
+      "scene_id": "00057",
+      "long_name": "00057_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00057_00_10s.ARW"
+    },
+    {
+      "scene_id": "00058",
+      "long_name": "00058_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00058_00_10s.ARW"
+    },
+    {
+      "scene_id": "00059",
+      "long_name": "00059_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00059_00_10s.ARW"
+    },
+    {
+      "scene_id": "00060",
+      "long_name": "00060_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00060_00_10s.ARW"
+    },
+    {
+      "scene_id": "00062",
+      "long_name": "00062_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00062_00_10s.ARW"
+    },
+    {
+      "scene_id": "00063",
+      "long_name": "00063_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00063_00_10s.ARW"
+    },
+    {
+      "scene_id": "00064",
+      "long_name": "00064_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00064_00_10s.ARW"
+    },
+    {
+      "scene_id": "00065",
+      "long_name": "00065_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00065_00_10s.ARW"
+    },
+    {
+      "scene_id": "00066",
+      "long_name": "00066_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00066_00_10s.ARW"
+    },
+    {
+      "scene_id": "00067",
+      "long_name": "00067_00_10s.ARW",
+      "iso": 250,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00067_00_10s.ARW"
+    },
+    {
+      "scene_id": "00070",
+      "long_name": "00070_00_10s.ARW",
+      "iso": 400,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00070_00_10s.ARW"
+    },
+    {
+      "scene_id": "00071",
+      "long_name": "00071_00_10s.ARW",
+      "iso": 400,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00071_00_10s.ARW"
+    },
+    {
+      "scene_id": "00072",
+      "long_name": "00072_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00072_00_30s.ARW"
+    },
+    {
+      "scene_id": "00073",
+      "long_name": "00073_00_30s.ARW",
+      "iso": 1600,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00073_00_30s.ARW"
+    },
+    {
+      "scene_id": "00075",
+      "long_name": "00075_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00075_00_30s.ARW"
+    },
+    {
+      "scene_id": "00076",
+      "long_name": "00076_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00076_00_30s.ARW"
+    },
+    {
+      "scene_id": "00078",
+      "long_name": "00078_00_30s.ARW",
+      "iso": 800,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00078_00_30s.ARW"
+    },
+    {
+      "scene_id": "00081",
+      "long_name": "00081_00_30s.ARW",
+      "iso": 640,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00081_00_30s.ARW"
+    },
+    {
+      "scene_id": "00083",
+      "long_name": "00083_00_30s.ARW",
+      "iso": 640,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00083_00_30s.ARW"
+    },
+    {
+      "scene_id": "00084",
+      "long_name": "00084_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00084_00_30s.ARW"
+    },
+    {
+      "scene_id": "00085",
+      "long_name": "00085_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00085_00_30s.ARW"
+    },
+    {
+      "scene_id": "00086",
+      "long_name": "00086_00_30s.ARW",
+      "iso": 2000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00086_00_30s.ARW"
+    },
+    {
+      "scene_id": "00088",
+      "long_name": "00088_00_30s.ARW",
+      "iso": 2000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00088_00_30s.ARW"
+    },
+    {
+      "scene_id": "00090",
+      "long_name": "00090_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00090_00_30s.ARW"
+    },
+    {
+      "scene_id": "00091",
+      "long_name": "00091_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00091_00_30s.ARW"
+    },
+    {
+      "scene_id": "00092",
+      "long_name": "00092_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00092_00_30s.ARW"
+    },
+    {
+      "scene_id": "00094",
+      "long_name": "00094_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00094_00_30s.ARW"
+    },
+    {
+      "scene_id": "00095",
+      "long_name": "00095_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00095_00_30s.ARW"
+    },
+    {
+      "scene_id": "00096",
+      "long_name": "00096_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00096_00_30s.ARW"
+    },
+    {
+      "scene_id": "00097",
+      "long_name": "00097_00_30s.ARW",
+      "iso": 400,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00097_00_30s.ARW"
+    },
+    {
+      "scene_id": "00098",
+      "long_name": "00098_00_30s.ARW",
+      "iso": 400,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00098_00_30s.ARW"
+    },
+    {
+      "scene_id": "00099",
+      "long_name": "00099_00_30s.ARW",
+      "iso": 400,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00099_00_30s.ARW"
+    },
+    {
+      "scene_id": "00100",
+      "long_name": "00100_00_30s.ARW",
+      "iso": 1600,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00100_00_30s.ARW"
+    },
+    {
+      "scene_id": "00102",
+      "long_name": "00102_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00102_00_30s.ARW"
+    },
+    {
+      "scene_id": "00104",
+      "long_name": "00104_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00104_00_30s.ARW"
+    },
+    {
+      "scene_id": "00108",
+      "long_name": "00108_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00108_00_30s.ARW"
+    },
+    {
+      "scene_id": "00109",
+      "long_name": "00109_00_30s.ARW",
+      "iso": 640,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00109_00_30s.ARW"
+    },
+    {
+      "scene_id": "00110",
+      "long_name": "00110_00_30s.ARW",
+      "iso": 1000,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00110_00_30s.ARW"
+    },
+    {
+      "scene_id": "00112",
+      "long_name": "00112_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00112_00_30s.ARW"
+    },
+    {
+      "scene_id": "00113",
+      "long_name": "00113_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00113_00_30s.ARW"
+    },
+    {
+      "scene_id": "00114",
+      "long_name": "00114_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00114_00_30s.ARW"
+    },
+    {
+      "scene_id": "00117",
+      "long_name": "00117_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00117_00_30s.ARW"
+    },
+    {
+      "scene_id": "00118",
+      "long_name": "00118_00_30s.ARW",
+      "iso": 50,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00118_00_30s.ARW"
+    },
+    {
+      "scene_id": "00119",
+      "long_name": "00119_00_30s.ARW",
+      "iso": 100,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00119_00_30s.ARW"
+    },
+    {
+      "scene_id": "00121",
+      "long_name": "00121_00_30s.ARW",
+      "iso": 200,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00121_00_30s.ARW"
+    },
+    {
+      "scene_id": "00122",
+      "long_name": "00122_00_30s.ARW",
+      "iso": 200,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00122_00_30s.ARW"
+    },
+    {
+      "scene_id": "00123",
+      "long_name": "00123_00_30s.ARW",
+      "iso": 64,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00123_00_30s.ARW"
+    },
+    {
+      "scene_id": "00124",
+      "long_name": "00124_00_30s.ARW",
+      "iso": 200,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00124_00_30s.ARW"
+    },
+    {
+      "scene_id": "00127",
+      "long_name": "00127_00_30s.ARW",
+      "iso": 1600,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00127_00_30s.ARW"
+    },
+    {
+      "scene_id": "00128",
+      "long_name": "00128_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00128_00_30s.ARW"
+    },
+    {
+      "scene_id": "00129",
+      "long_name": "00129_00_30s.ARW",
+      "iso": 1250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00129_00_30s.ARW"
+    },
+    {
+      "scene_id": "00130",
+      "long_name": "00130_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00130_00_30s.ARW"
+    },
+    {
+      "scene_id": "00131",
+      "long_name": "00131_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00131_00_30s.ARW"
+    },
+    {
+      "scene_id": "00132",
+      "long_name": "00132_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00132_00_30s.ARW"
+    },
+    {
+      "scene_id": "00133",
+      "long_name": "00133_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00133_00_30s.ARW"
+    },
+    {
+      "scene_id": "00134",
+      "long_name": "00134_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00134_00_30s.ARW"
+    },
+    {
+      "scene_id": "00135",
+      "long_name": "00135_00_30s.ARW",
+      "iso": 400,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00135_00_30s.ARW"
+    },
+    {
+      "scene_id": "00136",
+      "long_name": "00136_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00136_00_30s.ARW"
+    },
+    {
+      "scene_id": "00137",
+      "long_name": "00137_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00137_00_30s.ARW"
+    },
+    {
+      "scene_id": "00138",
+      "long_name": "00138_00_30s.ARW",
+      "iso": 800,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00138_00_30s.ARW"
+    },
+    {
+      "scene_id": "00141",
+      "long_name": "00141_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00141_00_30s.ARW"
+    },
+    {
+      "scene_id": "00142",
+      "long_name": "00142_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00142_00_30s.ARW"
+    },
+    {
+      "scene_id": "00143",
+      "long_name": "00143_00_30s.ARW",
+      "iso": 320,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00143_00_30s.ARW"
+    },
+    {
+      "scene_id": "00144",
+      "long_name": "00144_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00144_00_30s.ARW"
+    },
+    {
+      "scene_id": "00145",
+      "long_name": "00145_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00145_00_30s.ARW"
+    },
+    {
+      "scene_id": "00146",
+      "long_name": "00146_00_30s.ARW",
+      "iso": 200,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00146_00_30s.ARW"
+    },
+    {
+      "scene_id": "00148",
+      "long_name": "00148_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00148_00_30s.ARW"
+    },
+    {
+      "scene_id": "00149",
+      "long_name": "00149_00_30s.ARW",
+      "iso": 100,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00149_00_30s.ARW"
+    },
+    {
+      "scene_id": "00150",
+      "long_name": "00150_00_30s.ARW",
+      "iso": 800,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00150_00_30s.ARW"
+    },
+    {
+      "scene_id": "00151",
+      "long_name": "00151_00_30s.ARW",
+      "iso": 800,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00151_00_30s.ARW"
+    },
+    {
+      "scene_id": "00152",
+      "long_name": "00152_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00152_00_30s.ARW"
+    },
+    {
+      "scene_id": "00154",
+      "long_name": "00154_00_30s.ARW",
+      "iso": 80,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00154_00_30s.ARW"
+    },
+    {
+      "scene_id": "00155",
+      "long_name": "00155_00_30s.ARW",
+      "iso": 80,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00155_00_30s.ARW"
+    },
+    {
+      "scene_id": "00156",
+      "long_name": "00156_00_30s.ARW",
+      "iso": 80,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00156_00_30s.ARW"
+    },
+    {
+      "scene_id": "00157",
+      "long_name": "00157_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00157_00_30s.ARW"
+    },
+    {
+      "scene_id": "00158",
+      "long_name": "00158_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00158_00_30s.ARW"
+    },
+    {
+      "scene_id": "00159",
+      "long_name": "00159_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00159_00_30s.ARW"
+    },
+    {
+      "scene_id": "00160",
+      "long_name": "00160_00_30s.ARW",
+      "iso": 500,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00160_00_30s.ARW"
+    },
+    {
+      "scene_id": "00161",
+      "long_name": "00161_00_30s.ARW",
+      "iso": 400,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00161_00_30s.ARW"
+    },
+    {
+      "scene_id": "00164",
+      "long_name": "00164_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00164_00_30s.ARW"
+    },
+    {
+      "scene_id": "00165",
+      "long_name": "00165_00_30s.ARW",
+      "iso": 250,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00165_00_30s.ARW"
+    },
+    {
+      "scene_id": "00166",
+      "long_name": "00166_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00166_00_30s.ARW"
+    },
+    {
+      "scene_id": "00168",
+      "long_name": "00168_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00168_00_30s.ARW"
+    },
+    {
+      "scene_id": "00169",
+      "long_name": "00169_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00169_00_30s.ARW"
+    },
+    {
+      "scene_id": "00171",
+      "long_name": "00171_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00171_00_30s.ARW"
+    },
+    {
+      "scene_id": "00173",
+      "long_name": "00173_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00173_00_30s.ARW"
+    },
+    {
+      "scene_id": "00174",
+      "long_name": "00174_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00174_00_30s.ARW"
+    },
+    {
+      "scene_id": "00175",
+      "long_name": "00175_00_30s.ARW",
+      "iso": 160,
+      "exposure": 30.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00175_00_30s.ARW"
+    },
+    {
+      "scene_id": "00179",
+      "long_name": "00179_00_10s.ARW",
+      "iso": 800,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00179_00_10s.ARW"
+    },
+    {
+      "scene_id": "00180",
+      "long_name": "00180_00_10s.ARW",
+      "iso": 1600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00180_00_10s.ARW"
+    },
+    {
+      "scene_id": "00181",
+      "long_name": "00181_00_10s.ARW",
+      "iso": 640,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00181_00_10s.ARW"
+    },
+    {
+      "scene_id": "00182",
+      "long_name": "00182_00_10s.ARW",
+      "iso": 200,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00182_00_10s.ARW"
+    },
+    {
+      "scene_id": "00183",
+      "long_name": "00183_00_10s.ARW",
+      "iso": 500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00183_00_10s.ARW"
+    },
+    {
+      "scene_id": "00184",
+      "long_name": "00184_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00184_00_10s.ARW"
+    },
+    {
+      "scene_id": "00186",
+      "long_name": "00186_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00186_00_10s.ARW"
+    },
+    {
+      "scene_id": "00189",
+      "long_name": "00189_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00189_00_10s.ARW"
+    },
+    {
+      "scene_id": "00190",
+      "long_name": "00190_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00190_00_10s.ARW"
+    },
+    {
+      "scene_id": "00194",
+      "long_name": "00194_00_10s.ARW",
+      "iso": 2500,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00194_00_10s.ARW"
+    },
+    {
+      "scene_id": "00195",
+      "long_name": "00195_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00195_00_10s.ARW"
+    },
+    {
+      "scene_id": "00196",
+      "long_name": "00196_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00196_00_10s.ARW"
+    },
+    {
+      "scene_id": "00197",
+      "long_name": "00197_00_10s.ARW",
+      "iso": 12800,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00197_00_10s.ARW"
+    },
+    {
+      "scene_id": "00200",
+      "long_name": "00200_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00200_00_10s.ARW"
+    },
+    {
+      "scene_id": "00202",
+      "long_name": "00202_00_10s.ARW",
+      "iso": 4000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00202_00_10s.ARW"
+    },
+    {
+      "scene_id": "00204",
+      "long_name": "00204_00_10s.ARW",
+      "iso": 4000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00204_00_10s.ARW"
+    },
+    {
+      "scene_id": "00205",
+      "long_name": "00205_00_10s.ARW",
+      "iso": 4000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00205_00_10s.ARW"
+    },
+    {
+      "scene_id": "00206",
+      "long_name": "00206_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00206_00_10s.ARW"
+    },
+    {
+      "scene_id": "00207",
+      "long_name": "00207_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00207_00_10s.ARW"
+    },
+    {
+      "scene_id": "00209",
+      "long_name": "00209_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00209_00_10s.ARW"
+    },
+    {
+      "scene_id": "00212",
+      "long_name": "00212_00_10s.ARW",
+      "iso": 12800,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00212_00_10s.ARW"
+    },
+    {
+      "scene_id": "00214",
+      "long_name": "00214_00_10s.ARW",
+      "iso": 16000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00214_00_10s.ARW"
+    },
+    {
+      "scene_id": "00215",
+      "long_name": "00215_00_10s.ARW",
+      "iso": 6400,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00215_00_10s.ARW"
+    },
+    {
+      "scene_id": "00216",
+      "long_name": "00216_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00216_00_10s.ARW"
+    },
+    {
+      "scene_id": "00218",
+      "long_name": "00218_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00218_00_10s.ARW"
+    },
+    {
+      "scene_id": "00219",
+      "long_name": "00219_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00219_00_10s.ARW"
+    },
+    {
+      "scene_id": "00220",
+      "long_name": "00220_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00220_00_10s.ARW"
+    },
+    {
+      "scene_id": "00221",
+      "long_name": "00221_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00221_00_10s.ARW"
+    },
+    {
+      "scene_id": "00222",
+      "long_name": "00222_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00222_00_10s.ARW"
+    },
+    {
+      "scene_id": "00223",
+      "long_name": "00223_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00223_00_10s.ARW"
+    },
+    {
+      "scene_id": "00224",
+      "long_name": "00224_00_10s.ARW",
+      "iso": 8000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00224_00_10s.ARW"
+    },
+    {
+      "scene_id": "00225",
+      "long_name": "00225_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00225_00_10s.ARW"
+    },
+    {
+      "scene_id": "00230",
+      "long_name": "00230_00_10s.ARW",
+      "iso": 25600,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00230_00_10s.ARW"
+    },
+    {
+      "scene_id": "00231",
+      "long_name": "00231_00_10s.ARW",
+      "iso": 12800,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00231_00_10s.ARW"
+    },
+    {
+      "scene_id": "00232",
+      "long_name": "00232_00_10s.ARW",
+      "iso": 10000,
+      "exposure": 10.0,
+      "long": "/home/shared_files/dataset/SID/Sony/long/00232_00_10s.ARW"
+    }
+  ],
+  "summary": {
+    "records": 161,
+    "scenes": 161,
+    "scene_prefixes": [
+      "0"
+    ],
+    "iso_values": [
+      50,
+      64,
+      80,
+      100,
+      160,
+      200,
+      250,
+      320,
+      400,
+      500,
+      640,
+      800,
+      1000,
+      1250,
+      1600,
+      2000,
+      2500,
+      4000,
+      5000,
+      6400,
+      8000,
+      10000,
+      12800,
+      16000,
+      25600
+    ]
+  }
+}

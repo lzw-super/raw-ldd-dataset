@@ -10,16 +10,14 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from datasets.sid_synthetic_train import SIDSyntheticTrainDataset, build_sid_patch_manifest
+from datasets.sid_synthetic_train import SIDSyntheticTrainDataset, build_sid_raw_manifest
 from noise.dark_frame_bank import DarkFrameBank
 from noise.sid_noise_synthesis import synthesize_sid_noise
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--manifest", default="infos/SID_train_clean_patches.json")
-    parser.add_argument("--patch-dir", default="/home/shared_files/dataset/SID/Sony_train_long_patches")
-    parser.add_argument("--pair-list", default="/home/shared_files/dataset/SID/Sony_train_list.txt")
+    parser.add_argument("--manifest", default="infos/SID_train_clean_raw.json")
     parser.add_argument("--sid-long-dir", default="/home/shared_files/dataset/SID/Sony/long")
     parser.add_argument("--dark-root", default="biasframe_et_1_30")
     parser.add_argument("--pmn-resource-dir", default="resources/SonyA7S2")
@@ -29,7 +27,7 @@ def main() -> None:
 
     manifest_path = Path(args.manifest)
     if not manifest_path.is_file():
-        build_sid_patch_manifest(args.patch_dir, args.pair_list, manifest_path, args.sid_long_dir)
+        build_sid_raw_manifest(args.sid_long_dir, manifest_path, scene_prefixes=("0",))
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     records = manifest["records"]
     assert records and all(str(record["scene_id"]).startswith("0") for record in records)
@@ -46,7 +44,14 @@ def main() -> None:
     assert np.isfinite(residual).all()
 
     dataset = SIDSyntheticTrainDataset(
-        manifest_path, args.dark_root, args.pmn_resource_dir, patch_size=args.patch_size, crops_per_image=1, seed=7
+        manifest_path,
+        args.dark_root,
+        args.pmn_resource_dir,
+        patch_size=args.patch_size,
+        crops_per_image=1,
+        seed=7,
+        clean_source="raw",
+        allowed_scene_prefixes=("0",),
     )
     item = dataset[0]
     clean = item["clean"].unsqueeze(0)

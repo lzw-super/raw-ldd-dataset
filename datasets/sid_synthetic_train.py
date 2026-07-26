@@ -9,10 +9,11 @@ import re
 from typing import Dict, List
 
 import numpy as np
+import rawpy
 import torch
 from torch.utils.data import Dataset
 
-from noise.dark_frame_bank import DarkFrameBank
+from noise.dark_frame_bank import DarkFrameBank, pack_bayer
 from utils.utils import get_ISO_ExposureTime
 
 
@@ -123,6 +124,62 @@ def build_sid_patch_manifest(
     return manifest
 
 
+def build_sid_raw_manifest(
+    sid_long_dir: str | Path,
+    output_path: str | Path | None = None,
+    *,
+    scene_prefixes: tuple[str, ...] = ("0",),
+) -> Dict[str, object]:
+    """Create a scene-level manifest for dynamic crops from full SID long RAW.
+
+    One record is kept per long RAW. ``crops_per_image`` controls how many
+    independently sampled patches it contributes in an epoch. This avoids
+    repeatedly training on the same eight pre-generated NPZ crops.
+    """
+    sid_long_dir = Path(sid_long_dir)
+    if not sid_long_dir.is_dir():
+        raise FileNotFoundError(f"SID long RAW directory does not exist: {sid_long_dir}")
+    prefixes = tuple(str(prefix) for prefix in scene_prefixes)
+    paths = [
+        path
+        for path in sorted(sid_long_dir.glob("*.ARW"))
+        if path.name and any(path.name.startswith(prefix) for prefix in prefixes)
+    ]
+    if not paths:
+        raise RuntimeError(f"No SID long RAW files with prefixes {prefixes} found in {sid_long_dir}")
+    records: List[Dict[str, object]] = []
+    for path in paths:
+        metadata = get_ISO_ExposureTime(str(path))
+        records.append(
+            {
+                "scene_id": path.name[:5],
+                "long_name": path.name,
+                "iso": int(metadata["ISO"]),
+                "exposure": float(metadata["ExposureTime"]),
+                "long": str(path.resolve()),
+            }
+        )
+    manifest: Dict[str, object] = {
+        "format_version": 2,
+        "source_type": "full_sid_long_raw",
+        "source_long_dir": str(sid_long_dir.resolve()),
+        "iso_source": "EXIF ISO of each SID long RAW",
+        "selection": f"SID Sony long RAW scene prefixes {list(prefixes)}",
+        "records": records,
+        "summary": {
+            "records": len(records),
+            "scenes": len({record["scene_id"] for record in records}),
+            "scene_prefixes": list(prefixes),
+            "iso_values": sorted({int(record["iso"]) for record in records}),
+        },
+    }
+    if output_path is not None:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return manifest
+
+
 class SIDSyntheticTrainDataset(Dataset):
     """Returns clean packed RAW and an independent real dark-residual crop."""
 
@@ -139,11 +196,21 @@ class SIDSyntheticTrainDataset(Dataset):
         dark_cache_size: int = 2,
         augment: bool = True,
         seed: int = 1,
+        clean_source: str = "raw",
+        allowed_scene_prefixes: tuple[str, ...] | None = None,
     ):
         manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
         self.records = list(manifest["records"])
-        if any(not str(record["scene_id"]).startswith("0") for record in self.records):
-            raise ValueError("Training manifest contains non-train SID scenes")
+        self.clean_source = str(clean_source)
+        if self.clean_source not in {"raw", "packed"}:
+            raise ValueError("clean_source must be 'raw' or 'packed'")
+        if allowed_scene_prefixes is not None:
+            prefixes = tuple(str(prefix) for prefix in allowed_scene_prefixes)
+            if any(not str(record["scene_id"]).startswith(prefixes) for record in self.records):
+                raise ValueError(f"Manifest contains scenes outside allowed prefixes {prefixes}")
+        required_key = "long" if self.clean_source == "raw" else "patch"
+        if any(required_key not in record for record in self.records):
+            raise ValueError(f"Manifest has no '{required_key}' path required by clean_source={self.clean_source}")
         self.patch_size = int(patch_size)
         self.crops_per_image = int(crops_per_image)
         self.ratios = tuple(int(value) for value in ratios)
@@ -176,37 +243,50 @@ class SIDSyntheticTrainDataset(Dataset):
             )
         return self._dark_bank
 
-    def _load_clean(self, path: str) -> np.ndarray:
+    def _load_clean_dn(self, path: str) -> np.ndarray:
         cached = self._clean_cache.get(path)
         if cached is not None:
             self._clean_cache.move_to_end(path)
             return cached
-        with np.load(path, allow_pickle=False) as archive:
-            if "im" not in archive:
-                raise KeyError(f"{path} contains no 'im' array")
-            packed = np.asarray(archive["im"], dtype=np.float32)
+        if self.clean_source == "raw":
+            raw = rawpy.imread(path)
+            try:
+                mosaic = np.array(raw.raw_image_visible, copy=True)
+            finally:
+                raw.close()
+            packed = pack_bayer(mosaic)
+        else:
+            with np.load(path, allow_pickle=False) as archive:
+                if "im" not in archive:
+                    raise KeyError(f"{path} contains no 'im' array")
+                packed = np.asarray(archive["im"])
         if packed.ndim != 3 or packed.shape[0] != 4:
             raise ValueError(f"Expected [4,H,W] packed RAW in {path}, got {packed.shape}")
-        clean = np.clip((packed - BLACK_LEVEL) / (WHITE_LEVEL - BLACK_LEVEL), 0.0, 1.0)
         if self.cache_size:
-            self._clean_cache[path] = clean
+            # Cache the uint16 DN data. Caching a normalised full RAW would
+            # double its memory footprint and is unnecessary before cropping.
+            self._clean_cache[path] = packed
             self._clean_cache.move_to_end(path)
             while len(self._clean_cache) > self.cache_size:
                 self._clean_cache.popitem(last=False)
-        return clean
+        return packed
 
-    def _random_clean_crop(self, clean: np.ndarray, rng: np.random.Generator) -> np.ndarray:
-        _, height, width = clean.shape
+    def _random_clean_crop(self, clean_dn: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+        _, height, width = clean_dn.shape
         if self.patch_size > height or self.patch_size > width:
             raise ValueError(f"Clean patch {self.patch_size} exceeds stored patch size {(height, width)}")
         top = int(rng.integers(height - self.patch_size + 1))
         left = int(rng.integers(width - self.patch_size + 1))
-        return clean[:, top : top + self.patch_size, left : left + self.patch_size].copy()
+        crop_dn = clean_dn[:, top : top + self.patch_size, left : left + self.patch_size].astype(
+            np.float32, copy=True
+        )
+        return np.clip((crop_dn - BLACK_LEVEL) / (WHITE_LEVEL - BLACK_LEVEL), 0.0, 1.0)
 
     def __getitem__(self, index: int) -> Dict[str, object]:
         record = self.records[index // self.crops_per_image]
         rng = self._get_rng()
-        clean = self._random_clean_crop(self._load_clean(str(record["patch"])), rng)
+        clean_path = str(record["long"] if self.clean_source == "raw" else record["patch"])
+        clean = self._random_clean_crop(self._load_clean_dn(clean_path), rng)
         iso = int(record["iso"])
         ratio = int(rng.choice(self.ratios))
         dark, matched_dark_iso, dark_path = self._get_dark_bank().sample_residual_patch(iso, self.patch_size, rng)
@@ -224,6 +304,6 @@ class SIDSyntheticTrainDataset(Dataset):
             "ratio": torch.tensor(ratio, dtype=torch.float32),
             "matched_dark_iso": torch.tensor(matched_dark_iso, dtype=torch.int32),
             "scene_id": str(record["scene_id"]),
-            "clean_path": str(record["patch"]),
+            "clean_path": clean_path,
             "dark_path": dark_path,
         }
