@@ -153,6 +153,12 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Generated SID synthetic-training manifests, reports, and checkpoints
+/experiments/
+/infos/SID_train_clean_patches.json
+/worklog/sid_training_asset_validation.json
+/worklog/pretrained_sid_x100_one_sample.json
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

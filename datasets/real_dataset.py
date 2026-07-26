@@ -43,7 +43,7 @@ def raw2bayer(raw, wl=16383, bl=512, norm=True, clip=False, format="rggb"):
 
 
 class SIDEvalDataset(Dataset):
-    def __init__(self, wl=16383, bl=512, clip_low=False, clip_high=True, eval_ratio=250):
+    def __init__(self, wl=16383, bl=512, clip_low=False, clip_high=True, eval_ratio=250, max_items=None):
         super().__init__()
         self.wl, self.bl = wl, bl
         self.clip_low = 0 if clip_low else float("-inf")
@@ -61,6 +61,8 @@ class SIDEvalDataset(Dataset):
         with open(f"./infos/SID_evaltest.info", "rb") as info_file:
             self.data_info = pkl.load(info_file)
         self.evaltest_remap(ratio=eval_ratio)
+        if max_items is not None:
+            self.data_info = self.data_info[: int(max_items)]
 
         self.cache = {}
         for idx in tqdm(range(len(self.data_info))):
@@ -149,7 +151,7 @@ class SIDEvalDataset(Dataset):
 
 
 class ELDPairEvalDataset(Dataset):
-    def __init__(self, wl=16383, bl=512, clip_low=False, clip_high=True, eval_ratio=100):
+    def __init__(self, wl=16383, bl=512, clip_low=False, clip_high=True, eval_ratio=100, max_items=None):
         super().__init__()
         self.wl, self.bl = wl, bl
         self.clip_low = 0 if clip_low else float("-inf")
@@ -168,6 +170,8 @@ class ELDPairEvalDataset(Dataset):
         ## data
         with open("infos/ELD_SonyA7S2.info", "rb") as info_file:
             self.data_info = pkl.load(info_file)
+        if max_items is not None:
+            self.data_info = self.data_info[: int(max_items)]
 
     def __len__(self):
         return len(self.data_info) * len(self.iso_list)
