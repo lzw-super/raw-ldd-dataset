@@ -21,6 +21,7 @@ from torch import nn
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.ELD_models import UNetSeeInDark
+from models.natnet_arch import NAFNet
 
 
 def _shape(value: torch.Tensor) -> list[int]:
@@ -152,10 +153,14 @@ def _load_checkpoint(model: nn.Module, checkpoint_path: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default="unet")
     parser.add_argument("--input-shape", type=int, nargs=4, default=[1, 4, 512, 512], metavar=("N", "C", "H", "W"))
     parser.add_argument("--in-channels", type=int, default=4)
     parser.add_argument("--out-channels", type=int, default=4)
-    parser.add_argument("--features", type=int, default=32, help="Base U-Net feature width")
+    parser.add_argument("--features", type=int, default=32, help="Base U-Net/NAFNet feature width")
+    parser.add_argument("--encoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
+    parser.add_argument("--middle-blocks", type=int, default=2)
+    parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--checkpoint", default=None, help="Optional bare or training checkpoint")
     parser.add_argument("--output-json", default=None)
@@ -172,11 +177,35 @@ def main() -> None:
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
 
-    model = UNetSeeInDark(in_nc=args.in_channels, out_nc=args.out_channels, nf=args.features)
+    if args.model == "unet":
+        model = UNetSeeInDark(in_nc=args.in_channels, out_nc=args.out_channels, nf=args.features)
+        architecture_config = {
+            "in_channels": args.in_channels,
+            "out_channels": args.out_channels,
+            "features": args.features,
+        }
+    else:
+        if args.in_channels != args.out_channels:
+            raise ValueError("NAFNet's global image residual requires equal input and output channels")
+        model = NAFNet(
+            img_channel=args.in_channels,
+            width=args.features,
+            enc_blk_nums=tuple(args.encoder_blocks),
+            middle_blk_num=args.middle_blocks,
+            dec_blk_nums=tuple(args.decoder_blocks),
+        )
+        architecture_config = {
+            "img_channel": args.in_channels,
+            "width": args.features,
+            "enc_blk_nums": args.encoder_blocks,
+            "middle_blk_num": args.middle_blocks,
+            "dec_blk_nums": args.decoder_blocks,
+        }
     if args.checkpoint:
         _load_checkpoint(model, args.checkpoint)
     model.to(device)
     info = calculate_model_info(model, args.input_shape, device)
+    info["architecture_config"] = architecture_config
     if args.checkpoint:
         info["checkpoint"] = str(args.checkpoint)
     print(format_model_info(info))

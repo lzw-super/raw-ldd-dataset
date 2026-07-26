@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train UNetSeeInDark with SID clean RAW plus LLD dark-frame synthesis.
+"""Train a RAW denoiser with SID clean RAW plus LLD dark-frame synthesis.
 
 This is a reproducible implementation of the paper-fair path described in
 ``ref-pdf/Noise Modeling in One Hour - SID Sony 训练复现指南.md``.  It never
@@ -33,6 +33,7 @@ from datasets.sid_synthetic_train import (
     build_sid_raw_manifest,
 )
 from models.ELD_models import UNetSeeInDark
+from models.natnet_arch import NAFNet
 from noise.sid_noise_synthesis import synthesize_sid_noise
 from tools.calculate_model_info import calculate_model_info, format_model_info
 
@@ -65,6 +66,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="experiments/sid_sony_paper_fair")
     parser.add_argument("--resume", default=None, help="Checkpoint produced by this script")
     parser.add_argument("--init-checkpoint", default=None, help="Model-only checkpoint; do not use the official test checkpoint")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default="unet")
+    parser.add_argument("--model-width", type=int, default=32)
+    parser.add_argument("--encoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
+    parser.add_argument("--middle-blocks", type=int, default=2)
+    parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
 
     parser.add_argument("--epochs", type=int, default=1000)
     parser.add_argument("--steps-per-epoch", type=int, default=None, help="Defaults to all clean patches in the manifest")
@@ -152,6 +158,37 @@ def to_device(batch: Dict[str, object], device: torch.device) -> tuple[torch.Ten
     iso = batch["iso"].to(device, non_blocking=True)
     ratio = batch["ratio"].to(device, non_blocking=True)
     return clean, dark, iso, ratio
+
+
+def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, object]]:
+    """Construct the selected 4-channel packed-RAW denoiser."""
+    if args.model == "unet":
+        config: Dict[str, object] = {
+            "model": "unet",
+            "in_channels": 4,
+            "out_channels": 4,
+            "width": int(args.model_width),
+        }
+        return UNetSeeInDark(in_nc=4, out_nc=4, nf=args.model_width), config
+
+    config = {
+        "model": "nafnet",
+        "img_channel": 4,
+        "width": int(args.model_width),
+        "enc_blk_nums": [int(value) for value in args.encoder_blocks],
+        "middle_blk_num": int(args.middle_blocks),
+        "dec_blk_nums": [int(value) for value in args.decoder_blocks],
+    }
+    return (
+        NAFNet(
+            img_channel=4,
+            width=args.model_width,
+            enc_blk_nums=tuple(args.encoder_blocks),
+            middle_blk_num=args.middle_blocks,
+            dec_blk_nums=tuple(args.decoder_blocks),
+        ),
+        config,
+    )
 
 
 @torch.no_grad()
@@ -298,8 +335,10 @@ def main() -> None:
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "config.json").write_text(json.dumps(vars(args), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    model = UNetSeeInDark(in_nc=4, out_nc=4, nf=32).to(device)
+    model, architecture_config = build_model(args)
+    model = model.to(device)
     model_info = calculate_model_info(model, (1, 4, args.patch_size, args.patch_size), device)
+    model_info["architecture_config"] = architecture_config
     (output_dir / "model_info.json").write_text(
         json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -320,7 +359,8 @@ def main() -> None:
     log_path = output_dir / "metrics.jsonl"
     autocast = torch.cuda.amp.autocast if device.type == "cuda" else nullcontext
     print(
-        f"Training {len(train_dataset)} samples ({steps_per_epoch} steps/epoch) on {device}; "
+        f"Training {type(model).__name__} on {len(train_dataset)} samples "
+        f"({steps_per_epoch} steps/epoch) on {device}; "
         f"synthesis={args.synthesis}, ratios={args.ratios}, AMP={args.amp}"
     )
     for epoch in range(start_epoch, args.epochs + 1):

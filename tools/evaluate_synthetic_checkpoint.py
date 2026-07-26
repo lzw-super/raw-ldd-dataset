@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from datasets.sid_synthetic_train import SIDSyntheticTrainDataset
 from models.ELD_models import UNetSeeInDark
+from models.natnet_arch import NAFNet
 from noise.sid_noise_synthesis import synthesize_sid_noise
 
 
@@ -54,7 +55,24 @@ def main() -> None:
     )
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     device = torch.device(args.device)
-    model = UNetSeeInDark(in_nc=4, out_nc=4, nf=32).to(device)
+    model_name = checkpoint_args.get("model", "unet")
+    if model_name == "unet":
+        model = UNetSeeInDark(
+            in_nc=4,
+            out_nc=4,
+            nf=int(checkpoint_args.get("model_width", 32)),
+        )
+    elif model_name in {"nafnet", "natnet"}:
+        model = NAFNet(
+            img_channel=4,
+            width=int(checkpoint_args.get("model_width", 32)),
+            enc_blk_nums=tuple(checkpoint_args.get("encoder_blocks", [2, 2, 2, 2])),
+            middle_blk_num=int(checkpoint_args.get("middle_blocks", 2)),
+            dec_blk_nums=tuple(checkpoint_args.get("decoder_blocks", [2, 2, 2, 2])),
+        )
+    else:
+        raise ValueError(f"Unsupported checkpoint model: {model_name}")
+    model = model.to(device)
     model.load_state_dict(state_dict, strict=True)
     model.eval()
 
@@ -79,6 +97,7 @@ def main() -> None:
 
     result = {
         "checkpoint": args.checkpoint,
+        "model": model_name,
         "manifest": args.manifest,
         "held_out_scene_prefix": "2",
         "synthesis": synthesis,

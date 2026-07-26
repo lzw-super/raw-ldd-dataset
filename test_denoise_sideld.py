@@ -14,17 +14,40 @@ from utils.imgproc import *
 
 from datasets.real_dataset import SIDEvalDataset, ELDPairEvalDataset
 from models.ELD_models import UNetSeeInDark
+from models.natnet_arch import NAFNet
 
 
 def build_model(args):
-    model = UNetSeeInDark().to(args.device)
     checkpoint = torch.load(args.cp_dir, map_location="cpu")
+    checkpoint_args = checkpoint.get("args", {}) if isinstance(checkpoint, dict) else {}
+    model_name = args.model or checkpoint_args.get("model", "unet")
+    model_name = "nafnet" if model_name == "natnet" else model_name
+    model_width = args.model_width or int(checkpoint_args.get("model_width", 32))
+    encoder_blocks = args.encoder_blocks or checkpoint_args.get("encoder_blocks", [2, 2, 2, 2])
+    middle_blocks = args.middle_blocks
+    if middle_blocks is None:
+        middle_blocks = int(checkpoint_args.get("middle_blocks", 2))
+    decoder_blocks = args.decoder_blocks or checkpoint_args.get("decoder_blocks", [2, 2, 2, 2])
+    if model_name == "unet":
+        model = UNetSeeInDark(in_nc=4, out_nc=4, nf=model_width)
+    elif model_name == "nafnet":
+        model = NAFNet(
+            img_channel=4,
+            width=model_width,
+            enc_blk_nums=tuple(encoder_blocks),
+            middle_blk_num=middle_blocks,
+            dec_blk_nums=tuple(decoder_blocks),
+        )
+    else:
+        raise ValueError(f"Unsupported model: {model_name}")
+    model = model.to(args.device)
     # Official weights are a bare state dict; train_sid_sony.py writes a
     # resumable checkpoint with its state dict in ``model``.
     if isinstance(checkpoint, dict) and "model" in checkpoint:
         checkpoint = checkpoint["model"]
     model.load_state_dict(checkpoint, strict=True)
     model.eval()
+    args.resolved_model = model_name
     return model
 
 
@@ -84,6 +107,7 @@ def main(args):
     if args.result_json:
         result = {
             "checkpoint": args.cp_dir,
+            "model": args.resolved_model,
             "testset_type": args.testset_type,
             "eval_ratio": args.eval_ratio,
             "max_samples": args.max_samples,
@@ -103,8 +127,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     ## common
     parser.add_argument("--task", type=str, default="sonya7s2")
-    parser.add_argument("--device", type=str, default="cuda:0")
+    parser.add_argument("--device", type=str, default="cuda:1")
     parser.add_argument("--cp-dir", "--cp_dir", dest="cp_dir", type=str, default="./checkpoints/sonya7s2.pth")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default=None)
+    parser.add_argument("--model-width", type=int, default=None)
+    parser.add_argument("--encoder-blocks", type=int, nargs="+", default=None)
+    parser.add_argument("--middle-blocks", type=int, default=None)
+    parser.add_argument("--decoder-blocks", type=int, nargs="+", default=None)
     parser.add_argument("--seed", type=int, default=1, help="random seed")
     ## change below for different setups
     parser.add_argument("--plot-res", action="store_true")
