@@ -399,7 +399,8 @@ def main() -> None:
             "train_l1": epoch_l1 / max(1, epoch_samples),
             "learning_rate": scheduler.get_last_lr()[0],
             "seconds": time.perf_counter() - epoch_start,
-            "model_info": model_info,
+            # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，
+            # 此处不再重复写入每个 epoch 的 metrics，避免日志与 metrics.jsonl 冗余。
         }
         if args.validate_steps and (epoch % args.validate_every == 0 or epoch == args.epochs):
             metrics.update(synthetic_validate(model, val_loader, args, device))
