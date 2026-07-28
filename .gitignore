@@ -195,3 +195,5 @@ test-op/*.log
 *.swo
 *~
 *.mat
+raw-test 
+*.zip
