@@ -155,6 +155,7 @@ cython_debug/
 
 # Generated SID synthetic-training manifests, reports, and checkpoints
 /experiments/
+/data/MEY_AN00/
 /infos/SID_train_clean_patches.json
 /worklog/sid_training_asset_validation.json
 /worklog/pretrained_sid_x100_one_sample.json

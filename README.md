@@ -16,6 +16,10 @@ Noise synthesis is a promising solution for addressing the data shortage problem
 ## Installation
 Clone the repository and install necessary dependencies with `pip install -r requirements.txt`
 
+## MEY-AN00 phone DNG workflow
+
+This workspace also contains a sensor-specific HONOR MEY-AN00 packed-DNG pipeline.  It keeps `raw-test/val` as independent-scene **synthetic-only** validation and `raw-test/noisy` as unpaired qualitative input, so neither is misreported as real paired PSNR.  See [TRAINING_MEY_AN00.md](TRAINING_MEY_AN00.md) for manifest/calibration, training, checkpoint evaluation, qualitative inference, and the future registered noisy-clean pair protocol.
+
 
 ## Test our pretrained model
 **We follow [PMN](https://github.com/megvii-research/PMN/tree/TPAMI) for dataset preparation**
