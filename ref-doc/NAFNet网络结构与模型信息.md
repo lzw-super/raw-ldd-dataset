@@ -363,6 +363,29 @@ for ratio in 100 250 300; do
 done
 ```
 
+定性可视化对比（每行：含噪输入 | 去噪结果 | 干净 GT）使用
+`test-op/run_qual_compare.sh`，同样会从 checkpoint 的 `args` 自动恢复
+NAFNet-Tiny 的 `width=16`、`enc/dec_blk_nums=[1,1,1,1]`、`middle_blk_num=2`，
+无需在命令行重复结构参数：
+
+```bash
+# 单档
+CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth \
+  bash test-op/run_qual_compare.sh 0 100
+
+# 三档全跑，产物存到 nafnet 专属目录，避免与 UNet 同名覆盖
+for r in 100 250 300; do
+  CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth \
+  OUT_DIR=experiments/sid_sony_nafnet_tiny/qualitative \
+    bash test-op/run_qual_compare.sh 0 $r
+done
+```
+
+位置参数为 `<GPU> <ratio 100/250/300> <抽样图片数>`；`CP_DIR` / `OUT_DIR` /
+`MODEL` 均通过环境变量指定（`MODEL` 留空即自动推断为 `nafnet`）。产物为
+`$OUT_DIR/denoise_comparison_ratio${RATIO}.png`，终端打印的
+`resolved model = nafnet width=16 enc=[1, 1, 1, 1] ...` 可用于确认结构。
+
 本地短程健康检查使用 10 epoch × 128 step，共 1,280 step。训练 L1 从首
 batch 的 `0.1949` 降至 epoch 10 平均 `0.0246`；20 个独立 held-out
 synthetic patch 的 PSNR 最高达到 `26.62 dB`。短程 checkpoint 在真实 SID

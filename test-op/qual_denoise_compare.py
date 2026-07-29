@@ -70,29 +70,31 @@ def _setup_cjk_font() -> None:
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.utils import rggb_to_srgb, ELDIlluminanceCorrect, PMN_metric  # noqa: E402
+from utils.model_factory import build_denoiser_from_checkpoint  # noqa: E402
 from datasets.real_dataset import SIDEvalDataset  # noqa: E402
-from models.ELD_models import UNetSeeInDark  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
 # 模型构建
 # ---------------------------------------------------------------------------
-def build_model(cp_dir: str, device: torch.device) -> torch.nn.Module:
-    """加载训练好的 UNetSeeInDark 权重并切换到 eval 模式。
+def build_model(args: argparse.Namespace) -> torch.nn.Module:
+    """从 checkpoint 还原去噪模型（unet 或 nafnet-tiny）并切换到 eval 模式。
 
-    训练配置 (configs/train_sid_sony.yaml) 使用默认 nf=32 的 UNetSeeInDark，
-    因此这里固定构造 UNetSeeInDark(in_nc=4, out_nc=4, nf=32)。
-    checkpoint 兼容两种格式：可恢复字典（取 "model" 键）或纯 state_dict。
+    模型类型与结构默认从 checkpoint 的 ``args`` 自动推断；命令行
+    ``--model / --model-width / --encoder-blocks / --middle-blocks /
+    --decoder-blocks`` 可强制覆盖。解析结果写入 ``args.resolved_meta``，
+    供日志与图内标注使用。实际构建逻辑统一收敛到 utils.model_factory。
     """
-    checkpoint = torch.load(cp_dir, map_location="cpu")
-    if isinstance(checkpoint, dict) and "model" in checkpoint:
-        state_dict = checkpoint["model"]
-    else:
-        state_dict = checkpoint  # 官方发布的纯权重
-    model = UNetSeeInDark(in_nc=4, out_nc=4, nf=32)
-    model.load_state_dict(state_dict, strict=True)
-    model = model.to(device)
-    model.eval()
+    model, meta = build_denoiser_from_checkpoint(
+        args.cp_dir,
+        device=args.device,
+        model=args.model,
+        model_width=args.model_width,
+        encoder_blocks=args.encoder_blocks,
+        middle_blocks=args.middle_blocks,
+        decoder_blocks=args.decoder_blocks,
+    )
+    args.resolved_meta = meta
     return model
 
 
@@ -172,7 +174,7 @@ def _crop_or_full(rgb: np.ndarray, crop_size: int, full: bool, dy: int, dx: int)
 # ---------------------------------------------------------------------------
 # 拼图
 # ---------------------------------------------------------------------------
-def make_comparison_figure(rows, ratio, out_path, dpi, full):
+def make_comparison_figure(rows, ratio, out_path, dpi, full, model_label=""):
     """把多行 (noisy, dn, gt) 拼成单张三列对比 PNG 并保存。
 
     每行：含噪输入 | 去噪结果 | 干净参考 GT；多行纵向堆叠。
@@ -204,9 +206,12 @@ def make_comparison_figure(rows, ratio, out_path, dpi, full):
             ha="left", va="bottom",
             bbox=dict(boxstyle="round,pad=0.25", fc="black", ec="none", alpha=0.55),
         )
-        # 左侧标注图片名 / ISO / 放大倍率
+        # 左侧标注图片名 / ISO / 放大倍率 / 模型名（便于横向对比不同模型产物）
+        row_label = f"{row['name']}\nISO {row['iso']} | x{ratio}"
+        if model_label:
+            row_label += f" | {model_label}"
         ax_l.text(
-            -0.02, 0.5, f"{row['name']}\nISO {row['iso']} | x{ratio}",
+            -0.02, 0.5, row_label,
             transform=ax_l.transAxes, color="black", fontsize=10,
             ha="right", va="center", rotation=90,
         )
@@ -231,6 +236,16 @@ def main():
     parser = argparse.ArgumentParser(description="SID Sony 去噪定性可视化（单张左右对比图）")
     parser.add_argument("--cp-dir", default="experiments/sid_sony_paper_fair/checkpoints/latest.pth",
                         help="checkpoint 路径")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default=None,
+                        help="强制模型类型；留空则按 checkpoint 的 args 自动推断（推荐）")
+    parser.add_argument("--model-width", type=int, default=None,
+                        help="特征通道数；留空则用 checkpoint 记录值，再回退到 32")
+    parser.add_argument("--encoder-blocks", type=int, nargs="+", default=None,
+                        help="NAFNet 各编码阶段 block 数；留空则用 checkpoint 记录值")
+    parser.add_argument("--middle-blocks", type=int, default=None,
+                        help="NAFNet 中间 block 数；留空则用 checkpoint 记录值")
+    parser.add_argument("--decoder-blocks", type=int, nargs="+", default=None,
+                        help="NAFNet 各解码阶段 block 数；留空则用 checkpoint 记录值")
     parser.add_argument("--device", default="cuda:0", help="推理设备，如 cuda:0 / cpu")
     parser.add_argument("--ratio", type=int, default=100, choices=[100, 250, 300],
                         help="SID 评估放大倍率（越大噪声越强、去噪难度越高）")
@@ -246,8 +261,10 @@ def main():
     parser.add_argument("--seed", type=int, default=1, help="随机种子")
     parser.add_argument("--out-dir", default="experiments/sid_sony_paper_fair/qualitative",
                         help="输出目录（当 --out-path 为空时，在其下按 ratio 自动命名）")
+    parser.add_argument("--out-prefix", default="",
+                        help="产物文件名前缀，用于区分不同 checkpoint（如 official_）；留空则无前缀")
     parser.add_argument("--out-path", default="",
-                        help="对比图完整保存路径（含文件名）。留空则用 --out-dir/denoise_comparison_ratio{R}.png")
+                        help="对比图完整保存路径（含文件名）。留空则用 --out-dir/<prefix>denoise_comparison_ratio{R}.png")
     args = parser.parse_args()
 
     # 注册中文字体，确保图中的中文标题/标签正常显示
@@ -263,8 +280,11 @@ def main():
     print(f"[info] device = {device}, ratio = {args.ratio}, crop = "
           f"{'full' if args.full else args.crop_size}")
 
-    # 1) 加载模型
-    model = build_model(args.cp_dir, device)
+    # 1) 加载模型（unet 或 nafnet-tiny，结构从 checkpoint 自动推断）
+    model = build_model(args)
+    meta = args.resolved_meta
+    print(f"[info] resolved model = {meta['model']} width={meta['model_width']} "
+          f"enc={meta['encoder_blocks']} mid={meta['middle_blocks']} dec={meta['decoder_blocks']}")
 
     # 2) 构建评估集（构造时会缓存该 ratio 下所有 RAW，与官方评估一致）
     #    注意：SIDEvalDataset 内部使用相对路径 ./resources、./infos，必须在仓库根目录运行
@@ -295,8 +315,10 @@ def main():
     if args.out_path:
         out_path = args.out_path
     else:
-        out_path = os.path.join(args.out_dir, f"denoise_comparison_ratio{args.ratio}.png")
-    make_comparison_figure(rows, args.ratio, out_path, args.dpi, args.full)
+        out_path = os.path.join(
+            args.out_dir, f"{args.out_prefix}denoise_comparison_ratio{args.ratio}.png"
+        )
+    make_comparison_figure(rows, args.ratio, out_path, args.dpi, args.full, model_label=meta["model"])
     print(f"\n[done] 对比图已保存: {os.path.abspath(out_path)}")
 
 

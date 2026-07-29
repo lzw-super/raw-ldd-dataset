@@ -205,10 +205,10 @@ conda run --no-capture-output -n LED-ICCV23 \
 ```bash
 conda run --no-capture-output -n LED-ICCV23 \
   python tools/calculate_model_info.py \
-  --checkpoint experiments/sid_sony_raw_dynamic/checkpoints/latest.pth \
+  --checkpoint experiments/sid_sony_paper_fair/checkpoints/latest.pth \
   --device cuda:1 \
-  --output-json experiments/sid_sony_raw_dynamic/model_info.json \
-  --metrics-jsonl experiments/sid_sony_raw_dynamic/metrics.jsonl
+  --output-json experiments/sid_sony_paper_fair/model_info.json \
+  --metrics-jsonl experiments/sid_sony_paper_fair/metrics.jsonl
 ```
 
 这里采用 `1 MAC = 1 次乘加 ≈ 2 FLOPs` 的口径，只统计卷积、反卷积和
@@ -222,7 +222,7 @@ conda run --no-capture-output -n LED-ICCV23 \
 ```bash
 conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
   --config configs/train_sid_sony.yaml \
-  --resume experiments/sid_sony_raw_dynamic/checkpoints/latest.pth
+  --resume experiments/sid_sony_paper_fair/checkpoints/latest.pth
 ```
 
 不要把 `--steps-per-epoch 8` 之类短冒烟 run 的 checkpoint 恢复到正式 1,288 step/epoch、1,000 epoch 训练中，因为学习率调度总步数不同。
@@ -234,10 +234,10 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 ```bash
 for ratio in 100 250 300; do
   conda run --no-capture-output -n LED-ICCV23 python test_denoise_sideld.py \
-    --cp-dir experiments/sid_sony_raw_dynamic/checkpoints/latest.pth \
+    --cp-dir experiments/sid_sony_paper_fair/checkpoints/latest.pth \
     --testset-type sid --eval-ratio "$ratio" \
     --num-workers 2 \
-    --result-json "experiments/sid_sony_raw_dynamic/sid_x${ratio}.json"
+    --result-json "experiments/sid_sony_paper_fair/sid_x${ratio}.json"
 done
 ```
 
@@ -251,6 +251,50 @@ done
 - `--max-samples 1`：可附加用于快速检查，不能作为正式指标。
 
 评估会执行官方流程：真实 short RAW 减 PMN dark shading、打包归一化、乘 exposure ratio、网络推理、`ELDIlluminanceCorrect` 全局亮度校正，最后计算 PSNR/SSIM。
+
+### 4.7 定性可视化对比
+
+除 PSNR/SSIM 数值外，可用 `test-op/run_qual_compare.sh` 生成单张左右对比图
+（每行：含噪输入 | 去噪结果 | 干净 GT），直观查看去噪效果。脚本位于
+`test-op/`，内部调用 `test-op/qual_denoise_compare.py`。
+
+该脚本与正式评估共用同一套数据加载、模型与照度校正流程，并支持加载任意 SID
+训练 checkpoint：**模型类型（unet / nafnet）与结构会从 checkpoint 的 `args`
+自动推断**，无需手动指定。模型构建逻辑统一收敛在
+`utils/model_factory.py`，`test_denoise_sideld.py` 与本脚本共用同一套推断规则。
+
+默认（UNet、ratio=100、中心裁剪 512）：
+
+```bash
+bash test-op/run_qual_compare.sh 0 100
+```
+
+位置参数为 `<GPU> <ratio 100/250/300> <抽样图片数>`；通过环境变量切换
+checkpoint、模型类型与输出目录：
+
+```bash
+# NAFNet-tiny：只换 CP_DIR，模型类型与结构自动识别（推荐）
+CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth \
+  bash test-op/run_qual_compare.sh 0 100
+
+# 三档全跑，并用 OUT_DIR 把 nafnet 产物单独存放，避免与 UNet 同名覆盖
+for r in 100 250 300; do
+  CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth \
+  OUT_DIR=experiments/sid_sony_nafnet_tiny/qualitative \
+    bash test-op/run_qual_compare.sh 0 $r
+done
+```
+
+参数说明：
+
+- `CP_DIR`：待可视化的 checkpoint，默认 `experiments/sid_sony_paper_fair/checkpoints/latest.pth`；
+- `MODEL`：强制模型类型（`unet` / `nafnet` / `natnet`），**留空即自动推断**；仅当 checkpoint 未记录 `args`（如官方纯权重）时才需显式指定；
+- `OUT_DIR`：对比图输出目录，默认 `experiments/sid_sony_paper_fair/qualitative`；切换模型时建议显式指定，避免不同模型的同名 PNG 互相覆盖；
+- `EXTRA`：透传给 `qual_denoise_compare.py` 的高级参数，如 `--full`、`--indices 0 10`、`--model-width 16` 等。
+
+产物为 `$OUT_DIR/denoise_comparison_ratio${RATIO}.png`。运行时终端会打印一行
+`resolved model = ...`，确认自动推断到的模型名与结构；对比图左列行标签也会
+标注模型名，便于横向对比 unet 与 nafnet-tiny。
 
 ## 5. 已完成的本地验证结果
 
