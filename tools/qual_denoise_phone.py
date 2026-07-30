@@ -20,6 +20,9 @@ from utils.phone_inference import make_side_by_side, packed_raw_preview, tiled_p
 from utils.phone_model import load_phone_checkpoint
 
 
+MAX_DENOISE_RATIO = 300.0
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--checkpoint", required=True, help="Checkpoint produced by train_phone.py")
@@ -28,12 +31,12 @@ def parse_args() -> argparse.Namespace:
     inputs.add_argument("--input-root", default=None, help="Directory recursively containing DNGs")
     parser.add_argument("--output-dir", default="experiments/mey_an00_pseudoclean/qualitative_noisy")
     parser.add_argument("--calibration-root", default="data/MEY_AN00/calibration", help="DS artifacts used during hybrid training")
-    parser.add_argument("--no-dark-shading", action="store_true", help="Ablation only: do not subtract calibrated 1/30 s DS")
+    parser.add_argument("--no-dark-shading", action="store_true", help="Ablation only: do not subtract calibrated DS")
     parser.add_argument(
         "--missing-ds-policy",
         choices=["error", "nearest_log2", "none"],
         default="nearest_log2",
-        help="What to do when this unpaired noisy DNG has no exact ISO/exposure DS artifact",
+        help="What to do when this unpaired noisy DNG has no exact-ISO DS artifact; DS exposure is not matched",
     )
     parser.add_argument(
         "--reference-exposure-s",
@@ -41,7 +44,18 @@ def parse_args() -> argparse.Namespace:
         default=10.0,
         help="Long-exposure target domain; used when --ratio is not supplied",
     )
-    parser.add_argument("--ratio", type=float, default=None, help="Override target/input exposure ratio for every DNG")
+    parser.add_argument(
+        "--ratio",
+        type=float,
+        nargs="+",
+        default=None,
+        metavar="RATIO",
+        help=(
+            "Optional ratio list. One value is broadcast to every DNG; otherwise provide one value per input DNG "
+            f"in processing order. Use -1 to calculate that input's ratio automatically. "
+            f"Every effective ratio is capped at {MAX_DENOISE_RATIO:g}"
+        ),
+    )
     parser.add_argument("--tile-size", type=int, default=512)
     parser.add_argument("--tile-overlap", type=int, default=64)
     parser.add_argument("--gamma", type=float, default=2.2, help="Display-only packed-RGB preview gamma")
@@ -73,6 +87,23 @@ def load_inputs(args: argparse.Namespace) -> list[dict[str, Any]]:
     return [{"path": str(path.resolve()), "relative_path": str(path.relative_to(root))} for path in paths]
 
 
+def resolve_ratio_overrides(ratios: list[float] | None, input_count: int) -> list[float | None]:
+    """Broadcast/map CLI ratios; ``-1`` selects automatic exposure ratio."""
+    if ratios is None:
+        return [None] * input_count
+    values = [float(value) for value in ratios]
+    if any(not math.isfinite(value) or (value != -1.0 and value <= 0) for value in values):
+        raise ValueError("Every --ratio value must be finite and positive, or -1 for automatic calculation")
+    if len(values) == 1:
+        values *= input_count
+    if len(values) != input_count:
+        raise ValueError(
+            f"--ratio received {len(values)} values for {input_count} input DNGs; "
+            "provide one value to broadcast or exactly one value per input"
+        )
+    return [None if value == -1.0 else value for value in values]
+
+
 def _load_dark_shading_artifact(directory: Path, expected_shape: tuple[int, ...]) -> tuple[np.ndarray, dict[str, Any]]:
     ds_path, metadata_path = directory / "dark_shading_dn.npy", directory / "metadata.json"
     if not ds_path.is_file() or not metadata_path.is_file():
@@ -95,34 +126,13 @@ def load_dark_shading(
     expected_shape: tuple[int, ...],
     missing_policy: str,
 ) -> tuple[np.ndarray, dict[str, Any]]:
-    """Load exact DS or a clearly labelled nearest-log-ISO qualitative fallback."""
-    try:
-        dark_shading, artifact_metadata = _load_dark_shading_artifact(calibration_root / condition_key, expected_shape)
-        if artifact_metadata.get("condition_key") != condition_key:
-            raise ValueError(f"{calibration_root / condition_key / 'metadata.json'}: condition key mismatch")
-        return dark_shading, {
-            "mode": "exact",
-            "requested_condition_key": condition_key,
-            "used_condition_key": condition_key,
-            "requested_iso_exif": int(iso_exif),
-            "used_iso_exif": int(iso_exif),
-        }
-    except FileNotFoundError:
-        if missing_policy == "error":
-            raise FileNotFoundError(
-                f"Missing dark-shading artifact for {condition_key}; run calibrate_phone_dark_shading.py, "
-                "use --missing-ds-policy nearest_log2, or use --no-dark-shading"
-            ) from None
-        if missing_policy == "none":
-            return np.zeros(expected_shape, dtype=np.float32), {
-                "mode": "none_missing_exact",
-                "requested_condition_key": condition_key,
-                "used_condition_key": None,
-                "requested_iso_exif": int(iso_exif),
-                "used_iso_exif": None,
-            }
+    """Load DS by ISO only; exposure is retained in output metadata but never matched.
 
-    candidates: list[tuple[float, int, str, Path]] = []
+    This is deliberately restricted to unpaired qualitative inference.  The
+    calibration artifact must still have the same packed RAW shape, and an
+    exact ISO takes precedence over the log2-nearest fallback.
+    """
+    candidates: list[tuple[float, int, str, float, Path]] = []
     for metadata_path in calibration_root.glob("*/metadata.json"):
         try:
             artifact_metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -132,23 +142,58 @@ def load_dark_shading(
             candidate_key = str(artifact_metadata["condition_key"])
         except (KeyError, TypeError, ValueError, json.JSONDecodeError):
             continue
-        if tuple(artifact_metadata.get("packed_shape_chw", ())) != expected_shape:
+        if candidate_iso <= 0 or tuple(artifact_metadata.get("packed_shape_chw", ())) != expected_shape:
             continue
-        if not math.isclose(candidate_exposure_s, exposure_s, rel_tol=0.02, abs_tol=1e-9):
-            continue
-        candidates.append((abs(math.log2(candidate_iso / float(iso_exif))), candidate_iso, candidate_key, metadata_path.parent))
-    if not candidates:
-        raise FileNotFoundError(
-            f"No readable same-exposure, same-shape DS artifacts found below {calibration_root} for {condition_key}"
+        candidates.append(
+            (
+                abs(math.log2(candidate_iso / float(iso_exif))),
+                candidate_iso,
+                candidate_key,
+                candidate_exposure_s,
+                metadata_path.parent,
+            )
         )
-    _, candidate_iso, candidate_key, candidate_directory = min(candidates)
+    exact_candidates = [candidate for candidate in candidates if candidate[1] == iso_exif]
+    if exact_candidates:
+        _, candidate_iso, candidate_key, candidate_exposure_s, candidate_directory = min(
+            exact_candidates, key=lambda candidate: (candidate[2], str(candidate[4]))
+        )
+        mode = "exact"
+    elif missing_policy == "none":
+        return np.zeros(expected_shape, dtype=np.float32), {
+            "mode": "none_missing_exact_iso",
+            "requested_condition_key": condition_key,
+            "used_condition_key": None,
+            "requested_iso_exif": int(iso_exif),
+            "used_iso_exif": None,
+            "requested_exposure_s": float(exposure_s),
+            "used_exposure_s": None,
+        }
+    elif missing_policy == "error":
+        raise FileNotFoundError(
+            f"Missing same-shape DS artifact for ISO {iso_exif}; run calibrate_phone_dark_shading.py, "
+            "use --missing-ds-policy nearest_log2, or use --no-dark-shading"
+        )
+    elif not candidates:
+        raise FileNotFoundError(
+            f"No readable same-shape DS artifacts found below {calibration_root} for ISO {iso_exif}; "
+            "DS exposure is intentionally not a matching condition"
+        )
+    else:
+        _, candidate_iso, candidate_key, candidate_exposure_s, candidate_directory = min(
+            candidates, key=lambda candidate: (candidate[0], candidate[1], candidate[2], str(candidate[4]))
+        )
+        mode = "nearest_log2"
+
     dark_shading, _ = _load_dark_shading_artifact(candidate_directory, expected_shape)
     return dark_shading, {
-        "mode": "nearest_log2",
+        "mode": mode,
         "requested_condition_key": condition_key,
         "used_condition_key": candidate_key,
         "requested_iso_exif": int(iso_exif),
         "used_iso_exif": candidate_iso,
+        "requested_exposure_s": float(exposure_s),
+        "used_exposure_s": candidate_exposure_s,
     }
 
 
@@ -157,13 +202,14 @@ def main() -> None:
     args = parse_args()
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
-    if args.reference_exposure_s <= 0 or (args.ratio is not None and args.ratio <= 0):
-        raise ValueError("reference-exposure-s and ratio must be positive")
+    if not math.isfinite(args.reference_exposure_s) or args.reference_exposure_s <= 0:
+        raise ValueError("reference-exposure-s must be finite and positive")
     device = torch.device(args.device)
     model, checkpoint_args, model_name = load_phone_checkpoint(args.checkpoint, device)
     records = load_inputs(args)
     if args.max_images > 0:
         records = records[: args.max_images]
+    ratio_overrides = resolve_ratio_overrides(args.ratio, len(records))
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     calibration_root = Path(args.calibration_root)
@@ -177,16 +223,22 @@ def main() -> None:
             "checkpoint_synthesis": checkpoint_args.get("synthesis"),
             "reference_exposure_s": args.reference_exposure_s,
             "ratio_override": args.ratio,
+            "max_denoise_ratio": MAX_DENOISE_RATIO,
             "missing_ds_policy": args.missing_ds_policy,
             "tile_size": args.tile_size,
             "tile_overlap": args.tile_overlap,
             "outputs": [],
         }
-    for index, record in enumerate(records, start=1):
+    for index, (record, ratio_override) in enumerate(zip(records, ratio_overrides), start=1):
         source_path = Path(record["path"])
         packed, metadata = read_phone_dng_packed(source_path)
         black = np.asarray(metadata.black_level_canonical, dtype=np.float32).reshape(4, 1, 1)
-        ratio = float(args.ratio) if args.ratio is not None else args.reference_exposure_s / metadata.exposure_s
+        calculated_ratio = args.reference_exposure_s / metadata.exposure_s
+        requested_ratio = float(ratio_override) if ratio_override is not None else calculated_ratio
+        ratio = min(requested_ratio, MAX_DENOISE_RATIO)
+        ratio_was_capped = requested_ratio > MAX_DENOISE_RATIO and not math.isclose(
+            requested_ratio, MAX_DENOISE_RATIO, rel_tol=1e-6, abs_tol=1e-6
+        )
         if args.no_dark_shading:
             dark_shading = np.zeros_like(packed, dtype=np.float32)
             ds_info = {
@@ -195,6 +247,8 @@ def main() -> None:
                 "used_condition_key": None,
                 "requested_iso_exif": metadata.iso_exif,
                 "used_iso_exif": None,
+                "requested_exposure_s": metadata.exposure_s,
+                "used_exposure_s": None,
             }
         else:
             dark_shading, ds_info = load_dark_shading(
@@ -224,7 +278,11 @@ def main() -> None:
             "iso_exif": metadata.iso_exif,
             "input_exposure_s": metadata.exposure_s,
             "reference_exposure_s": args.reference_exposure_s,
+            "calculated_exposure_ratio": calculated_ratio,
+            "requested_ratio": requested_ratio,
             "exposure_ratio": ratio,
+            "max_denoise_ratio": MAX_DENOISE_RATIO,
+            "ratio_was_capped": ratio_was_capped,
             "canonical_channel_order": ["R", "G1", "G2", "B"],
             "domain": metadata.domain,
             "dark_shading": ds_info,
@@ -234,12 +292,24 @@ def main() -> None:
         }
         if run_summary is not None:
             run_summary["outputs"].append(item_summary)
-        ds_note = "exact DS" if ds_info["mode"] == "exact" else (
-            f"DS={ds_info['mode']} (ISO {ds_info['used_iso_exif']})"
-        )
+        if ds_info["mode"] == "exact":
+            ds_note = f"exact ISO DS (source {ds_info['used_exposure_s']:.7g}s)"
+        elif ds_info["mode"] == "disabled":
+            ds_note = "DS=disabled"
+        else:
+            ds_note = (
+                f"DS={ds_info['mode']} (ISO {ds_info['used_iso_exif']}, "
+                f"source {ds_info['used_exposure_s']:.7g}s)"
+            )
+        if ratio_was_capped:
+            ratio_note = f"x{requested_ratio:.5g} -> capped x{ratio:.5g}"
+        elif ratio_override is not None:
+            ratio_note = f"requested x{ratio:.5g}"
+        else:
+            ratio_note = f"x{ratio:.5g}"
         print(
             f"[{index}/{len(records)}] {source_path.name}: ISO {metadata.iso_exif}, "
-            f"{metadata.exposure_s:.7f}s -> x{ratio:.5g}; {ds_note}; comparison saved"
+            f"{metadata.exposure_s:.7f}s -> {ratio_note}; {ds_note}; comparison saved"
         )
     if run_summary is not None:
         (output_dir / "run_summary.json").write_text(
