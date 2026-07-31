@@ -1,0 +1,50 @@
+# UNetSeeInDark fine-tuning on the HONOR MEY-AN00 phone data.
+#
+# The initializer below is the already completed SID synthetic pretraining
+# run in this workspace.  It is loaded as model weights only: phone
+# fine-tuning starts with a fresh optimizer and learning-rate schedule.
+
+clean_manifest: data/MEY_AN00/manifests/clean_train.jsonl
+dark_manifest: data/MEY_AN00/manifests/dark_train.jsonl
+calibration_root: data/MEY_AN00/calibration
+val_clean_manifest: data/MEY_AN00/manifests/clean_synthetic_val.jsonl
+val_dark_manifest: data/MEY_AN00/manifests/dark_val.jsonl
+output_dir: experiments/mey_an00_unet
+init_checkpoint: experiments/sid_sony_paper_fair/checkpoints/latest.pth
+
+model: unet
+model_width: 32
+
+epochs: 500
+steps_per_epoch: null
+batch_size: 1
+num_workers: 2
+patch_size: 512
+crops_per_image: 2
+ratios: [100.0, 250.0, 300.0]
+dark_exposure_policy: approximate_reuse_1_30s
+clean_cache_size: 4
+dark_cache_size: 2
+max_target_saturation_fraction: 0.01
+max_crop_attempts: 32
+exposure_ratio_tolerance: 0.02
+
+synthesis: hybrid
+learning_rate: 0.00001
+beta1: 0.9
+beta2: 0.999
+weight_decay: 0.0
+warmup_epochs: 1
+grad_clip: null
+amp: false
+device: cuda:0
+seed: 1
+
+validate_every: 1
+validate_steps: 10
+val_ratios: [100.0, 250.0, 300.0]
+val_crops_per_image: 1
+val_seed: 10001
+save_every: 1
+keep_checkpoints: 3
+log_every: 10

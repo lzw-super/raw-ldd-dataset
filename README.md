@@ -20,6 +20,10 @@ Clone the repository and install necessary dependencies with `pip install -r req
 
 This workspace also contains a sensor-specific HONOR MEY-AN00 packed-DNG pipeline.  It keeps `raw-test/val` as independent-scene **synthetic-only** validation and `raw-test/noisy` as unpaired qualitative input, so neither is misreported as real paired PSNR.  See [TRAINING_MEY_AN00.md](TRAINING_MEY_AN00.md) for manifest/calibration, training, checkpoint evaluation, qualitative inference, and the future registered noisy-clean pair protocol.
 
+For the capacity-control experiment comparing the existing NAFNet-Tiny with
+the SID-pretrained U-Net and the standard/original NAFNet, see
+[TRAINING_LARGE_MODELS.md](TRAINING_LARGE_MODELS.md).
+
 
 ## Test our pretrained model
 **We follow [PMN](https://github.com/megvii-research/PMN/tree/TPAMI) for dataset preparation**

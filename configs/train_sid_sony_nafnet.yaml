@@ -1,0 +1,54 @@
+# Standard/original NAFNet SID synthetic pretraining.
+#
+# This uses the same data, noise synthesis, crop schedule and optimizer as
+# NAFNet-Tiny so that model capacity is the controlled variable.
+#
+# Complexity at [1, 4, 512, 512]:
+#   parameters: 7,600,228
+#   convolution MACs: 35.042 GMAC
+#   convolution FLOPs: 70.084 GFLOPs (2 FLOPs/MAC)
+
+patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
+pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
+sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+clean_source: raw
+manifest: infos/SID_train_clean_raw.json
+val_manifest: infos/SID_validation_clean_raw.json
+dark_root: biasframe_et_1_30
+pmn_resource_dir: resources/SonyA7S2
+
+# Original NAFNet structure used by LED for packed-RAW restoration.
+model: nafnet
+model_width: 32
+encoder_blocks: [2, 2, 2, 2]
+middle_blocks: 2
+decoder_blocks: [2, 2, 2, 2]
+
+output_dir: experiments/sid_sony_nafnet
+epochs: 1000
+steps_per_epoch: null
+batch_size: 1
+num_workers: 2
+patch_size: 512
+crops_per_image: 8
+ratios: [100, 250, 300]
+clean_cache_size: 16
+dark_cache_size: 2
+
+synthesis: ratio_aware
+k_scale: 0.1
+learning_rate: 0.0002
+beta1: 0.9
+beta2: 0.999
+weight_decay: 0.0
+warmup_epochs: 5
+grad_clip: null
+amp: false
+device: cuda:0
+seed: 1
+
+validate_every: 10
+validate_steps: 20
+save_every: 10
+keep_checkpoints: 3
+log_every: 20
