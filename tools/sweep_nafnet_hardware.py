@@ -209,6 +209,142 @@ def unet_skip_footprint(width: int, height: int, width_px: int,
     }
 
 
+def full_frame_live_activation_peak(
+    width: int,
+    img_channel: int,
+    height: int,
+    width_px: int,
+    num_stages: int,
+    blocks_per_stage: int,
+    middle_blocks: int,
+) -> dict[str, Any]:
+    """Estimate the peak *simultaneously live* full-frame activations.
+
+    This is a hardware buffer-liveness model, rather than a PyTorch allocator
+    measurement.  It assumes sequential, operator-at-a-time execution with:
+
+    * distinct full-frame input/output (ping-pong) buffers for convolutions;
+    * encoder skips released immediately after their decoder addition;
+    * elementwise operations performed in-place where their lifetime permits;
+    * the padded network input retained for the final long residual addition;
+    * no tiling, spilling, recomputation, or buffer compression.
+
+    A NAFBlock depthwise convolution is the important case.  For a base feature
+    map of B elements it needs the block residual B plus expanded convolution
+    input 2B and output 2B, i.e. 5B, in addition to live U-Net skips and the
+    long input residual.  Counting only conv input+output misses that residual.
+    """
+    padder = 2 ** num_stages
+    padded_h = ((height + padder - 1) // padder) * padder
+    padded_w = ((width_px + padder - 1) // padder) * padder
+    input_residual = img_channel * padded_h * padded_w
+
+    bases = [width * (2 ** stage)
+             * (padded_h // (2 ** stage))
+             * (padded_w // (2 ** stage))
+             for stage in range(num_stages + 1)]
+    skips = bases[:-1]
+    candidates: list[dict[str, Any]] = []
+
+    def add(location: str, current: int, block_residual: int = 0,
+            live_skips: int = 0, detail: str = "") -> None:
+        components = {
+            "current_operator_buffers": int(current),
+            "nafblock_residual": int(block_residual),
+            "live_unet_skips": int(live_skips),
+            "input_long_residual": int(input_residual),
+        }
+        candidates.append({
+            "location": location,
+            "detail": detail,
+            "components": components,
+            "elements": int(sum(components.values())),
+        })
+
+    # intro: padded input is both the convolution input and long residual, so
+    # count the physical buffer only once.
+    add("intro", bases[0], detail="input residual buffer + intro output")
+
+    prior_skips = 0
+    for stage in range(num_stages):
+        base = bases[stage]
+        if blocks_per_stage > 0:
+            add(
+                f"encoder.stage{stage}.nafblock.dwconv2",
+                4 * base,
+                block_residual=base,
+                live_skips=prior_skips,
+                detail="dwconv input 2B + output 2B + block residual B",
+            )
+        # The downsample input is the just-created skip, hence it must not be
+        # counted twice.  Its output contains half as many elements.
+        add(
+            f"down.stage{stage}",
+            base + bases[stage + 1],
+            live_skips=prior_skips,
+            detail="down input aliases current skip; distinct down output",
+        )
+        prior_skips += base
+
+    if middle_blocks > 0:
+        middle_base = bases[-1]
+        add(
+            "middle.nafblock.dwconv2",
+            4 * middle_base,
+            block_residual=middle_base,
+            live_skips=sum(skips),
+            detail="dwconv input 2B + output 2B + block residual B",
+        )
+
+    # Decode deepest to shallowest.  The matching skip is live during upsample,
+    # then consumed by an in-place-capable elementwise addition.
+    for stage in reversed(range(num_stages)):
+        base = bases[stage]
+        shallower_skips = sum(skips[:stage])
+        matching_and_shallower = shallower_skips + base
+        add(
+            f"up.stage{stage}",
+            bases[stage + 1] + base,
+            live_skips=matching_and_shallower,
+            detail="up input + up output while matching skip is still live",
+        )
+        if blocks_per_stage > 0:
+            add(
+                f"decoder.stage{stage}.nafblock.dwconv2",
+                4 * base,
+                block_residual=base,
+                live_skips=shallower_skips,
+                detail="matching skip consumed; dwconv input 2B + output 2B + block residual B",
+            )
+
+    # ending conv output and retained input residual are distinct.  The final
+    # residual add may overwrite the ending output.
+    add("ending", bases[0] + input_residual,
+        detail="ending input + output, plus retained input residual")
+
+    peak = max(candidates, key=lambda item: item["elements"])
+    peak_elements = peak["elements"]
+    return {
+        "model": "full_frame_operator_ping_pong",
+        "assumptions": [
+            "sequential operator-at-a-time schedule",
+            "convolution input/output use distinct full-frame buffers",
+            "elementwise operations may overwrite dead inputs",
+            "U-Net skips are released immediately after use",
+            "padded input is retained for the final long residual",
+            "no tiling, external-memory spill, recomputation, or compression",
+        ],
+        "padded_spatial": [padded_h, padded_w],
+        "peak_elements": int(peak_elements),
+        "peak_bytes_fp16": int(peak_elements * DTYPE_BYTES["fp16"]),
+        "peak_bytes_int8": int(peak_elements * DTYPE_BYTES["int8"]),
+        "peak_location": peak["location"],
+        "peak_detail": peak["detail"],
+        "peak_components": peak["components"],
+        "liveness_candidates": candidates,
+    }
+
+
 # --------------------------------------------------------------------------- #
 # 3. 参数量按子模块分组
 # --------------------------------------------------------------------------- #
@@ -283,6 +419,11 @@ def profile_one(config: dict[str, Any], input_shape: Sequence[int],
                                             config["num_stages"], dtype_bytes)
     skip = unet_skip_footprint(config["width"], in_h, in_w,
                                config["num_stages"], dtype_bytes)
+    live_peak = full_frame_live_activation_peak(
+        config["width"], config["img_channel"], in_h, in_w,
+        config["num_stages"], config["blocks_per_stage"],
+        config["middle_blocks"],
+    )
     breakdown = param_breakdown(model)
 
     max_single = fm["max_single_elements"]
@@ -301,6 +442,7 @@ def profile_one(config: dict[str, Any], input_shape: Sequence[int],
         "max_single_feature_map_bytes_fp16": int(max_single * DTYPE_BYTES["fp16"]),
         "max_single_feature_map_tensor": fm["max_single_tensor"],
         "unet_skip_footprint": skip,
+        "live_activation_peak": live_peak,
         "per_resolution": resolution_table,
         "param_breakdown": breakdown,
     }
@@ -344,10 +486,13 @@ def estimate_fpga(result: dict[str, Any], clock_mhz: float,
     fps = 1000.0 / latency_ms if latency_ms > 0 else float("inf")
 
     weight_bytes = result["weight_bytes_int8"] if int8 else result["weight_bytes_fp16"]
-    act_bytes = result["max_single_feature_map_bytes_fp16"]  # 单层激活缓冲 (双缓冲约 2x)
-    # 权重 + 激活双缓冲所需 BRAM 块数
+    # Use the liveness peak directly: it already includes operator ping-pong,
+    # NAFBlock residuals, U-Net skips, and the long input residual.
+    act_bytes = (result["live_activation_peak"]["peak_bytes_int8"] if int8
+                 else result["live_activation_peak"]["peak_bytes_fp16"])
+    # 权重 + 同时存活激活所需 BRAM 块数
     weight_bram = (weight_bytes * 8 + FPGA_BRAM_BITS - 1) // FPGA_BRAM_BITS
-    act_bram = (act_bytes * 2 * 8 + FPGA_BRAM_BITS - 1) // FPGA_BRAM_BITS  # 输入+输出双缓冲
+    act_bram = (act_bytes * 8 + FPGA_BRAM_BITS - 1) // FPGA_BRAM_BITS
 
     mac_per_dsp = FPGA_INT8_MAC_PER_DSP if int8 else FPGA_INT16_MAC_PER_DSP
     dsp = -(-parallel_macs // mac_per_dsp)  # 向上取整
@@ -368,7 +513,8 @@ def estimate_fpga(result: dict[str, Any], clock_mhz: float,
         "lut_est": int(lut),
         "ff_est": int(ff),
         "weight_kib": weight_bytes / 1024,
-        "act_buffer_kib": act_bytes * 2 / 1024,
+        "act_buffer_kib": act_bytes / 1024,
+        "act_buffer_model": result["live_activation_peak"]["model"],
     }
 
 
@@ -386,7 +532,8 @@ def estimate_asic(result: dict[str, Any], clock_mhz: float,
 
     # SRAM: 权重 (若放片上) + 激活缓冲 (双缓冲)
     weight_bits = result["total_parameters"] * (8 if int8 else 16)
-    act_bits = result["max_single_feature_map_elements"] * 16 * 2  # 双缓冲, fp16
+    activation_bits = 8 if int8 else 16
+    act_bits = result["live_activation_peak"]["peak_elements"] * activation_bits
     weight_um2 = weight_bits * ASIC_SRAM_UM2_PER_BIT_28NM
     act_um2 = act_bits * ASIC_SRAM_UM2_PER_BIT_28NM
     sram_mm2 = (weight_um2 + act_um2) * 1e-6  # 含逻辑外围会更大, 这里是裸存储
@@ -547,8 +694,8 @@ def render_report(payload: dict[str, Any]) -> str:
     lines.append("## 1. 参数量 / 计算量 / 最大特征图 总览\n")
     header = ("| 配置 | width | 深度(block/stage) | 阶段数 | 参数量 | "
               "权重(fp16) | GMACs | GFLOPs | 单层最大特征图(元素) | 单层最大(fp16) | "
-              "跳连总足迹(元素) |")
-    sep = "|" + "---|" * 11
+              "跳连总足迹(元素) | 实际驻留峰值(fp16) |")
+    sep = "|" + "---|" * 12
     lines.append(header)
     lines.append(sep)
     for r in payload["results"]:
@@ -559,7 +706,8 @@ def render_report(payload: dict[str, Any]) -> str:
             f"{r['weight_bytes_fp16']/1024:.1f} KiB | {r['gmacs']:.3f} | "
             f"{r['gflops']:.3f} | {r['max_single_feature_map_elements']:,} | "
             f"{r['max_single_feature_map_bytes_fp16']/1024:.1f} KiB | "
-            f"{r['unet_skip_footprint']['skip_elements']:,} |"
+            f"{r['unet_skip_footprint']['skip_elements']:,} | "
+            f"{r['live_activation_peak']['peak_bytes_fp16']/1024/1024:.1f} MiB |"
         )
     lines.append("")
 
@@ -620,8 +768,10 @@ def render_report(payload: dict[str, Any]) -> str:
                  "LayerNorm/SimpleGate 的实现方式等。")
     lines.append("- MAC 统计不含 LayerNorm / SimpleGate / 池化 / 元素乘 的算术, "
                  "硬件实现时这些会额外消耗 LUT/逻辑, 但相对卷积量级很小。")
-    lines.append("- 「单层最大特征图」指任一中间张量的最大元素数; 折叠式加速器据此设计激活缓冲。")
+    lines.append("- 「单层最大特征图」只表示单个 tensor 的大小，不能单独作为片内激活容量。")
     lines.append("- 「跳连总足迹」指 U-Net encoder 各 skip 在解码期需同时保留的激活量。")
+    lines.append("- 「实际驻留峰值」按逐算子全帧 ping-pong 调度统计，同时包含算子输入/输出、"
+                 "NAFBlock 残差、当时仍存活的 skip 和输入长残差。")
     lines.append("- 权重 BRAM 假设全片上; 若放外存 (DRAM) 则 BRAM 仅需激活缓冲, 但带宽成为瓶颈。\n")
     return "\n".join(lines) + "\n"
 

@@ -42,7 +42,11 @@ def main(json_path: str, out_path: str) -> None:
                f"权重 fp16 = {by_label['w16_d1_s4']['weight_bytes_fp16']/1024:.1f} KiB")
     out.append(f"- 计算量 **{gmacs('w16_d1_s4'):.3f} GMACs / {gflops('w16_d1_s4'):.3f} GFLOPs** (与 model_info.json 完全一致)")
     out.append(f"- 单层最大特征图 **{by_label['w16_d1_s4']['max_single_feature_map_elements']:,} 元素 "
-               f"= {by_label['w16_d1_s4']['max_single_feature_map_bytes_fp16']/1024/1024:.1f} MiB (fp16)**\n")
+               f"= {by_label['w16_d1_s4']['max_single_feature_map_bytes_fp16']/1024/1024:.1f} MiB (fp16)**")
+    base_peak = by_label["w16_d1_s4"]["live_activation_peak"]
+    out.append(f"- 该全帧逐算子调度口径下的**同时驻留峰值 {base_peak['peak_elements']:,} 元素 "
+               f"= {base_peak['peak_bytes_fp16']/1024/1024:.1f} MiB (fp16) / "
+               f"{base_peak['peak_bytes_int8']/1024/1024:.1f} MiB (int8)**\n")
     out.append("三个可调设计变量 (本次扫描范围):\n")
     out.append("| 变量 | 含义 | 候选 |")
     out.append("|---|---|---|")
@@ -55,8 +59,9 @@ def main(json_path: str, out_path: str) -> None:
 
     # ----------------------------------------------------------------- #
     out.append("## 1. 全配置主表 (36 组)\n")
-    out.append("按 width 分组。`maxFM` = 单层最大中间特征图元素数; `skip` = U-Net 跳连需同时驻留的激活元素数。\n")
-    out.append("| 配置 | width | depth | stages | 参数量 | 权重fp16 | GMACs | GFLOPs | maxFM(元素) | maxFM(fp16) | skip(元素) |")
+    out.append("按 width 分组。`maxFM` 是单个最大 tensor；`skip` 是所有 encoder skip 之和；"
+               "`livePeak` 才是指定调度口径下同一时刻需要片内保存的激活峰值。\n")
+    out.append("| 配置 | width | depth | stages | 参数量 | 权重fp16 | GMACs | GFLOPs | maxFM(fp16) | skip(fp16) | livePeak(fp16) |")
     out.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in results:
         c = r["config"]
@@ -64,16 +69,17 @@ def main(json_path: str, out_path: str) -> None:
             f"| {c['label']} | {c['width']} | {c['blocks_per_stage']} | {c['num_stages']} | "
             f"{r['total_parameters']:,} | {r['weight_bytes_fp16']/1024:.0f} KiB | "
             f"{r['gmacs']:.2f} | {r['gflops']:.2f} | "
-            f"{r['max_single_feature_map_elements']:,} | "
             f"{r['max_single_feature_map_bytes_fp16']/1024/1024:.1f} MiB | "
-            f"{r['unet_skip_footprint']['skip_elements']:,} |"
+            f"{r['unet_skip_footprint']['skip_bytes_fp16']/1024/1024:.1f} MiB | "
+            f"{r['live_activation_peak']['peak_bytes_fp16']/1024/1024:.1f} MiB |"
         )
     out.append("")
 
     # ----------------------------------------------------------------- #
-    out.append("## 2. 最大中间特征图 (本次重点)\n")
-    out.append("通过对每个算子的输入/输出挂 hook 实测, **单个中间张量的最大元素数** 只取决于 `width`, "
-               "与 depth / stages 无关:\n")
+    out.append("## 2. 片内激活真实驻留峰值 (本次重点)\n")
+    out.append("先保留原 `maxFM` 指标用于描述单个 tensor。hook 实测表明它只取决于 `width`，"
+               "但它**不是**硬件所需激活容量：一个算子执行时至少还可能同时存在其输入、"
+               "NAFBlock 局部残差、尚未消费的 U-Net skip 和网络输入长残差。\n")
     out.append("| width | 最大张量 | 形状 | 元素数 | fp16 | int8 |")
     out.append("|---|---|---|---|---|---|")
     for w in (8, 12, 16):
@@ -89,6 +95,56 @@ def main(json_path: str, out_path: str) -> None:
                "`dwconv2` (3×3 depthwise) 保持 `2×width` 通道不变, 该张量 = `2 × width × 512 × 512`。"
                "FFN 分支 (`conv4`) 同样扩张到 `2×width`, 量级相同。stage-0 之后通道翻倍但空间 ÷4, "
                "元素数逐层减半, 故最大值恒由 stage-0 决定。\n")
+    out.append("### 2.1 统计口径与基线峰值\n")
+    out.append("这里采用适合折叠式 FPGA/ASIC 加速器比较的明确口径：整帧逐算子执行；卷积输入/输出使用"
+               "不同的 ping-pong buffer；元素级运算允许覆盖已无后续用途的输入；skip 在相应 decoder "
+               "相加后立即释放；512×512×4 的 padded input 为最终长残差一直保留；不做 tiling、外存 spill、"
+               "重计算或压缩。该结果是**硬件 buffer liveness 模型**，不是 PyTorch allocator 峰值。\n")
+    out.append("令 `A = width × H × W`。stage-0 的 `dwconv2` 执行时必须同时存在：\n")
+    out.append("| 驻留项 | 元素数（w16） | fp16 | 原因 |")
+    out.append("|---|---:|---:|---|")
+    comp = base_peak["peak_components"]
+    out.append(f"| dwconv2 输入（2A）+ 输出（2A） | {comp['current_operator_buffers']:,} | "
+               f"{comp['current_operator_buffers']*2/1024/1024:.1f} MiB | 卷积 ping-pong |")
+    out.append(f"| NAFBlock 局部残差（A） | {comp['nafblock_residual']:,} | "
+               f"{comp['nafblock_residual']*2/1024/1024:.1f} MiB | 必须保留到 `y = inp + ...` |")
+    out.append(f"| 当时尚存活的 U-Net skip | {comp['live_unet_skips']:,} | "
+               f"{comp['live_unet_skips']*2/1024/1024:.1f} MiB | stage-0 encoder 内尚未生成 skip |")
+    out.append(f"| 网络输入长残差 | {comp['input_long_residual']:,} | "
+               f"{comp['input_long_residual']*2/1024/1024:.1f} MiB | 最终 `output + padded_input` |")
+    out.append(f"| **合计峰值** | **{base_peak['peak_elements']:,}** | "
+               f"**{base_peak['peak_bytes_fp16']/1024/1024:.1f} MiB** | `5A + 4HW` |")
+    out.append("")
+    out.append("因此旧的“最大扩张 tensor × 双缓冲”只有 `4A = 32 MiB`，仍漏掉 `A = 8 MiB` 的"
+               " NAFBlock 局部残差以及 2 MiB 的输入长残差；`measure_peak_live.py` 原先给出的 34 MiB "
+               "也正是因为只补了后者。修正后的 hook 统计与解析 liveness 都得到 42 MiB。\n")
+    out.append("skip 已纳入每个时刻的生命周期统计，只是全局峰值恰好发生在第一个 skip 生成之前。"
+               "下面列出几个代表时刻，说明后续 stage 的 skip 与当前计算 buffer 如何叠加：\n")
+    out.append("| 时刻（w16） | 算子buffer | 块残差 | 存活skip | 长残差 | 合计(fp16) |")
+    out.append("|---|---:|---:|---:|---:|---:|")
+    candidates = {item["location"]: item for item in base_peak["liveness_candidates"]}
+    for location in ("encoder.stage0.nafblock.dwconv2",
+                     "encoder.stage1.nafblock.dwconv2",
+                     "middle.nafblock.dwconv2"):
+        item = candidates[location]
+        c = item["components"]
+        out.append(f"| `{location}` | {c['current_operator_buffers']:,} | "
+                   f"{c['nafblock_residual']:,} | {c['live_unet_skips']:,} | "
+                   f"{c['input_long_residual']:,} | {item['elements']*2/1024/1024:.1f} MiB |")
+    out.append("")
+    out.append("若硬件允许在结尾从外存重新读取原始输入，而不是让长残差全程驻留，w16 峰值可由 "
+               "42 MiB 降为 40 MiB（fp16）；代价是额外输入带宽。\n")
+    out.append("| width | livePeak 元素 | fp16 | int8 | 峰值位置 |")
+    out.append("|---|---:|---:|---:|---|")
+    for w in (8, 12, 16):
+        peak = by_label[f"w{w}_d1_s4"]["live_activation_peak"]
+        out.append(f"| {w} | {peak['peak_elements']:,} | "
+                   f"{peak['peak_bytes_fp16']/1024/1024:.1f} MiB | "
+                   f"{peak['peak_bytes_int8']/1024/1024:.1f} MiB | `{peak['peak_location']}` |")
+    out.append("")
+    out.append("在本次扫描的 `depth≥1` 配置中，峰值均由 stage-0 NAFBlock 决定，所以只随 width 变化；"
+               "增加 blocks 或 stages 不提高这一峰值。需要注意，这一结论依赖当前 `DW_Expand=2`、"
+               "输入通道为 4，以及上述立即释放/原地相加策略。\n")
     out.append("**U-Net 跳连总足迹** (解码期需同时保留的 encoder skip 激活):\n")
     out.append("| width | skip 总元素 | fp16 | 各 stage skip (stage0→3) |")
     out.append("|---|---|---|---|")
@@ -108,7 +164,7 @@ def main(json_path: str, out_path: str) -> None:
                    f"{row['expanded2x_elements']:,} |")
     out.append("")
     out.append("> **硬件含义**: 「权重存储」瓶颈在深层 (middle, 256 通道), 「激活存储」瓶颈在浅层 (stage 0)。"
-               "二者解耦 —— depth/stages 几乎不动 maxFM, 只有 width 决定激活缓冲上界。\n")
+               "对当前扫描而言，depth/stages 不改变 livePeak，width 才决定全帧激活容量。\n")
 
     # ----------------------------------------------------------------- #
     out.append("## 3. 参数分布的关键洞察\n")
@@ -155,9 +211,10 @@ def main(json_path: str, out_path: str) -> None:
             f"{f['lut_est']:,} | {f['latency_ms_per_frame']:.1f} | {f['fps']:.0f} |"
         )
     out.append("")
-    out.append("- **权重 BRAM 很小** (最大 ~557 块 36Kb ≈ 2 MiB), 权重轻松全片上。")
-    out.append("- **激活 BRAM 极大** (数千块): 因为按「整帧最大特征图 + 双缓冲」估, 16–32 MiB 级。"
-               "任何主流 FPGA 都无法把它全塞进 BRAM —— **必须分块 (tiling) 流水 或 用外存 DRAM**。")
+    out.append("- 权重 BRAM 以 INT8 全片上估算；最大配置约 557 块 36Kb（约 2.45 MiB），"
+               "是否可行取决于具体器件及 BRAM/URAM 分配。")
+    out.append("- 激活 BRAM 按修正后的 INT8 `livePeak` 估算（已包含 ping-pong、局部残差、skip 和长残差），"
+               "仍需数千块 36Kb；大多数实现需要 tiling、外存 spill，或两者结合。")
     out.append("- **DSP 是算力瓶颈**: 全帧 30 fps 需要数百~数千 DSP。例如 `w16_d4_s4` 需 ~2048 DSP (≈ ZU19EG 级), "
                "`w8_d2_s4` 仅需 ~256 DSP (中端 FPGA 可达 >40 fps)。\n")
 
@@ -173,15 +230,16 @@ def main(json_path: str, out_path: str) -> None:
             f"{a['sram_mm2']:.1f} | {a['total_mm2']:.1f} | {a['power_mw']:.0f} | {a['fps']:.0f} |"
         )
     out.append("")
-    out.append("- **面积被 SRAM (激活缓冲) 主导**, 同样源于整帧 maxFM。采用 line-buffer / tiling 流水后, "
-               "激活 SRAM 可从数十 mm² 降到 <1 mm² (仅保留若干行缓冲 + 权重 SRAM)。")
-    out.append("- 逻辑 (MAC 阵列 + 控制) 本身很小: 即使最大配置也仅 ~8 KGE / <7 mm²。"
+    out.append("- **面积被 SRAM (激活缓冲) 主导**。tiling 能降低当前算子工作集，但 U-Net skip 仍需"
+               "片上保留或写回外存；此外 SCA 含全局平均池化，端到端独立小 tile 会改变网络语义，"
+               "必须采用分阶段调度/全局统计回传或近似方案。")
+    out.append("- 逻辑 (MAC 阵列 + 控制) 本身较小: 最大配置约 8,242 KGE（即 8.24 MGE）/ 6.59 mm²。"
                "功耗主要随并行度 (MAC 数 × 时钟) 线性增长。\n")
 
     # ----------------------------------------------------------------- #
     out.append("## 6. 设计建议 (面向 FPGA/ASIC 部署)\n")
     out.append("若「模型太大」是主要矛盾, 在 **保持 4 阶段 (足够感受野利于去噪)** 前提下:\n")
-    out.append("| 候选 | 参数量 | GMACs | maxFM(fp16) | 相对 baseline |")
+    out.append("| 候选 | 参数量 | GMACs | livePeak(fp16) | 相对 baseline |")
     out.append("|---|---|---|---|---|")
     base_p = by_label["w16_d1_s4"]["total_parameters"]
     base_g = by_label["w16_d1_s4"]["gmacs"]
@@ -193,7 +251,7 @@ def main(json_path: str, out_path: str) -> None:
     ]:
         r = by_label[label]
         out.append(f"| {label} ({note}) | {r['total_parameters']/1e3:.0f}K | {r['gmacs']:.2f} | "
-                   f"{r['max_single_feature_map_bytes_fp16']/1024/1024:.0f} MiB | "
+                   f"{r['live_activation_peak']['peak_bytes_fp16']/1024/1024:.0f} MiB | "
                    f"参数 ×{base_p/r['total_parameters']:.1f}, 算力 ×{base_g/r['gmacs']:.1f} ↓ |")
     out.append("")
     out.append("若可接受较少下采样阶段 (牺牲一点大尺度结构恢复), **stages 是最强瘦身杠杆**:\n")
@@ -205,10 +263,12 @@ def main(json_path: str, out_path: str) -> None:
                    f"middle 通道 {16*2**r['config']['num_stages']} |")
     out.append("")
     out.append("通用硬件实现建议:\n")
-    out.append("1. **INT8 量化**: 权重与 DSP 需求减半; NAFNet 无 ReLU (用 SimpleGate), 对量化友好。")
-    out.append("2. **分块 (tiling) 流水**: 把 512×512 切成条带/块逐块流过, 激活缓冲从 MiB 级降到 KB 级 line buffer, "
-               "彻底消除 BRAM/SRAM 瓶颈。代价是需要处理跨块边界 (3×3 卷积/PixelShuffle 的 overlap)。")
-    out.append("3. **权重全片上**: 最大配置权重 <6 MiB (INT8 <3 MiB), 用 BRAM/ROM 缓存即可, 避免权重带宽瓶颈。")
+    out.append("1. **INT8 量化需实测**: 权重容量相对 fp16 减半，DSP 打包理论上可提高吞吐；但 LayerNorm、"
+               "SimpleGate/SCA 的乘法和残差动态范围并不自动保证量化友好，建议做 PTQ/QAT 精度验证。")
+    out.append("2. **分块 (tiling) / 条带流水**: 可显著缩小算子工作 buffer，但不能简单宣称只需若干行。"
+               "必须同时规划多尺度 skip 的片上/片外存放、卷积 halo、下/上采样边界，以及 SCA 全局平均统计。")
+    out.append("3. **权重驻留**: 最大配置权重 fp16 <6 MiB、INT8 <3 MiB；可优先评估 BRAM/URAM/ROM 全片上，"
+               "资源不足时按层搬运。")
     out.append("4. **realism**: 全帧 512×512×4 @30 fps 偏激进; 实际可降到 10–15 fps, 或对全画幅 (如 ~2128×1420) "
                "做分块推理, DSP 需求按比例下降。\n")
 
@@ -217,9 +277,10 @@ def main(json_path: str, out_path: str) -> None:
     out.append("- FPGA/ASIC 数字为 **规划级粗估**, 仅供横向对比配置, 非综合/流片后精确值。"
                "实际取决于量化方案、PE 阵列拓扑、流水深度、LayerNorm(含除法/开方)/SCA 池化的实现。")
     out.append("- MAC 不含 LayerNorm / SimpleGate / 池化 / 元素乘 的算术; 这些主要消耗 LUT/逻辑, 量级远小于卷积。")
-    out.append("- 激活 BRAM/SRAM 按「整帧最大特征图 + 双缓冲」 worst-case 估算; "
-               "实际 tiled 设计会小 1–2 个数量级。")
-    out.append("- 单层最大特征图、跳连足迹为 forward hook 实测 + 解析交叉验证, 数值可信。")
+    out.append("- 激活 BRAM/SRAM 使用本报告的全帧逐算子 liveness 峰值；INT8 表按每个激活元素 8 bit、"
+               "fp16 表按 16 bit，未计 bank 对齐、行缓冲、累加器、FIFO、地址冲突冗余和 ECC。")
+    out.append("- 单 tensor 与 skip 尺寸由 forward hook 实测；livePeak 由修正后的 hook 与解析生命周期模型"
+               "交叉验证。不同数据流、融合、重计算、spill 或 tiling 策略会得到不同片内峰值。")
     out.append("- 输入固定为 1×4×512×512; 其他分辨率下 maxFM ∝ H×W, MACs ∝ H×W×(块数+固定项), 可线性外推。\n")
 
     Path(out_path).write_text("\n".join(out) + "\n", encoding="utf-8")
