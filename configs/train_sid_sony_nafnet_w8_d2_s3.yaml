@@ -1,0 +1,56 @@
+# NAFNet w8_d2_s3 SID synthetic-training configuration.
+# Architecture: width=8, 3 encoder/decoder stages, 2 NAFBlocks per stage,
+#               2 middle NAFBlocks.
+# Complexity at [1, 4, 512, 512]:
+#   parameters: 128,796
+#   convolution MACs: 2.035 GMAC
+#   convolution FLOPs: 4.071 GFLOPs (2 FLOPs/MAC)
+#   full-frame live activation peak: 22.0 MiB fp16 / 11.0 MiB int8
+# Compared with w16_d1_s4: parameters /12.46, MACs /2.80,
+#                         full-frame fp16 activation peak /1.91.
+
+patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
+pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
+sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+clean_source: raw
+manifest: infos/SID_train_clean_raw.json
+val_manifest: infos/SID_validation_clean_raw.json
+dark_root: biasframe_et_1_30
+pmn_resource_dir: resources/SonyA7S2
+
+model: nafnet
+model_width: 8
+encoder_blocks: [2, 2, 2]
+middle_blocks: 2
+decoder_blocks: [2, 2, 2]
+
+# Keep this separate from experiments/sid_sony_nafnet_tiny so checkpoints and
+# metrics from the existing w16_d1_s4 experiment are never overwritten.
+output_dir: experiments/sid_sony_nafnet_w8_d2_s3
+epochs: 1000
+steps_per_epoch: null
+batch_size: 1
+num_workers: 2
+patch_size: 512
+crops_per_image: 8
+ratios: [100, 250, 300]
+clean_cache_size: 16
+dark_cache_size: 2
+
+synthesis: ratio_aware
+k_scale: 0.1
+learning_rate: 0.0002
+beta1: 0.9
+beta2: 0.999
+weight_decay: 0.0
+warmup_epochs: 5
+grad_clip: null
+amp: false
+device: cuda:1
+seed: 1
+
+validate_every: 10
+validate_steps: 20
+save_every: 10
+keep_checkpoints: 3
+log_every: 20
