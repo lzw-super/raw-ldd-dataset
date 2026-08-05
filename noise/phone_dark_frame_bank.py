@@ -10,6 +10,7 @@ from typing import Any
 
 import numpy as np
 
+from noise.phone_dark_shading import PhoneContinuousDarkShading
 from utils.phone_dng import PhoneDNGMetadata, read_phone_dng_packed
 
 
@@ -30,6 +31,7 @@ class PhoneDarkSample:
     exposure_s: float
     condition_key: str
     path: str
+    dark_shading_model: str
 
 
 class PhoneDarkFrameBank:
@@ -40,7 +42,14 @@ class PhoneDarkFrameBank:
     so residual FPN keeps its physical sensor coordinate.
     """
 
-    def __init__(self, manifest_path: str | Path, calibration_root: str | Path, *, cache_size: int = 2):
+    def __init__(
+        self,
+        manifest_path: str | Path,
+        calibration_root: str | Path,
+        *,
+        cache_size: int = 2,
+        dark_shading_model: str = "continuous_iso_fit",
+    ):
         self.manifest_path = Path(manifest_path)
         self.calibration_root = Path(calibration_root)
         self.records = _read_jsonl(self.manifest_path)
@@ -55,6 +64,14 @@ class PhoneDarkFrameBank:
             if condition not in self.conditions_by_iso[iso]:
                 self.conditions_by_iso[iso].append(condition)
         self.cache_size = max(0, int(cache_size))
+        if dark_shading_model not in {"continuous_iso_fit", "per_condition_mean"}:
+            raise ValueError("dark_shading_model must be 'continuous_iso_fit' or 'per_condition_mean'")
+        self.dark_shading_model = str(dark_shading_model)
+        self.continuous_dark_shading = (
+            PhoneContinuousDarkShading(self.calibration_root)
+            if self.dark_shading_model == "continuous_iso_fit"
+            else None
+        )
         self._frame_cache: "OrderedDict[str, tuple[np.ndarray, PhoneDNGMetadata]]" = OrderedDict()
         self._ds_cache: dict[str, np.ndarray] = {}
         self._artifact_metadata: dict[str, dict[str, Any]] = {}
@@ -134,7 +151,16 @@ class PhoneDarkFrameBank:
             raise ValueError("Requested dark residual crop lies outside DefaultCrop packed coordinates")
         black = np.asarray(metadata.black_level_canonical, dtype=np.float32).reshape(4, 1, 1)
         raw_crop = packed[:, packed_top:bottom, packed_left:right].astype(np.float32, copy=False)
-        ds_crop = np.asarray(ds[:, packed_top:bottom, packed_left:right], dtype=np.float32)
+        if self.continuous_dark_shading is not None:
+            if tuple(self.continuous_dark_shading.shape) != tuple(packed.shape):
+                raise ValueError(
+                    f"Continuous DS shape {self.continuous_dark_shading.shape} != dark frame shape {packed.shape}"
+                )
+            ds_crop = self.continuous_dark_shading.crop(
+                metadata.iso_exif, packed_top, packed_left, patch_size
+            )
+        else:
+            ds_crop = np.asarray(ds[:, packed_top:bottom, packed_left:right], dtype=np.float32)
         residual = raw_crop - black - ds_crop
         return PhoneDarkSample(
             residual_dn=residual.astype(np.float32, copy=False),
@@ -144,4 +170,5 @@ class PhoneDarkFrameBank:
             exposure_s=float(metadata.exposure_s),
             condition_key=condition,
             path=str(record["path"]),
+            dark_shading_model=self.dark_shading_model,
         )

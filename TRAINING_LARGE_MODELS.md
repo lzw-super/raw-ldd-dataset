@@ -4,9 +4,9 @@
 
 |实验|结构|参数量|SID 阶段|手机阶段输出目录|
 |---|---|---:|---|---|
-|现有基线|NAFNet-Tiny，width 16，blocks 1/1/1/1|1,604,692|已完成|`experiments/mey_an00_pseudoclean`|
-|大模型 1|UNetSeeInDark，nf 32|7,760,484|已完成|`experiments/mey_an00_unet`|
-|大模型 2|标准 NAFNet，width 32，blocks 2/2/2/2|7,600,228|需要先运行|`experiments/mey_an00_nafnet`|
+|新基线|NAFNet-Tiny，width 16，blocks 1/1/1/1|1,604,692|需按连续 DS 重跑|`experiments/mey_an00_pseudoclean_continuous_ds`|
+|大模型 1|UNetSeeInDark，nf 32|7,760,484|已完成|`experiments/mey_an00_unet_continuous_ds`|
+|大模型 2|标准 NAFNet，width 32，blocks 2/2/2/2|7,600,228|需要先运行|`experiments/mey_an00_nafnet_continuous_ds`|
 
 ## 1. U-Net：直接进行手机微调
 
@@ -24,6 +24,8 @@ python train_phone.py \
 ```
 
 这是权重初始化，不是断点续训。脚本通过 `init_checkpoint` 只载入模型权重，并为手机微调创建新的 Adam 优化器和余弦学习率计划。不要把 SID checkpoint 传给 `--resume`。
+
+手机训练前还必须按 [TRAINING_MEY_AN00.md](TRAINING_MEY_AN00.md) 运行 `fit_phone_dark_shading.py`。当前正式配置使用连续 ISO DS；旧的 `experiments/mey_an00_unet`/`mey_an00_pseudoclean` 是离散 DS 实验，不能从旧手机 checkpoint 继续训练。
 
 如果要改用仓库自带的纯 U-Net 权重 `checkpoints/sonya7s2.pth`，可在命令行覆盖：
 
@@ -71,7 +73,7 @@ python train_sid_sony.py \
 ```bash
 python train_phone.py \
   --config configs/train_mey_an00_nafnet.yaml \
-  --resume experiments/mey_an00_nafnet/checkpoints/latest.pth
+  --resume experiments/mey_an00_nafnet_continuous_ds/checkpoints/latest.pth
 ```
 
 配置里的 `init_checkpoint` 会保留，但当显式提供 `--resume` 时，训练脚本优先恢复 `resume`，不会再次应用 SID 初始化。
@@ -102,28 +104,28 @@ python train_sid_sony.py \
 
 ```bash
 python tools/evaluate_phone_synthetic_checkpoint.py \
-  --checkpoint experiments/mey_an00_unet/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_unet_continuous_ds/checkpoints/latest.pth \
   --ratios 100 250 300 \
-  --result-json experiments/mey_an00_unet/synthetic_val.json
+  --result-json experiments/mey_an00_unet_continuous_ds/synthetic_val.json
 
 python tools/evaluate_phone_synthetic_checkpoint.py \
-  --checkpoint experiments/mey_an00_nafnet/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_nafnet_continuous_ds/checkpoints/latest.pth \
   --ratios 100 250 300 \
-  --result-json experiments/mey_an00_nafnet/synthetic_val.json
+  --result-json experiments/mey_an00_nafnet_continuous_ds/synthetic_val.json
 ```
 
 手机真实 noisy DNG 的定性结果：
 
 ```bash
 python tools/qual_denoise_phone.py \
-  --checkpoint experiments/mey_an00_unet/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_unet_continuous_ds/checkpoints/latest.pth \
   --input-manifest data/MEY_AN00/manifests/noisy_qualitative.jsonl \
-  --output-dir experiments/mey_an00_unet/qualitative_noisy
+  --output-dir experiments/mey_an00_unet_continuous_ds/qualitative_noisy
 
 python tools/qual_denoise_phone.py \
-  --checkpoint experiments/mey_an00_nafnet/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_nafnet_continuous_ds/checkpoints/latest.pth \
   --input-manifest data/MEY_AN00/manifests/noisy_qualitative.jsonl \
-  --output-dir experiments/mey_an00_nafnet/qualitative_noisy
+  --output-dir experiments/mey_an00_nafnet_continuous_ds/qualitative_noisy
 ```
 
 `synthetic_heldout_psnr` 只用于检查合成域性能；`raw-test/noisy` 没有 clean GT，因此最终判断仍应把三种模型对同一批 noisy DNG 的定性输出并排比较，不能把 synthetic PSNR 当成真实手机 paired PSNR。

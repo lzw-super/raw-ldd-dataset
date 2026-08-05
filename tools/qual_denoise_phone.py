@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.phone_dng import read_phone_dng_packed
 from utils.phone_inference import make_side_by_side, packed_raw_preview, tiled_phone_inference
 from utils.phone_model import load_phone_checkpoint
+from noise.phone_dark_shading import PhoneContinuousDarkShading
 
 
 MAX_DENOISE_RATIO = 300.0
@@ -31,6 +32,12 @@ def parse_args() -> argparse.Namespace:
     inputs.add_argument("--input-root", default=None, help="Directory recursively containing DNGs")
     parser.add_argument("--output-dir", default="experiments/mey_an00_pseudoclean/qualitative_noisy")
     parser.add_argument("--calibration-root", default="data/MEY_AN00/calibration", help="DS artifacts used during hybrid training")
+    parser.add_argument(
+        "--dark-shading-model",
+        choices=["continuous_iso_fit", "per_condition_mean"],
+        default=None,
+        help="Defaults to checkpoint setting; legacy checkpoints use per_condition_mean",
+    )
     parser.add_argument("--no-dark-shading", action="store_true", help="Ablation only: do not subtract calibrated DS")
     parser.add_argument(
         "--missing-ds-policy",
@@ -206,6 +213,10 @@ def main() -> None:
         raise ValueError("reference-exposure-s must be finite and positive")
     device = torch.device(args.device)
     model, checkpoint_args, model_name = load_phone_checkpoint(args.checkpoint, device)
+    dark_shading_model = args.dark_shading_model or str(
+        checkpoint_args.get("dark_shading_model", "per_condition_mean")
+    )
+    training_ratios = tuple(float(value) for value in checkpoint_args.get("ratios", ()))
     records = load_inputs(args)
     if args.max_images > 0:
         records = records[: args.max_images]
@@ -213,6 +224,11 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     calibration_root = Path(args.calibration_root)
+    continuous_ds = (
+        PhoneContinuousDarkShading(calibration_root)
+        if dark_shading_model == "continuous_iso_fit" and not args.no_dark_shading
+        else None
+    )
 
     run_summary: dict[str, Any] | None = None
     if args.write_summary:
@@ -223,8 +239,10 @@ def main() -> None:
             "checkpoint_synthesis": checkpoint_args.get("synthesis"),
             "reference_exposure_s": args.reference_exposure_s,
             "ratio_override": args.ratio,
+            "checkpoint_training_ratios": list(training_ratios),
             "max_denoise_ratio": MAX_DENOISE_RATIO,
             "missing_ds_policy": args.missing_ds_policy,
+            "dark_shading_model": dark_shading_model,
             "tile_size": args.tile_size,
             "tile_overlap": args.tile_overlap,
             "outputs": [],
@@ -239,6 +257,10 @@ def main() -> None:
         ratio_was_capped = requested_ratio > MAX_DENOISE_RATIO and not math.isclose(
             requested_ratio, MAX_DENOISE_RATIO, rel_tol=1e-6, abs_tol=1e-6
         )
+        ratio_seen_in_training = any(
+            math.isclose(ratio, trained_ratio, rel_tol=0.02, abs_tol=0.0)
+            for trained_ratio in training_ratios
+        )
         if args.no_dark_shading:
             dark_shading = np.zeros_like(packed, dtype=np.float32)
             ds_info = {
@@ -249,6 +271,16 @@ def main() -> None:
                 "used_iso_exif": None,
                 "requested_exposure_s": metadata.exposure_s,
                 "used_exposure_s": None,
+            }
+        elif continuous_ds is not None:
+            dark_shading = continuous_ds.full(metadata.iso_exif, packed.shape)
+            ds_info = {
+                **continuous_ds.describe(metadata.iso_exif),
+                "requested_condition_key": metadata.condition_key,
+                "used_condition_key": "piecewise_linear_iso_model",
+                "requested_exposure_s": metadata.exposure_s,
+                "used_exposure_s": continuous_ds.metadata["source_exposure_s"],
+                "used_iso_exif": metadata.iso_exif,
             }
         else:
             dark_shading, ds_info = load_dark_shading(
@@ -283,6 +315,8 @@ def main() -> None:
             "exposure_ratio": ratio,
             "max_denoise_ratio": MAX_DENOISE_RATIO,
             "ratio_was_capped": ratio_was_capped,
+            "ratio_seen_in_training": ratio_seen_in_training,
+            "checkpoint_training_ratios": list(training_ratios),
             "canonical_channel_order": ["R", "G1", "G2", "B"],
             "domain": metadata.domain,
             "dark_shading": ds_info,
@@ -292,7 +326,9 @@ def main() -> None:
         }
         if run_summary is not None:
             run_summary["outputs"].append(item_summary)
-        if ds_info["mode"] == "exact":
+        if ds_info["mode"] == "continuous_iso_fit":
+            ds_note = f"continuous ISO DS ({ds_info['branch']} branch, ISO {metadata.iso_exif})"
+        elif ds_info["mode"] == "exact":
             ds_note = f"exact ISO DS (source {ds_info['used_exposure_s']:.7g}s)"
         elif ds_info["mode"] == "disabled":
             ds_note = "DS=disabled"
@@ -307,6 +343,8 @@ def main() -> None:
             ratio_note = f"requested x{ratio:.5g}"
         else:
             ratio_note = f"x{ratio:.5g}"
+        if training_ratios and not ratio_seen_in_training:
+            ratio_note += f" [OOD vs trained {list(training_ratios)}]"
         print(
             f"[{index}/{len(records)}] {source_path.name}: ISO {metadata.iso_exif}, "
             f"{metadata.exposure_s:.7f}s -> {ratio_note}; {ds_note}; comparison saved"

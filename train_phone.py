@@ -32,6 +32,7 @@ from datasets.phone_synthetic_train import PhoneSyntheticTrainDataset
 from models.ELD_models import UNetSeeInDark
 from models.natnet_arch import NAFNet
 from noise.dng_noise_synthesis import synthesize_phone_noise
+from noise.phone_dark_shading import DEFAULT_MODEL_DIRECTORY
 from tools.calculate_model_info import calculate_model_info, format_model_info
 from utils.phone_evaluation import evaluate_phone_synthetic
 
@@ -76,6 +77,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ratio", type=float, default=None, help="Deprecated single-ratio override; takes precedence over --ratios")
     parser.add_argument("--clean-cache-size", type=int, default=4)
     parser.add_argument("--dark-cache-size", type=int, default=2)
+    parser.add_argument(
+        "--dark-shading-model",
+        choices=["continuous_iso_fit", "per_condition_mean"],
+        default="continuous_iso_fit",
+        help="Continuous PMN/SID-style k*ISO+b model, or legacy per-ISO mean-map ablation",
+    )
     parser.add_argument("--max-target-saturation-fraction", type=float, default=0.01)
     parser.add_argument("--max-crop-attempts", type=int, default=32)
     parser.add_argument("--exposure-ratio-tolerance", type=float, default=0.02)
@@ -251,9 +258,44 @@ def load_checkpoint(
     optimizer: torch.optim.Optimizer | None = None,
     scheduler: LambdaLR | None = None,
     scaler: Any | None = None,
+    expected_args: argparse.Namespace | None = None,
 ) -> tuple[int, int]:
     state = torch.load(path, map_location="cpu")
     if "model" in state:
+        if optimizer is not None and expected_args is not None:
+            saved_args = state.get("args", {})
+            saved_ds_model = saved_args.get("dark_shading_model", "per_condition_mean")
+            current_ds_model = expected_args.dark_shading_model
+            comparisons = {
+                "model": (saved_args.get("model", "nafnet"), expected_args.model),
+                "model_width": (saved_args.get("model_width", 16), expected_args.model_width),
+                "encoder_blocks": (saved_args.get("encoder_blocks", [1, 1, 1, 1]), expected_args.encoder_blocks),
+                "middle_blocks": (saved_args.get("middle_blocks", 2), expected_args.middle_blocks),
+                "decoder_blocks": (saved_args.get("decoder_blocks", [1, 1, 1, 1]), expected_args.decoder_blocks),
+                "synthesis": (saved_args.get("synthesis", "hybrid"), expected_args.synthesis),
+                "dark_shading_model": (saved_ds_model, current_ds_model),
+                "dark_exposure_policy": (
+                    saved_args.get("dark_exposure_policy", "strict_match"),
+                    expected_args.dark_exposure_policy,
+                ),
+                "ratios": (saved_args.get("ratios", [300.0]), expected_args.ratios),
+                "patch_size": (saved_args.get("patch_size", 512), expected_args.patch_size),
+                "crops_per_image": (saved_args.get("crops_per_image", 2), expected_args.crops_per_image),
+                "epochs": (saved_args.get("epochs", 100), expected_args.epochs),
+                "steps_per_epoch": (saved_args.get("steps_per_epoch"), expected_args.steps_per_epoch),
+                "max_steps": (saved_args.get("max_steps"), expected_args.max_steps),
+            }
+            mismatches = {
+                key: {"checkpoint": saved, "current": current}
+                for key, (saved, current) in comparisons.items()
+                if saved != current
+            }
+            if mismatches:
+                raise ValueError(
+                    "Refusing to resume with a changed training protocol: "
+                    + json.dumps(mismatches, ensure_ascii=False)
+                    + ". Start a new output directory and use --init-checkpoint for model-only transfer."
+                )
         model.load_state_dict(state["model"], strict=True)
         if optimizer is not None:
             optimizer.load_state_dict(state["optimizer"])
@@ -316,6 +358,7 @@ def main() -> None:
         seed=args.seed,
         exposure_ratio_tolerance=args.exposure_ratio_tolerance,
         dark_exposure_policy=args.dark_exposure_policy,
+        dark_shading_model=args.dark_shading_model,
     )
     train_loader = make_loader(train_dataset, args, shuffle=True, workers=args.num_workers)
     available_steps = len(train_loader)
@@ -338,6 +381,7 @@ def main() -> None:
             seed=args.seed + 10_000,
             exposure_ratio_tolerance=args.exposure_ratio_tolerance,
             dark_exposure_policy=args.dark_exposure_policy,
+            dark_shading_model=args.dark_shading_model,
         )
     elif args.validate_steps:
         raise ValueError("Held-out synthetic validation requires both val clean and val dark manifests")
@@ -354,6 +398,7 @@ def main() -> None:
         "noise_condition": "same EXIF ISO as clean source",
         "ratios": list(ratios),
         "dark_exposure_policy": args.dark_exposure_policy,
+        "dark_shading_model": args.dark_shading_model,
         "clean_manifest": str(Path(args.clean_manifest).resolve()),
         "clean_manifest_sha256": file_sha256(args.clean_manifest),
         "dark_manifest": str(Path(args.dark_manifest).resolve()),
@@ -370,6 +415,16 @@ def main() -> None:
             "seed": int(args.val_seed),
         },
         "calibration_root": str(Path(args.calibration_root).resolve()),
+        "dark_shading_model_metadata": (
+            str((Path(args.calibration_root) / DEFAULT_MODEL_DIRECTORY / "metadata.json").resolve())
+            if args.dark_shading_model == "continuous_iso_fit"
+            else None
+        ),
+        "dark_shading_model_metadata_sha256": (
+            file_sha256(Path(args.calibration_root) / DEFAULT_MODEL_DIRECTORY / "metadata.json")
+            if args.dark_shading_model == "continuous_iso_fit"
+            else None
+        ),
         "init_checkpoint": str(Path(args.init_checkpoint).resolve()) if args.init_checkpoint else None,
         "init_checkpoint_sha256": file_sha256(args.init_checkpoint) if args.init_checkpoint else None,
     }
@@ -386,7 +441,9 @@ def main() -> None:
     scaler = make_grad_scaler(bool(args.amp))
     start_epoch, global_step = 1, 0
     if args.resume:
-        previous_epoch, global_step = load_checkpoint(args.resume, model, optimizer, scheduler, scaler)
+        previous_epoch, global_step = load_checkpoint(
+            args.resume, model, optimizer, scheduler, scaler, expected_args=args
+        )
         start_epoch = previous_epoch + 1
         print(f"Resumed {args.resume} at epoch {start_epoch}, global step {global_step}")
     elif args.init_checkpoint:
@@ -396,7 +453,7 @@ def main() -> None:
     print(
         f"Training {type(model).__name__} on {len(train_dataset)} pseudo-clean samples; "
         f"{steps_per_epoch} steps/epoch, total cap={total_steps}, device={device}, synthesis={args.synthesis}, "
-        f"ratios={list(ratios)}, dark_policy={args.dark_exposure_policy}"
+        f"ratios={list(ratios)}, dark_policy={args.dark_exposure_policy}, DS={args.dark_shading_model}"
     )
     metrics_path = output_dir / "metrics.jsonl"
     finished = False
@@ -449,6 +506,7 @@ def main() -> None:
             "seconds": time.perf_counter() - epoch_start,
             "stage": "pseudo_clean_prototype",
             "dark_exposure_policy": args.dark_exposure_policy,
+            "dark_shading_model": args.dark_shading_model,
             "ratio_counts": {f"{ratio:g}": count for ratio, count in sorted(epoch_ratio_counts.items())},
             "simulated_short_exposure_s": {
                 "min": min(epoch_simulated_exposures) if epoch_simulated_exposures else None,

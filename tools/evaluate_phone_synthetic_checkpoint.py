@@ -22,6 +22,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--clean-manifest", default="data/MEY_AN00/manifests/clean_synthetic_val.jsonl")
     parser.add_argument("--dark-manifest", default="data/MEY_AN00/manifests/dark_val.jsonl")
     parser.add_argument("--calibration-root", default="data/MEY_AN00/calibration")
+    parser.add_argument(
+        "--dark-shading-model",
+        choices=["continuous_iso_fit", "per_condition_mean"],
+        default=None,
+        help="Defaults to checkpoint setting; legacy checkpoints use per_condition_mean",
+    )
     parser.add_argument("--ratios", type=float, nargs="+", default=[100.0, 250.0, 300.0])
     parser.add_argument("--patch-size", type=int, default=512)
     parser.add_argument("--crops-per-image", type=int, default=1)
@@ -48,6 +54,9 @@ def main() -> None:
     device = torch.device(args.device)
     model, checkpoint_args, model_name = load_phone_checkpoint(args.checkpoint, device)
     synthesis = args.synthesis or str(checkpoint_args.get("synthesis", "hybrid"))
+    dark_shading_model = args.dark_shading_model or str(
+        checkpoint_args.get("dark_shading_model", "per_condition_mean")
+    )
     dataset = PhoneSyntheticTrainDataset(
         args.clean_manifest,
         args.dark_manifest,
@@ -61,6 +70,7 @@ def main() -> None:
         max_crop_attempts=args.max_crop_attempts,
         seed=args.seed,
         dark_exposure_policy=args.dark_exposure_policy,
+        dark_shading_model=dark_shading_model,
     )
     result = {
         "metric_protocol": "synthetic_heldout_pseudoclean_not_real_pair_psnr",
@@ -74,6 +84,7 @@ def main() -> None:
         "max_samples": args.max_samples,
         "synthesis": synthesis,
         "dark_exposure_policy": args.dark_exposure_policy,
+        "dark_shading_model": dark_shading_model,
         **evaluate_phone_synthetic(
             model,
             dataset,

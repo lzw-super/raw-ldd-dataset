@@ -50,6 +50,7 @@ class PhoneSyntheticTrainDataset(Dataset):
         seed: int = 1,
         exposure_ratio_tolerance: float = 0.02,
         dark_exposure_policy: str = "strict_match",
+        dark_shading_model: str = "continuous_iso_fit",
     ):
         self.records = _read_jsonl(clean_manifest)
         if any(record.get("role") != "clean_source" for record in self.records):
@@ -79,6 +80,9 @@ class PhoneSyntheticTrainDataset(Dataset):
         if dark_exposure_policy not in {"strict_match", "approximate_reuse_1_30s"}:
             raise ValueError("dark_exposure_policy must be 'strict_match' or 'approximate_reuse_1_30s'")
         self.dark_exposure_policy = str(dark_exposure_policy)
+        if dark_shading_model not in {"continuous_iso_fit", "per_condition_mean"}:
+            raise ValueError("dark_shading_model must be 'continuous_iso_fit' or 'per_condition_mean'")
+        self.dark_shading_model = str(dark_shading_model)
         self._clean_cache: "OrderedDict[str, tuple[np.ndarray, PhoneDNGMetadata]]" = OrderedDict()
         self._dark_bank: PhoneDarkFrameBank | None = None
         self._rng: np.random.Generator | None = None
@@ -96,7 +100,10 @@ class PhoneSyntheticTrainDataset(Dataset):
     def _dark(self) -> PhoneDarkFrameBank:
         if self._dark_bank is None:
             self._dark_bank = PhoneDarkFrameBank(
-                self._dark_manifest, self._calibration_root, cache_size=self.dark_cache_size
+                self._dark_manifest,
+                self._calibration_root,
+                cache_size=self.dark_cache_size,
+                dark_shading_model=self.dark_shading_model,
             )
         return self._dark_bank
 
@@ -194,4 +201,5 @@ class PhoneSyntheticTrainDataset(Dataset):
             "target_saturation_fraction": torch.tensor(saturated_fraction, dtype=torch.float32),
             "target_protocol": "pseudo_clean_no_1_30s_ds_subtraction",
             "dark_exposure_policy": self.dark_exposure_policy,
+            "dark_shading_model": dark.dark_shading_model,
         }

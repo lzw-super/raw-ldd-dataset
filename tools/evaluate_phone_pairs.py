@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.phone_dng import read_phone_dng_packed
 from utils.phone_inference import tiled_phone_inference
 from utils.phone_model import load_phone_checkpoint
+from noise.phone_dark_shading import PhoneContinuousDarkShading
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,6 +26,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pair-manifest", required=True, help="JSONL records with noisy_path, clean_path and registration metadata")
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--calibration-root", default="data/MEY_AN00/calibration")
+    parser.add_argument(
+        "--dark-shading-model",
+        choices=["continuous_iso_fit", "per_condition_mean"],
+        default=None,
+        help="Defaults to checkpoint setting; legacy checkpoints use per_condition_mean",
+    )
     parser.add_argument("--no-dark-shading", action="store_true", help="Ablation only: do not subtract calibrated short-exposure DS")
     parser.add_argument("--tile-size", type=int, default=512)
     parser.add_argument("--tile-overlap", type=int, default=64)
@@ -96,8 +103,16 @@ def main() -> None:
     if args.max_pairs > 0:
         records = records[: args.max_pairs]
     device = torch.device(args.device)
-    model, _, model_name = load_phone_checkpoint(args.checkpoint, device)
+    model, checkpoint_args, model_name = load_phone_checkpoint(args.checkpoint, device)
     calibration_root = Path(args.calibration_root)
+    dark_shading_model = args.dark_shading_model or str(
+        checkpoint_args.get("dark_shading_model", "per_condition_mean")
+    )
+    continuous_ds = (
+        PhoneContinuousDarkShading(calibration_root)
+        if dark_shading_model == "continuous_iso_fit" and not args.no_dark_shading
+        else None
+    )
 
     total_absolute_error, total_squared_error, total_pixels = 0.0, 0.0, 0
     per_pair: list[dict[str, Any]] = []
@@ -127,11 +142,14 @@ def main() -> None:
             raise ValueError(f"{record['pair_id']}: exposure_ratio must be finite and positive")
         noisy_black = np.asarray(noisy_metadata.black_level_canonical, dtype=np.float32).reshape(4, 1, 1)
         clean_black = np.asarray(clean_metadata.black_level_canonical, dtype=np.float32).reshape(4, 1, 1)
-        dark_shading = (
-            np.zeros_like(noisy_packed, dtype=np.float32)
-            if args.no_dark_shading
-            else load_dark_shading(calibration_root, noisy_metadata.condition_key, noisy_packed.shape)
-        )
+        if args.no_dark_shading:
+            dark_shading = np.zeros_like(noisy_packed, dtype=np.float32)
+        elif continuous_ds is not None:
+            dark_shading = continuous_ds.full(noisy_metadata.iso_exif, noisy_packed.shape)
+        else:
+            dark_shading = load_dark_shading(
+                calibration_root, noisy_metadata.condition_key, noisy_packed.shape
+            )
         model_input = np.minimum(
             (noisy_packed.astype(np.float32, copy=False) - noisy_black - dark_shading)
             / float(noisy_metadata.dynamic_range)
@@ -173,7 +191,12 @@ def main() -> None:
             "exposure_s": {"noisy": noisy_metadata.exposure_s, "clean": clean_metadata.exposure_s},
             "exposure_ratio": ratio,
             "dark_shading_subtracted": not args.no_dark_shading,
-            "dark_shading_condition_key": noisy_metadata.condition_key if not args.no_dark_shading else None,
+            "dark_shading_model": dark_shading_model if not args.no_dark_shading else "disabled",
+            "dark_shading_condition_key": (
+                noisy_metadata.condition_key
+                if not args.no_dark_shading and dark_shading_model == "per_condition_mean"
+                else None
+            ),
             "registration_verified": is_verified,
             "valid_pixels": valid_pixels,
             "l1": absolute_error / valid_pixels,
@@ -188,6 +211,7 @@ def main() -> None:
         "pair_manifest": str(manifest_path),
         "calibration_root": str(calibration_root.resolve()),
         "dark_shading_subtracted": not args.no_dark_shading,
+        "dark_shading_model": dark_shading_model if not args.no_dark_shading else "disabled",
         "model": model_name,
         "pairs": len(per_pair),
         "global_l1": total_absolute_error / max(1, total_pixels),

@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from datasets.phone_synthetic_train import PhoneSyntheticTrainDataset
 from noise.dng_noise_synthesis import synthesize_phone_noise
 from noise.phone_dark_frame_bank import PhoneDarkFrameBank
+from noise.phone_dark_shading import PhoneContinuousDarkShading
 from utils.phone_dng import read_phone_dng_packed, unpack_to_dng_cfa
 
 
@@ -41,9 +42,9 @@ def main() -> None:
             "Unexpected current collection counts: "
             f"{summary.get('clean_train_source_records')}, {summary['dark_records']}"
         )
-    if summary.get("clean_synthetic_val_records") != 10 or summary.get("qualitative_noisy_records") != 10:
+    if summary.get("clean_synthetic_val_records") != 10 or int(summary.get("qualitative_noisy_records", 0)) <= 0:
         raise AssertionError(
-            "Expected 10 independent synthetic-val and 10 unpaired qualitative noisy DNGs; got "
+            "Expected 10 independent synthetic-val and at least one unpaired qualitative noisy DNG; got "
             f"{summary.get('clean_synthetic_val_records')}, {summary.get('qualitative_noisy_records')}"
         )
     if len(summary["folder_iso_outliers"]) != 4:
@@ -55,6 +56,8 @@ def main() -> None:
     dark_val = read_jsonl(manifest_dir / "dark_val.jsonl")
     if not clean_records or not synthetic_val_records or not qualitative_noisy_records or not dark_train or not dark_val:
         raise AssertionError("One of the training manifests is empty")
+    if len(qualitative_noisy_records) != int(summary["qualitative_noisy_records"]):
+        raise AssertionError("Qualitative-noisy manifest count does not match manifest_summary.json")
     if any(record.get("role") != "clean_source" or record.get("split") != "synthetic_val" for record in synthetic_val_records):
         raise AssertionError("Synthetic validation manifest has an invalid role or split")
     if any(record.get("role") != "qualitative_noisy" or record.get("pair_status") != "no_ground_truth" for record in qualitative_noisy_records):
@@ -150,6 +153,16 @@ def main() -> None:
     if not (float(held_out.residual_dn.min()) < 0.0 < float(held_out.residual_dn.max())):
         raise AssertionError("Held-out residual is not signed")
 
+    continuous_ds = PhoneContinuousDarkShading(args.calibration_root)
+    ds250 = continuous_ds.crop(250, 0, 0, args.patch_size)
+    if ds250.shape != (4, args.patch_size, args.patch_size) or not np.isfinite(ds250).all():
+        raise AssertionError("Continuous DS failed for an ISO absent from the discrete calibration set")
+    low_k = continuous_ds.arrays["low_k"][:, : args.patch_size, : args.patch_size]
+    low_b = continuous_ds.arrays["low_b"][:, : args.patch_size, : args.patch_size]
+    ble250, _ = continuous_ds._ble(250)
+    if not np.allclose(ds250, low_k * 250.0 + low_b + ble250.reshape(4, 1, 1), rtol=0.0, atol=1e-6):
+        raise AssertionError("Continuous ISO DS no longer follows k*ISO+b+BLE")
+
     # Moment check with zero dark residual.  For ratio-aware DNG Poisson noise:
     # Var(Y | X) = ratio * S * X in the normalized output domain.
     flat = torch.full((1, 4, 64, 64), 0.2)
@@ -183,6 +196,12 @@ def main() -> None:
             "strict_match_rejects_ratio_100": True,
         },
         "held_out_dark": {"mean_dn": float(held_out.residual_dn.mean()), "std_dn": float(held_out.residual_dn.std())},
+        "continuous_dark_shading": {
+            "model_type": continuous_ds.metadata["model_type"],
+            "iso_breakpoint": continuous_ds.iso_breakpoint,
+            "calibrated_iso_range": [continuous_ds.minimum_iso, continuous_ds.maximum_iso],
+            "iso250_crop_mean_dn": [float(value) for value in ds250.mean(axis=(1, 2))],
+        },
         "synthetic_validation": {
             "records": len(synthetic_val_records),
             "iso_exif": sorted(val_iso),

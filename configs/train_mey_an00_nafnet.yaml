@@ -9,7 +9,7 @@ dark_manifest: data/MEY_AN00/manifests/dark_train.jsonl
 calibration_root: data/MEY_AN00/calibration
 val_clean_manifest: data/MEY_AN00/manifests/clean_synthetic_val.jsonl
 val_dark_manifest: data/MEY_AN00/manifests/dark_val.jsonl
-output_dir: experiments/mey_an00_nafnet
+output_dir: experiments/mey_an00_nafnet_continuous_ds
 init_checkpoint: experiments/sid_sony_nafnet/checkpoints/latest.pth
 
 model: nafnet
@@ -26,6 +26,7 @@ patch_size: 512
 crops_per_image: 2
 ratios: [100.0, 250.0, 300.0]
 dark_exposure_policy: approximate_reuse_1_30s
+dark_shading_model: continuous_iso_fit
 clean_cache_size: 4
 dark_cache_size: 2
 max_target_saturation_fraction: 0.01

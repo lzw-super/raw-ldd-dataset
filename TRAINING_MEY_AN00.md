@@ -9,7 +9,7 @@
 |`raw-test/cleanframe`|90 张 10 s|pseudo-clean 训练内容源|无|
 |`raw-test/biasframe-1-30`|134 张 1/30 s|DS 标定与合成暗帧残差|无|
 |`raw-test/val`|10 张 10 s、独立场景|held-out synthetic 验证 target|仅 `synthetic_heldout_psnr`|
-|`raw-test/noisy`|10 张约 1/30 s、无 GT|无参考定性去噪|无；**不计算 PSNR/SSIM**|
+|`raw-test/noisy`|28 张混合曝光、无 GT|无参考定性去噪|无；**不计算 PSNR/SSIM**|
 
 `val` 的 ISO 为 200/319/400/800/2000/3200/8000，均有相同最终 EXIF ISO 的 held-out dark residual，因此 ratio 300（10 s 对 1/30 s）是严格匹配的合成验证条件。它仍是单张 pseudo-clean，不是 noisy-clean pair，故任何 `synthetic_heldout_psnr` 都不能简称为“真实 PSNR”。
 
@@ -25,6 +25,12 @@ python tools/build_phone_manifest.py \
 python tools/calibrate_phone_dark_shading.py \
   --manifest data/MEY_AN00/manifests/dark_calibration.jsonl \
   --output-root data/MEY_AN00/calibration
+
+# 用各 ISO 的独立 calibration artifact 拟合与 SID/PMN 同构的连续 DS：
+# DS(ISO) = k_branch * ISO + b_branch + BLE(ISO)
+python tools/fit_phone_dark_shading.py \
+  --calibration-root data/MEY_AN00/calibration \
+  --iso-breakpoint 1600
 ```
 
 manifest 工具不移动原始 DNG，按 DNG 的 `iso_exif` 配对而非目录名。它会写出：
@@ -33,13 +39,13 @@ manifest 工具不移动原始 DNG，按 DNG 的 `iso_exif` 配对而非目录�
 data/MEY_AN00/manifests/
 ├── clean_train.jsonl             # 仅 cleanframe，90 张
 ├── clean_synthetic_val.jsonl     # 仅 val，10 张独立场景
-├── noisy_qualitative.jsonl       # 仅 noisy，10 张、无 GT
+├── noisy_qualitative.jsonl       # 仅 noisy，当前 28 张、无 GT
 ├── dark_calibration.jsonl
 ├── dark_train.jsonl
 └── dark_val.jsonl
 ```
 
-暗帧在每个 ISO 内按时间块切成 60% DS calibration、20% residual train、20% residual val；DS 帧不与 residual train/val 复用。当前 `cleanframe` 中仍有 4 张位于 `iso 100-10` 文件夹、但 DNG EXIF ISO 为 500 的文件；这是 manifest 记录的来源信息，不需要移动文件。
+暗帧在每个 ISO 内按时间块切成 60% DS calibration、20% residual train、20% residual val；DS 帧不与 residual train/val 复用。连续模型在 packed sensor coordinates 中逐像素拟合低/高 ISO 两段 `k*ISO+b`，并对每通道 BLE 做 log2-ISO 连续插值；训练 residual、synthetic 验证和真实 DNG 推理共用同一模型。旧的逐 ISO `dark_shading_dn.npy` 仍保留，只有显式设置 `dark_shading_model=per_condition_mean` 时才作为消融使用。当前 `cleanframe` 中仍有 4 张位于 `iso 100-10` 文件夹、但 DNG EXIF ISO 为 500 的文件；这是 manifest 记录的来源信息，不需要移动文件。
 
 ## 2. 训练与周期性 held-out synthetic 验证
 
@@ -48,6 +54,8 @@ python train_phone.py \
   --config configs/train_mey_an00_nafnet_tiny.yaml \
   --max-steps 100
 ```
+
+新配置写入 `experiments/mey_an00_pseudoclean_continuous_ds`。已有的 `experiments/mey_an00_pseudoclean` 和 `experiments/mey_an00_unet` 来自旧的离散 DS 协议，不能用 `--resume` 切换为连续 DS；需要以 SID checkpoint 作为 `--init-checkpoint` 开一个新实验。
 
 默认配置会：
 
@@ -63,9 +71,9 @@ python train_phone.py \
 
 ```bash
 python tools/evaluate_phone_synthetic_checkpoint.py \
-  --checkpoint experiments/mey_an00_pseudoclean/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_pseudoclean_continuous_ds/checkpoints/latest.pth \
   --ratios 100 250 300 \
-  --result-json experiments/mey_an00_pseudoclean/synthetic_val.json
+  --result-json experiments/mey_an00_pseudoclean_continuous_ds/synthetic_val.json
 ```
 
 输出 JSON 的 `metric_protocol` 会明确标记为 `synthetic_heldout_pseudoclean_not_real_pair_psnr`。默认评估就是 `--ratios 100 250 300 --dark-exposure-policy approximate_reuse_1_30s`；报告时必须将近似的 100/250 与严格的 ratio 300 分开解释。
@@ -76,16 +84,16 @@ python tools/evaluate_phone_synthetic_checkpoint.py \
 
 ```bash
 python tools/qual_denoise_phone.py \
-  --checkpoint experiments/mey_an00_pseudoclean/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_pseudoclean_continuous_ds/checkpoints/latest.pth \
   --input-manifest data/MEY_AN00/manifests/noisy_qualitative.jsonl \
-  --output-dir experiments/mey_an00_pseudoclean/qualitative_noisy
+  --output-dir experiments/mey_an00_pseudoclean_continuous_ds/qualitative_noisy
 ```
 
 默认每张图只产生一张 `*_comparison.png`；左侧是经同一显示缩放的输入，右侧是去噪结果。PNG 是 packed-RGB 预览，并非色彩管理的 DNG ISP 输出，也不会写出可误作评测 RAW 的 `.npy`。该命令不产生 PSNR 或 SSIM。
 
 用 `--ratio` 可强制所有输入使用同一去噪亮度/曝光倍率（例如 `--ratio 100`）；不传时会按 `10 s / input_exposure` 自动求值。comparison 顶部会标明实际 `Noisy input (x倍率)`，便于区分不同设置的结果。
 
-`noisy` 中有一张 EXIF ISO=250，而当前 DS bank 没有 ISO 250。为保证定性批处理不中断，默认 `--missing-ds-policy nearest_log2` 会选用 log-ISO 最近的 ISO 200 DS，并在终端打印 `DS=nearest_log2 (ISO 200)`；它是仅供可视化的近似。若要严格拒绝这类输入，加入 `--missing-ds-policy error`；若需要机器可读的运行信息才加入 `--write-summary`。
+连续 DS 模型可以直接计算 EXIF ISO=250 的 DS，不再退化到 ISO 200 最近邻。对旧 checkpoint，工具仍会自动使用其旧的 `per_condition_mean` 协议；此时 `--missing-ds-policy` 才决定缺失 ISO 的行为。工具还会把不在 checkpoint 训练 ratio 集合内的输入标成 `OOD`。当前 `noisy` 已包含 1/125 s 到约 2 s 的混合曝光，其中很多样本不属于训练使用的 ratio 100/250/300，不能把这些结果直接归因于网络容量。
 
 ## 5. 未来真实 noisy-clean PSNR
 
@@ -99,9 +107,9 @@ python tools/qual_denoise_phone.py \
 
 ```bash
 python tools/evaluate_phone_pairs.py \
-  --checkpoint experiments/mey_an00_pseudoclean/checkpoints/latest.pth \
+  --checkpoint experiments/mey_an00_pseudoclean_continuous_ds/checkpoints/latest.pth \
   --pair-manifest raw-test/pairs_test.jsonl \
-  --output-json experiments/mey_an00_pseudoclean/real_pair_test.json
+  --output-json experiments/mey_an00_pseudoclean_continuous_ds/real_pair_test.json
 ```
 
 评估器默认要求 `registration.status="verified"`，在 noisy 端减对应 calibrated DS、逐帧归一化、曝光比放大、有效/非饱和 mask 后报告每 pair、macro 以及全像素 `global_psnr`。未配准的 pair 不应绕过此检查或作为可报告的真实 PSNR。

@@ -9,14 +9,14 @@ calibration_root: data/MEY_AN00/calibration
 # synthetic (not a real noisy-clean PSNR); noisy/ is never used for training.
 val_clean_manifest: data/MEY_AN00/manifests/clean_synthetic_val.jsonl
 val_dark_manifest: data/MEY_AN00/manifests/dark_val.jsonl
-output_dir: experiments/mey_an00_pseudoclean_continuous_ds
-init_checkpoint: experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth
+output_dir: experiments/mey_an00_nafnet_w8-d2-s3
+init_checkpoint: experiments/sid_sony_nafnet_w8_d2_s3/checkpoints/latest.pth
 
 model: nafnet
-model_width: 16
-encoder_blocks: [1, 1, 1, 1]
+model_width: 8
+encoder_blocks: [2, 2, 2]
 middle_blocks: 2
-decoder_blocks: [1, 1, 1, 1]
+decoder_blocks: [2, 2, 2]
 
 # Stop after enough steps to check DNG metadata, gradients and I/O.  Do not
 # extend this as a final experiment until clean burst masters and scene groups
@@ -50,7 +50,7 @@ weight_decay: 0.0
 warmup_epochs: 1
 grad_clip: null
 amp: false
-device: cuda:0
+device: cuda:1
 seed: 1
 
 # Fixed held-out scenes plus held-out dark residuals.  The three values are
