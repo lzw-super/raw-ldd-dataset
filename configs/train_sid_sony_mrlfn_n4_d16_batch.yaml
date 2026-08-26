@@ -1,0 +1,53 @@
+# MRLFN Model-B-style configuration: N=4 mRLFBs, feature depth d=16.
+# Training uses the exact reparameterizable graph; validation/model_info and
+# the checkpoint's model_deploy weights use the fused deployment graph.
+patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
+pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
+sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+clean_source: raw
+manifest: infos/SID_train_clean_raw.json
+val_manifest: infos/SID_validation_clean_raw.json
+dark_root: biasframe_et_1_30
+pmn_resource_dir: resources/SonyA7S2
+
+model: mrlfn
+feature_channels: 16
+num_blocks: 4
+model_bias: true
+
+# The referenced objective is 0.6*RAW-L1 + 0.4*(BG-L1 + RG-L1).
+# Current packed order is [R,G1,G2,B], while this list indexes [R,G1,B,G2].
+raw_loss_weight: 0.6
+chromatic_loss_weight: 0.4
+chromatic_channel_order: [0, 1, 3, 2]
+
+output_dir: experiments/sid_sony_mrlfn_n4_d16_batch
+epochs: 1000
+steps_per_epoch: null
+batch_size: 16
+num_workers: 2
+patch_size: 512
+crops_per_image: 8
+ratios: [100, 250, 300]
+clean_cache_size: 16
+dark_cache_size: 2
+
+synthesis: ratio_aware
+k_scale: 0.1
+# Reference MRLFN training uses Adam 1e-4; scheduling follows this repository's
+# step-wise warmup + cosine implementation.
+learning_rate: 0.0001
+beta1: 0.9
+beta2: 0.999
+weight_decay: 0.0
+warmup_epochs: 5
+grad_clip: null
+amp: false
+device: cuda:1
+seed: 1
+
+validate_every: 10
+validate_steps: 20
+save_every: 10
+keep_checkpoints: 3
+log_every: 20

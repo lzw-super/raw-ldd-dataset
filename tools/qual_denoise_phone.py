@@ -236,6 +236,7 @@ def main() -> None:
             "protocol": "qualitative_unpaired_no_reference_metrics",
             "checkpoint": str(Path(args.checkpoint).resolve()),
             "model": model_name,
+            "graph_state": "deploy" if getattr(model, "deploy_mode", False) else "native",
             "checkpoint_synthesis": checkpoint_args.get("synthesis"),
             "reference_exposure_s": args.reference_exposure_s,
             "ratio_override": args.ratio,

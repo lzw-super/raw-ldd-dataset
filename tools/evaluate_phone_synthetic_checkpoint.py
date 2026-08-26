@@ -76,6 +76,7 @@ def main() -> None:
         "metric_protocol": "synthetic_heldout_pseudoclean_not_real_pair_psnr",
         "checkpoint": str(Path(args.checkpoint).resolve()),
         "model": model_name,
+        "graph_state": "deploy" if getattr(model, "deploy_mode", False) else "native",
         "clean_manifest": str(Path(args.clean_manifest).resolve()),
         "dark_manifest": str(Path(args.dark_manifest).resolve()),
         "calibration_root": str(Path(args.calibration_root).resolve()),

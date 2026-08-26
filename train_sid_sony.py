@@ -32,10 +32,13 @@ from datasets.sid_synthetic_train import (
     build_sid_patch_manifest,
     build_sid_raw_manifest,
 )
+from losses.mrlfn_loss import RawReconstructionChromaticLoss
 from models.ELD_models import UNetSeeInDark
+from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
 from noise.sid_noise_synthesis import synthesize_sid_noise
 from tools.calculate_model_info import calculate_model_info, format_model_info
+from utils.model_deployment import deploy_state_dict, prepare_model_for_inference
 
 
 def parse_args() -> argparse.Namespace:
@@ -66,11 +69,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="experiments/sid_sony_paper_fair")
     parser.add_argument("--resume", default=None, help="Checkpoint produced by this script")
     parser.add_argument("--init-checkpoint", default=None, help="Model-only checkpoint; do not use the official test checkpoint")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default="unet")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn"], default="unet")
     parser.add_argument("--model-width", type=int, default=32)
     parser.add_argument("--encoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--middle-blocks", type=int, default=2)
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
+    parser.add_argument("--feature-channels", type=int, default=16, help="MRLFN feature depth d")
+    parser.add_argument("--num-blocks", type=int, default=4, help="MRLFN mRLFB count N")
+    parser.add_argument("--model-bias", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--raw-loss-weight", type=float, default=0.6)
+    parser.add_argument("--chromatic-loss-weight", type=float, default=0.4)
+    parser.add_argument(
+        "--chromatic-channel-order",
+        type=int,
+        nargs=4,
+        default=[0, 1, 3, 2],
+        metavar=("R", "G1", "B", "G2"),
+        help="Indices for semantic [R,G1,B,G2]; packed tensors here are [R,G1,G2,B]",
+    )
 
     parser.add_argument("--epochs", type=int, default=1000)
     parser.add_argument("--steps-per-epoch", type=int, default=None, help="Defaults to all clean patches in the manifest")
@@ -171,6 +187,28 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, ob
         }
         return UNetSeeInDark(in_nc=4, out_nc=4, nf=args.model_width), config
 
+    if args.model == "mrlfn":
+        config = {
+            "model": "mrlfn",
+            "in_channels": 4,
+            "out_channels": 4,
+            "feature_channels": int(args.feature_channels),
+            "num_blocks": int(args.num_blocks),
+            "bias": bool(args.model_bias),
+            "deploy": False,
+        }
+        return (
+            MRLFN(
+                in_channels=4,
+                out_channels=4,
+                feature_channels=args.feature_channels,
+                num_blocks=args.num_blocks,
+                bias=args.model_bias,
+                deploy=False,
+            ),
+            config,
+        )
+
     config = {
         "model": "nafnet",
         "img_channel": 4,
@@ -194,25 +232,30 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, ob
 @torch.no_grad()
 def synthetic_validate(
     model: torch.nn.Module, loader: Iterable[Dict[str, object]], args: argparse.Namespace, device: torch.device
-) -> Dict[str, float]:
+) -> Dict[str, object]:
     if args.validate_steps <= 0:
         return {}
-    model.eval()
+    was_training = model.training
+    inference_model, graph_state = prepare_model_for_inference(model)
     l1_sum, mse_sum, image_count = 0.0, 0.0, 0
     for step, batch in enumerate(loader):
         if step >= args.validate_steps:
             break
         clean, dark, iso, ratio = to_device(batch, device)
         noisy, target = synthesize_sid_noise(clean, dark, iso, ratio, k_scale=args.k_scale, mode=args.synthesis)
-        prediction = torch.clamp(model(noisy), 0.0, 1.0)
+        prediction = torch.clamp(inference_model(noisy), 0.0, 1.0)
         l1_sum += float(F.l1_loss(prediction, target, reduction="mean"))
         mse_sum += float(F.mse_loss(prediction, target, reduction="mean"))
         image_count += 1
-    model.train()
+    model.train(was_training)
     if not image_count:
         return {}
     mse = mse_sum / image_count
-    return {"synthetic_l1": l1_sum / image_count, "synthetic_psnr": -10.0 * math.log10(max(mse, 1e-12))}
+    return {
+        "synthetic_l1": l1_sum / image_count,
+        "synthetic_psnr": -10.0 * math.log10(max(mse, 1e-12)),
+        "validation_graph": graph_state,
+    }
 
 
 def save_checkpoint(
@@ -225,6 +268,7 @@ def save_checkpoint(
     global_step: int,
     args: argparse.Namespace,
 ) -> None:
+    fused_state = deploy_state_dict(model)
     state = {
         "epoch": epoch,
         "global_step": global_step,
@@ -233,7 +277,12 @@ def save_checkpoint(
         "scheduler": scheduler.state_dict(),
         "scaler": scaler.state_dict(),
         "args": vars(args),
+        "checkpoint_format": 2,
+        "training_graph": "reparameterizable" if fused_state is not None else "native",
     }
+    if fused_state is not None:
+        state["model_deploy"] = fused_state
+        state["inference_graph"] = "deploy"
     temporary = path.with_suffix(path.suffix + ".tmp")
     torch.save(state, temporary)
     os.replace(temporary, path)
@@ -272,6 +321,10 @@ def main() -> None:
         raise ValueError("epochs, batch-size, and crops-per-image must be positive")
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
+    if args.feature_channels <= 0 or args.num_blocks <= 0:
+        raise ValueError("feature-channels and num-blocks must be positive")
+    if args.model == "mrlfn" and list(args.chromatic_channel_order) != [0, 1, 3, 2]:
+        print("Warning: current packed RAW order is [R,G1,G2,B]; the aligned semantic order is [0,1,3,2]")
     device = torch.device(args.device)
     seed_everything(args.seed)
     torch.backends.cudnn.benchmark = True
@@ -337,13 +390,26 @@ def main() -> None:
 
     model, architecture_config = build_model(args)
     model = model.to(device)
-    model_info = calculate_model_info(model, (1, 4, args.patch_size, args.patch_size), device)
-    model_info["architecture_config"] = architecture_config
+    profile_model, profile_graph = prepare_model_for_inference(model)
+    model_info = calculate_model_info(profile_model, (1, 4, args.patch_size, args.patch_size), device)
+    model_info["architecture_config"] = {**architecture_config, "deploy": profile_graph == "deploy"}
+    model_info["graph_state"] = profile_graph
+    model_info["loss_config"] = (
+        {
+            "name": "RawReconstructionChromaticLoss",
+            "raw_weight": args.raw_loss_weight,
+            "chromatic_weight": args.chromatic_loss_weight,
+            "channel_order_for_R_G1_B_G2": list(args.chromatic_channel_order),
+        }
+        if args.model == "mrlfn"
+        else {"name": "L1Loss"}
+    )
     (output_dir / "model_info.json").write_text(
         json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     print(format_model_info(model_info))
+    del profile_model
     optimizer = Adam(model.parameters(), lr=args.learning_rate, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
     scheduler = build_scheduler(optimizer, args.epochs * steps_per_epoch, args.warmup_epochs * steps_per_epoch)
     scaler = torch.cuda.amp.GradScaler(enabled=bool(args.amp))
@@ -356,6 +422,16 @@ def main() -> None:
         load_checkpoint(args.init_checkpoint, model)
         print(f"Initialised model weights from {args.init_checkpoint}")
 
+    criterion = (
+        RawReconstructionChromaticLoss(
+            raw_weight=args.raw_loss_weight,
+            chromatic_weight=args.chromatic_loss_weight,
+            channel_order=tuple(args.chromatic_channel_order),
+        )
+        if args.model == "mrlfn"
+        else None
+    )
+
     log_path = output_dir / "metrics.jsonl"
     autocast = torch.cuda.amp.autocast if device.type == "cuda" else nullcontext
     print(
@@ -365,7 +441,7 @@ def main() -> None:
     )
     for epoch in range(start_epoch, args.epochs + 1):
         model.train()
-        epoch_l1, epoch_samples = 0.0, 0
+        epoch_loss, epoch_raw_l1, epoch_chromatic_l1, epoch_samples = 0.0, 0.0, 0.0, 0
         epoch_start = time.perf_counter()
         for step, batch in enumerate(train_loader, start=1):
             if step > steps_per_epoch:
@@ -375,7 +451,17 @@ def main() -> None:
             optimizer.zero_grad(set_to_none=True)
             with autocast(enabled=bool(args.amp)) if device.type == "cuda" else autocast():
                 prediction = model(noisy)
-                loss = F.l1_loss(torch.clamp(prediction, 0.0, 1.0), target)
+                if criterion is not None:
+                    per_sample_loss, per_sample_raw, per_sample_chromatic = criterion.per_sample_components(
+                        prediction, target
+                    )
+                    loss = per_sample_loss.mean()
+                    raw_l1 = per_sample_raw.mean()
+                    chromatic_l1 = per_sample_chromatic.mean()
+                else:
+                    loss = F.l1_loss(torch.clamp(prediction, 0.0, 1.0), target)
+                    raw_l1 = loss
+                    chromatic_l1 = loss.new_zeros(())
             scaler.scale(loss).backward()
             if args.grad_clip is not None:
                 scaler.unscale_(optimizer)
@@ -384,19 +470,25 @@ def main() -> None:
             scaler.update()
             scheduler.step()
             global_step += 1
-            epoch_l1 += float(loss.detach()) * clean.shape[0]
+            epoch_loss += float(loss.detach()) * clean.shape[0]
+            epoch_raw_l1 += float(raw_l1.detach()) * clean.shape[0]
+            epoch_chromatic_l1 += float(chromatic_l1.detach()) * clean.shape[0]
             epoch_samples += clean.shape[0]
             if step == 1 or step % args.log_every == 0 or step == steps_per_epoch:
                 print(
                     f"epoch {epoch:04d} step {step:04d}/{steps_per_epoch} "
-                    f"l1={float(loss.detach()):.6f} lr={scheduler.get_last_lr()[0]:.3e} "
+                    f"loss={float(loss.detach()):.6f} raw_l1={float(raw_l1.detach()):.6f} "
+                    f"chromatic_l1={float(chromatic_l1.detach()):.6f} lr={scheduler.get_last_lr()[0]:.3e} "
                     f"iso={int(iso[0])} ratio={int(ratio[0])}"
                 )
 
         metrics: Dict[str, object] = {
             "epoch": epoch,
             "global_step": global_step,
-            "train_l1": epoch_l1 / max(1, epoch_samples),
+            "train_loss": epoch_loss / max(1, epoch_samples),
+            "train_l1": epoch_raw_l1 / max(1, epoch_samples),
+            "train_chromatic_l1": epoch_chromatic_l1 / max(1, epoch_samples),
+            "loss_name": "raw_reconstruction_chromatic" if criterion is not None else "l1",
             "learning_rate": scheduler.get_last_lr()[0],
             "seconds": time.perf_counter() - epoch_start,
             # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，

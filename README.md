@@ -27,6 +27,10 @@ For the capacity-control experiment comparing the existing NAFNet-Tiny with
 the SID-pretrained U-Net and the standard/original NAFNet, see
 [TRAINING_LARGE_MODELS.md](TRAINING_LARGE_MODELS.md).
 
+The reparameterizable MRLFN reproduction (`N=4`, `d=16`), including SID
+pretraining, MEY-AN00 fine-tuning, the composite RAW/chromatic loss, and
+deployment-state evaluation, is documented in [TRAINING_MRLFN.md](TRAINING_MRLFN.md).
+
 
 ## Test our pretrained model
 **We follow [PMN](https://github.com/megvii-research/PMN/tree/TPAMI) for dataset preparation**

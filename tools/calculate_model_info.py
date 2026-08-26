@@ -21,6 +21,7 @@ from torch import nn
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.ELD_models import UNetSeeInDark
+from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
 
 
@@ -153,14 +154,21 @@ def _load_checkpoint(model: nn.Module, checkpoint_path: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default="unet")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn"], default="unet")
     parser.add_argument("--input-shape", type=int, nargs=4, default=[1, 4, 512, 512], metavar=("N", "C", "H", "W"))
     parser.add_argument("--in-channels", type=int, default=4)
     parser.add_argument("--out-channels", type=int, default=4)
-    parser.add_argument("--features", type=int, default=32, help="Base U-Net/NAFNet feature width")
+    parser.add_argument(
+        "--features",
+        type=int,
+        default=None,
+        help="Feature width; inferred from checkpoint, else 16 for MRLFN and 32 for U-Net/NAFNet",
+    )
     parser.add_argument("--encoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--middle-blocks", type=int, default=2)
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
+    parser.add_argument("--num-blocks", type=int, default=None, help="MRLFN block count N; inferred, else 4")
+    parser.add_argument("--model-bias", action=argparse.BooleanOptionalAction, default=None)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--checkpoint", default=None, help="Optional bare or training checkpoint")
     parser.add_argument("--output-json", default=None)
@@ -170,6 +178,19 @@ def main() -> None:
         help="Optionally append one model_info metadata record to an existing training metrics JSONL",
     )
     args = parser.parse_args()
+
+    checkpoint_args: dict[str, Any] = {}
+    if args.checkpoint:
+        checkpoint_metadata = torch.load(args.checkpoint, map_location="cpu")
+        if isinstance(checkpoint_metadata, dict):
+            checkpoint_args = checkpoint_metadata.get("args", {})
+    if args.features is None:
+        key, fallback = ("feature_channels", 16) if args.model == "mrlfn" else ("model_width", 32)
+        args.features = int(checkpoint_args.get(key, fallback))
+    if args.num_blocks is None:
+        args.num_blocks = int(checkpoint_args.get("num_blocks", 4))
+    if args.model_bias is None:
+        args.model_bias = bool(checkpoint_args.get("model_bias", True))
 
     if args.input_shape[1] != args.in_channels:
         raise ValueError("--input-shape channel count must equal --in-channels")
@@ -184,7 +205,7 @@ def main() -> None:
             "out_channels": args.out_channels,
             "features": args.features,
         }
-    else:
+    elif args.model in {"nafnet", "natnet"}:
         if args.in_channels != args.out_channels:
             raise ValueError("NAFNet's global image residual requires equal input and output channels")
         model = NAFNet(
@@ -201,11 +222,62 @@ def main() -> None:
             "middle_blk_num": args.middle_blocks,
             "dec_blk_nums": args.decoder_blocks,
         }
-    if args.checkpoint:
+    else:
+        model = MRLFN(
+            in_channels=args.in_channels,
+            out_channels=args.out_channels,
+            feature_channels=args.features,
+            num_blocks=args.num_blocks,
+            bias=args.model_bias,
+            deploy=False,
+        )
+        architecture_config = {
+            "in_channels": args.in_channels,
+            "out_channels": args.out_channels,
+            "feature_channels": args.features,
+            "num_blocks": args.num_blocks,
+            "bias": args.model_bias,
+            "deploy": True,
+        }
+    if args.checkpoint and args.model != "mrlfn":
         _load_checkpoint(model, args.checkpoint)
+    elif args.model == "mrlfn":
+        if args.checkpoint:
+            checkpoint = torch.load(args.checkpoint, map_location="cpu")
+            if isinstance(checkpoint, dict) and "model_deploy" in checkpoint:
+                model = MRLFN(
+                    in_channels=args.in_channels,
+                    out_channels=args.out_channels,
+                    feature_channels=args.features,
+                    num_blocks=args.num_blocks,
+                    bias=args.model_bias,
+                    deploy=True,
+                )
+                model.load_state_dict(checkpoint["model_deploy"], strict=True)
+            else:
+                state_dict = checkpoint["model"] if isinstance(checkpoint, dict) and "model" in checkpoint else checkpoint
+                bare_is_deploy = isinstance(state_dict, dict) and any(
+                    ".reparam_conv." in key for key in state_dict
+                )
+                if bare_is_deploy:
+                    model = MRLFN(
+                        in_channels=args.in_channels,
+                        out_channels=args.out_channels,
+                        feature_channels=args.features,
+                        num_blocks=args.num_blocks,
+                        bias=args.model_bias,
+                        deploy=True,
+                    )
+                    model.load_state_dict(state_dict, strict=True)
+                else:
+                    model.load_state_dict(state_dict, strict=True)
+                    model = model.deploy()
+        else:
+            model = model.deploy()
     model.to(device)
     info = calculate_model_info(model, args.input_shape, device)
     info["architecture_config"] = architecture_config
+    info["graph_state"] = "deploy" if args.model == "mrlfn" else "native"
     if args.checkpoint:
         info["checkpoint"] = str(args.checkpoint)
     print(format_model_info(info))

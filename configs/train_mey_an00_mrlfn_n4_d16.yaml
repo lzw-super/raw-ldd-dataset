@@ -1,0 +1,52 @@
+# Fine-tune MRLFN N=4,d=16 from its own SID pretraining checkpoint.
+clean_manifest: data/MEY_AN00/manifests/clean_train.jsonl
+dark_manifest: data/MEY_AN00/manifests/dark_train.jsonl
+calibration_root: data/MEY_AN00/calibration
+val_clean_manifest: data/MEY_AN00/manifests/clean_synthetic_val.jsonl
+val_dark_manifest: data/MEY_AN00/manifests/dark_val.jsonl
+output_dir: experiments/mey_an00_mrlfn_n4_d16_continuous_ds
+init_checkpoint: experiments/sid_sony_mrlfn_n4_d16/checkpoints/latest.pth
+
+model: mrlfn
+feature_channels: 16
+num_blocks: 4
+model_bias: true
+raw_loss_weight: 0.6
+chromatic_loss_weight: 0.4
+# Semantic [R,G1,B,G2] indices into this repo's physical [R,G1,G2,B] tensor.
+chromatic_channel_order: [0, 1, 3, 2]
+
+epochs: 500
+steps_per_epoch: null
+batch_size: 1
+num_workers: 2
+patch_size: 512
+crops_per_image: 2
+ratios: [100.0, 250.0, 300.0]
+dark_exposure_policy: approximate_reuse_1_30s
+dark_shading_model: continuous_iso_fit
+clean_cache_size: 4
+dark_cache_size: 2
+max_target_saturation_fraction: 0.01
+max_crop_attempts: 32
+exposure_ratio_tolerance: 0.02
+
+synthesis: hybrid
+learning_rate: 0.00001
+beta1: 0.9
+beta2: 0.999
+weight_decay: 0.0
+warmup_epochs: 1
+grad_clip: null
+amp: false
+device: cuda:0
+seed: 1
+
+validate_every: 1
+validate_steps: 10
+val_ratios: [100.0, 250.0, 300.0]
+val_crops_per_image: 1
+val_seed: 10001
+save_every: 1
+keep_checkpoints: 3
+log_every: 10

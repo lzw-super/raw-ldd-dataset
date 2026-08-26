@@ -11,13 +11,16 @@
 #   bash test-op/run_qual_compare.sh 0 300        # 指定 GPU 与放大倍率（100/250/300，越大越难）
 #   bash test-op/run_qual_compare.sh 0 100 6      # 指定 GPU、ratio、抽样图片数
 #
-# 切换不同模型（unet / nafnet-tiny 等）：
+# 切换不同模型（unet / nafnet / mrlfn 等）：
 #   ★ 推荐：靠 checkpoint 自动推断模型类型，无需指定 MODEL，只换 CP_DIR：
 #     CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth bash test-op/run_qual_compare.sh 0 100
-#   ★ 或用 MODEL 显式强制覆盖模型类型（unet / nafnet / natnet）：
+#   ★ 或用 MODEL 显式强制覆盖模型类型（unet / nafnet / natnet / mrlfn）：
 #     MODEL=nafnet CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth bash test-op/run_qual_compare.sh 0 300
 #   ★ NAFNet 结构高级覆盖（经 EXTRA 透传给 argparse）：
 #     EXTRA="--model-width 16 --encoder-blocks 1 1 1 1 --middle-blocks 2 --decoder-blocks 1 1 1 1" \
+#       bash test-op/run_qual_compare.sh 0 100
+#   ★ MRLFN N=4,d=16 的 checkpoint 通常无需覆盖；裸权重可显式指定：
+#     MODEL=mrlfn EXTRA="--feature-channels 16 --num-blocks 4" \
 #       bash test-op/run_qual_compare.sh 0 100
 #
 # 修改下方“可调参数”区块里的 CP_DIR / OUT_PATH 即可切换模型权重与输出图像地址。
@@ -33,7 +36,7 @@ set -e  # 任一步失败即终止
 #   CP_DIR=experiments/sid_sony_nafnet_tiny/checkpoints/latest.pth bash test-op/run_qual_compare.sh 0 100
 CP_DIR="${CP_DIR:-experiments/sid_sony_paper_fair/checkpoints/latest.pth}"
 
-# 模型类型（unet / nafnet / natnet）。
+# 模型类型（unet / nafnet / natnet / mrlfn）。
 #   ★ 推荐留空：脚本会从 checkpoint 的 args 自动推断模型类型与结构，无需手动指定；
 #     仅在需要强制覆盖（例如官方纯 state_dict 未记录 args 时）才填值。
 MODEL="${MODEL:-}"

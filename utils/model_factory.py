@@ -17,6 +17,7 @@ from typing import Any, Sequence
 import torch
 
 from models.ELD_models import UNetSeeInDark
+from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
 
 # 各模型的默认结构：当 checkpoint 未记录、且 CLI 未显式覆盖时使用
@@ -24,6 +25,8 @@ _DEFAULT_WIDTH = 32
 _DEFAULT_ENC_BLOCKS: tuple[int, ...] = (2, 2, 2, 2)
 _DEFAULT_MIDDLE_BLOCKS = 2
 _DEFAULT_DEC_BLOCKS: tuple[int, ...] = (2, 2, 2, 2)
+_DEFAULT_MRLFN_FEATURES = 16
+_DEFAULT_MRLFN_BLOCKS = 4
 
 
 def _coerce_int_tuple(value: Any, default: Sequence[int]) -> tuple[int, ...]:
@@ -41,12 +44,15 @@ def build_denoiser_from_checkpoint(
     encoder_blocks: Sequence[int] | None = None,
     middle_blocks: int | None = None,
     decoder_blocks: Sequence[int] | None = None,
+    feature_channels: int | None = None,
+    num_blocks: int | None = None,
+    model_bias: bool | None = None,
 ) -> tuple[torch.nn.Module, dict]:
     """从 checkpoint 还原 4 通道 packed-RAW 去噪器。
 
     参数优先级：显式参数 > ``checkpoint["args"]`` > 默认值。
 
-    - ``model``：``unet`` / ``nafnet`` / ``natnet``（``natnet`` 视为 ``nafnet`` 别名）。
+    - ``model``：``unet`` / ``nafnet`` / ``natnet`` / ``mrlfn``。
       为 None 时按 ``checkpoint["args"]["model"]`` 推断，再回退到 ``unet``。
     - 兼容两种 checkpoint：可恢复字典（权重在 ``"model"`` 键下）与官方纯 state_dict。
 
@@ -77,6 +83,31 @@ def build_denoiser_from_checkpoint(
         decoder_blocks if decoder_blocks is not None else checkpoint_args.get("decoder_blocks"),
         _DEFAULT_DEC_BLOCKS,
     )
+    mrlfn_features = int(
+        feature_channels
+        if feature_channels is not None
+        else checkpoint_args.get("feature_channels", _DEFAULT_MRLFN_FEATURES)
+    )
+    mrlfn_blocks = int(
+        num_blocks if num_blocks is not None else checkpoint_args.get("num_blocks", _DEFAULT_MRLFN_BLOCKS)
+    )
+    mrlfn_bias = bool(model_bias if model_bias is not None else checkpoint_args.get("model_bias", True))
+
+    packaged_checkpoint = isinstance(checkpoint, dict) and (
+        "model" in checkpoint or "model_deploy" in checkpoint
+    )
+    if packaged_checkpoint and model_name == "mrlfn" and "model_deploy" in checkpoint:
+        state_dict = checkpoint["model_deploy"]
+        weight_source = "model_deploy"
+        build_deploy = True
+    else:
+        state_dict = checkpoint["model"] if packaged_checkpoint and "model" in checkpoint else checkpoint
+        weight_source = "model" if packaged_checkpoint else "bare_state_dict"
+        build_deploy = bool(
+            model_name == "mrlfn"
+            and isinstance(state_dict, dict)
+            and any(".reparam_conv." in key for key in state_dict)
+        )
 
     # 3) 按模型名构造网络
     if model_name == "unet":
@@ -89,14 +120,23 @@ def build_denoiser_from_checkpoint(
             middle_blk_num=mid_blocks,
             dec_blk_nums=dec_blocks,
         )
+    elif model_name == "mrlfn":
+        net = MRLFN(
+            in_channels=4,
+            out_channels=4,
+            feature_channels=mrlfn_features,
+            num_blocks=mrlfn_blocks,
+            bias=mrlfn_bias,
+            deploy=build_deploy,
+        )
     else:
-        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet)")
+        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn)")
 
     # 4) 载入权重：可恢复字典取 "model" 键，否则视为纯 state_dict
-    state_dict = (
-        checkpoint["model"] if isinstance(checkpoint, dict) and "model" in checkpoint else checkpoint
-    )
     net.load_state_dict(state_dict, strict=True)
+    if model_name == "mrlfn" and not build_deploy:
+        net = net.deploy()
+        weight_source += "->fused"
 
     if device is not None:
         net = net.to(device)
@@ -108,5 +148,10 @@ def build_denoiser_from_checkpoint(
         "encoder_blocks": list(enc_blocks),
         "middle_blocks": mid_blocks,
         "decoder_blocks": list(dec_blocks),
+        "feature_channels": mrlfn_features,
+        "num_blocks": mrlfn_blocks,
+        "model_bias": mrlfn_bias,
+        "graph_state": "deploy" if model_name == "mrlfn" else "native",
+        "weight_source": weight_source,
     }
     return net, meta

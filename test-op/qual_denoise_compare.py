@@ -78,7 +78,7 @@ from datasets.real_dataset import SIDEvalDataset  # noqa: E402
 # 模型构建
 # ---------------------------------------------------------------------------
 def build_model(args: argparse.Namespace) -> torch.nn.Module:
-    """从 checkpoint 还原去噪模型（unet 或 nafnet-tiny）并切换到 eval 模式。
+    """从 checkpoint 还原去噪模型并切换到实际部署使用的 eval 图。
 
     模型类型与结构默认从 checkpoint 的 ``args`` 自动推断；命令行
     ``--model / --model-width / --encoder-blocks / --middle-blocks /
@@ -93,6 +93,8 @@ def build_model(args: argparse.Namespace) -> torch.nn.Module:
         encoder_blocks=args.encoder_blocks,
         middle_blocks=args.middle_blocks,
         decoder_blocks=args.decoder_blocks,
+        feature_channels=args.feature_channels,
+        num_blocks=args.num_blocks,
     )
     args.resolved_meta = meta
     return model
@@ -236,7 +238,7 @@ def main():
     parser = argparse.ArgumentParser(description="SID Sony 去噪定性可视化（单张左右对比图）")
     parser.add_argument("--cp-dir", default="experiments/sid_sony_paper_fair/checkpoints/latest.pth",
                         help="checkpoint 路径")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet"], default=None,
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn"], default=None,
                         help="强制模型类型；留空则按 checkpoint 的 args 自动推断（推荐）")
     parser.add_argument("--model-width", type=int, default=None,
                         help="特征通道数；留空则用 checkpoint 记录值，再回退到 32")
@@ -246,6 +248,10 @@ def main():
                         help="NAFNet 中间 block 数；留空则用 checkpoint 记录值")
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=None,
                         help="NAFNet 各解码阶段 block 数；留空则用 checkpoint 记录值")
+    parser.add_argument("--feature-channels", type=int, default=None,
+                        help="MRLFN 特征深度 d；留空则用 checkpoint 记录值")
+    parser.add_argument("--num-blocks", type=int, default=None,
+                        help="MRLFN mRLFB 数量 N；留空则用 checkpoint 记录值")
     parser.add_argument("--device", default="cuda:0", help="推理设备，如 cuda:0 / cpu")
     parser.add_argument("--ratio", type=int, default=100, choices=[100, 250, 300],
                         help="SID 评估放大倍率（越大噪声越强、去噪难度越高）")
@@ -280,11 +286,20 @@ def main():
     print(f"[info] device = {device}, ratio = {args.ratio}, crop = "
           f"{'full' if args.full else args.crop_size}")
 
-    # 1) 加载模型（unet 或 nafnet-tiny，结构从 checkpoint 自动推断）
+    # 1) 加载模型；MRLFN 会优先读取 model_deploy，旧训练权重则先融合
     model = build_model(args)
     meta = args.resolved_meta
-    print(f"[info] resolved model = {meta['model']} width={meta['model_width']} "
-          f"enc={meta['encoder_blocks']} mid={meta['middle_blocks']} dec={meta['decoder_blocks']}")
+    if meta["model"] == "mrlfn":
+        print(
+            f"[info] resolved model = mrlfn N={meta['num_blocks']} d={meta['feature_channels']} "
+            f"graph={meta['graph_state']} weights={meta['weight_source']}"
+        )
+    else:
+        print(
+            f"[info] resolved model = {meta['model']} width={meta['model_width']} "
+            f"enc={meta['encoder_blocks']} mid={meta['middle_blocks']} "
+            f"dec={meta['decoder_blocks']} graph={meta['graph_state']}"
+        )
 
     # 2) 构建评估集（构造时会缓存该 ratio 下所有 RAW，与官方评估一致）
     #    注意：SIDEvalDataset 内部使用相对路径 ./resources、./infos，必须在仓库根目录运行
@@ -318,7 +333,8 @@ def main():
         out_path = os.path.join(
             args.out_dir, f"{args.out_prefix}denoise_comparison_ratio{args.ratio}.png"
         )
-    make_comparison_figure(rows, args.ratio, out_path, args.dpi, args.full, model_label=meta["model"])
+    model_label = f"{meta['model']} ({meta['graph_state']})"
+    make_comparison_figure(rows, args.ratio, out_path, args.dpi, args.full, model_label=model_label)
     print(f"\n[done] 对比图已保存: {os.path.abspath(out_path)}")
 
 

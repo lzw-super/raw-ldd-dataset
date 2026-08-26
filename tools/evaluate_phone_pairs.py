@@ -213,6 +213,7 @@ def main() -> None:
         "dark_shading_subtracted": not args.no_dark_shading,
         "dark_shading_model": dark_shading_model if not args.no_dark_shading else "disabled",
         "model": model_name,
+        "graph_state": "deploy" if getattr(model, "deploy_mode", False) else "native",
         "pairs": len(per_pair),
         "global_l1": total_absolute_error / max(1, total_pixels),
         "global_psnr": psnr_from_sse(total_squared_error, total_pixels),

@@ -29,16 +29,13 @@ import torch
 from utils.utils import *
 from utils.imgproc import *
 from datasets.real_dataset import SIDEvalDataset
-from models.ELD_models import UNetSeeInDark
+from utils.model_factory import build_denoiser_from_checkpoint
 from test_denoise_sideld import valid_one_ep  # 复用官方评估主循环
 
 
 def build_model(device, cp_dir):
-    """加载预训练 U-Net 并切换到 eval 模式"""
-    model = UNetSeeInDark().to(device)
-    model.load_state_dict(torch.load(cp_dir, map_location="cpu"), strict=True)
-    model.eval()
-    return model
+    """加载 checkpoint；MRLFN 会强制使用融合后的部署图。"""
+    return build_denoiser_from_checkpoint(cp_dir, device=device)
 
 
 def build_loader(eval_ratio):
@@ -63,9 +60,12 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     # 模型只加载一次，三档 ratio 共用
-    model = build_model(args.device, args.cp_dir)
+    model, model_meta = build_model(args.device, args.cp_dir)
 
-    print(f"\n{'='*60}\nSID Sony 评估（checkpoint={args.cp_dir}, device={args.device}）\n{'='*60}")
+    print(
+        f"\n{'='*60}\nSID Sony 评估（checkpoint={args.cp_dir}, device={args.device}, "
+        f"model={model_meta['model']}, graph={model_meta['graph_state']}）\n{'='*60}"
+    )
     results = {}
     for ratio in args.ratios:
         args.task = "sonya7s2"

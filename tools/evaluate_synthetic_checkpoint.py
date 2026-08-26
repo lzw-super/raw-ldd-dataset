@@ -15,9 +15,8 @@ from torch.utils.data import DataLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from datasets.sid_synthetic_train import SIDSyntheticTrainDataset
-from models.ELD_models import UNetSeeInDark
-from models.natnet_arch import NAFNet
 from noise.sid_noise_synthesis import synthesize_sid_noise
+from utils.model_factory import build_denoiser_from_checkpoint
 
 
 def main() -> None:
@@ -35,7 +34,6 @@ def main() -> None:
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu")
     checkpoint_args = checkpoint.get("args", {}) if isinstance(checkpoint, dict) else {}
-    state_dict = checkpoint["model"] if isinstance(checkpoint, dict) and "model" in checkpoint else checkpoint
     synthesis = checkpoint_args.get("synthesis", "ratio_aware")
     k_scale = float(checkpoint_args.get("k_scale", 0.1))
 
@@ -55,26 +53,8 @@ def main() -> None:
     )
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     device = torch.device(args.device)
-    model_name = checkpoint_args.get("model", "unet")
-    if model_name == "unet":
-        model = UNetSeeInDark(
-            in_nc=4,
-            out_nc=4,
-            nf=int(checkpoint_args.get("model_width", 32)),
-        )
-    elif model_name in {"nafnet", "natnet"}:
-        model = NAFNet(
-            img_channel=4,
-            width=int(checkpoint_args.get("model_width", 32)),
-            enc_blk_nums=tuple(checkpoint_args.get("encoder_blocks", [2, 2, 2, 2])),
-            middle_blk_num=int(checkpoint_args.get("middle_blocks", 2)),
-            dec_blk_nums=tuple(checkpoint_args.get("decoder_blocks", [2, 2, 2, 2])),
-        )
-    else:
-        raise ValueError(f"Unsupported checkpoint model: {model_name}")
-    model = model.to(device)
-    model.load_state_dict(state_dict, strict=True)
-    model.eval()
+    model, model_meta = build_denoiser_from_checkpoint(args.checkpoint, device=device)
+    model_name = model_meta["model"]
 
     accumulators = {ratio: {"l1": 0.0, "mse": 0.0, "count": 0} for ratio in args.ratios}
     with torch.inference_mode():
@@ -98,6 +78,7 @@ def main() -> None:
     result = {
         "checkpoint": args.checkpoint,
         "model": model_name,
+        "graph_state": model_meta["graph_state"],
         "manifest": args.manifest,
         "held_out_scene_prefix": "2",
         "synthesis": synthesis,
