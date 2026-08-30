@@ -26,8 +26,8 @@ epochs: 1000
 steps_per_epoch: null
 batch_size: 16
 num_workers: 2
-patch_size: 512
-crops_per_image: 8
+patch_size: 256
+crops_per_image: 16
 ratios: [100, 250, 300]
 clean_cache_size: 16
 dark_cache_size: 2
