@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.ELD_models import UNetSeeInDark
 from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
+from utils.argparse_compat import add_boolean_optional_argument
 
 
 def _shape(value: torch.Tensor) -> list[int]:
@@ -168,7 +169,13 @@ def main() -> None:
     parser.add_argument("--middle-blocks", type=int, default=2)
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--num-blocks", type=int, default=None, help="MRLFN block count N; inferred, else 4")
-    parser.add_argument("--model-bias", action=argparse.BooleanOptionalAction, default=None)
+    add_boolean_optional_argument(parser, "--model-bias", default=None)
+    parser.add_argument(
+        "--space-to-depth-factor",
+        type=int,
+        default=None,
+        help="MRLFN mosaic-domain S2D/D2S factor; inferred from checkpoint, else disabled",
+    )
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--checkpoint", default=None, help="Optional bare or training checkpoint")
     parser.add_argument("--output-json", default=None)
@@ -191,6 +198,8 @@ def main() -> None:
         args.num_blocks = int(checkpoint_args.get("num_blocks", 4))
     if args.model_bias is None:
         args.model_bias = bool(checkpoint_args.get("model_bias", True))
+    if args.space_to_depth_factor is None:
+        args.space_to_depth_factor = int(checkpoint_args.get("space_to_depth_factor", 1))
 
     if args.input_shape[1] != args.in_channels:
         raise ValueError("--input-shape channel count must equal --in-channels")
@@ -230,6 +239,7 @@ def main() -> None:
             num_blocks=args.num_blocks,
             bias=args.model_bias,
             deploy=False,
+            space_to_depth_factor=args.space_to_depth_factor,
         )
         architecture_config = {
             "in_channels": args.in_channels,
@@ -237,6 +247,7 @@ def main() -> None:
             "feature_channels": args.features,
             "num_blocks": args.num_blocks,
             "bias": args.model_bias,
+            "space_to_depth_factor": args.space_to_depth_factor,
             "deploy": True,
         }
     if args.checkpoint and args.model != "mrlfn":
@@ -252,6 +263,7 @@ def main() -> None:
                     num_blocks=args.num_blocks,
                     bias=args.model_bias,
                     deploy=True,
+                    space_to_depth_factor=args.space_to_depth_factor,
                 )
                 model.load_state_dict(checkpoint["model_deploy"], strict=True)
             else:
@@ -267,6 +279,7 @@ def main() -> None:
                         num_blocks=args.num_blocks,
                         bias=args.model_bias,
                         deploy=True,
+                        space_to_depth_factor=args.space_to_depth_factor,
                     )
                     model.load_state_dict(state_dict, strict=True)
                 else:

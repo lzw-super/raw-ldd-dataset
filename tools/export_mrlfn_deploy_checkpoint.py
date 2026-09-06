@@ -34,6 +34,7 @@ def main() -> None:
             "feature_channels": meta["feature_channels"],
             "num_blocks": meta["num_blocks"],
             "model_bias": meta["model_bias"],
+            "space_to_depth_factor": meta["space_to_depth_factor"],
         }
     )
     payload = {

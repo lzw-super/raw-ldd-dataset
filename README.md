@@ -27,9 +27,10 @@ For the capacity-control experiment comparing the existing NAFNet-Tiny with
 the SID-pretrained U-Net and the standard/original NAFNet, see
 [TRAINING_LARGE_MODELS.md](TRAINING_LARGE_MODELS.md).
 
-The reparameterizable MRLFN reproduction (`N=4`, `d=16`), including SID
-pretraining, MEY-AN00 fine-tuning, the composite RAW/chromatic loss, and
-deployment-state evaluation, is documented in [TRAINING_MRLFN.md](TRAINING_MRLFN.md).
+The reparameterizable MRLFN reproduction, including the paper-aligned
+single-frame `N=4, d=32, k=4` S2D/D2S variant, the legacy no-S2D baseline,
+SID pretraining, the composite RAW/chromatic loss, and deployment-state
+evaluation, is documented in [TRAINING_MRLFN.md](TRAINING_MRLFN.md).
 
 
 ## Test our pretrained model

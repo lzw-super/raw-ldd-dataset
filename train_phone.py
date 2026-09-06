@@ -36,6 +36,7 @@ from models.natnet_arch import NAFNet
 from noise.dng_noise_synthesis import synthesize_phone_noise
 from noise.phone_dark_shading import DEFAULT_MODEL_DIRECTORY
 from tools.calculate_model_info import calculate_model_info, format_model_info
+from utils.argparse_compat import add_boolean_optional_argument
 from utils.model_deployment import deploy_state_dict, prepare_model_for_inference
 from utils.phone_evaluation import evaluate_phone_synthetic
 
@@ -70,7 +71,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[1, 1, 1, 1])
     parser.add_argument("--feature-channels", type=int, default=16, help="MRLFN feature depth d")
     parser.add_argument("--num-blocks", type=int, default=4, help="MRLFN mRLFB count N")
-    parser.add_argument("--model-bias", action=argparse.BooleanOptionalAction, default=True)
+    add_boolean_optional_argument(parser, "--model-bias", default=True)
+    parser.add_argument("--space-to-depth-factor", type=int, default=1, help="MRLFN Bayer S2D/D2S factor")
     parser.add_argument("--raw-loss-weight", type=float, default=0.6)
     parser.add_argument("--chromatic-loss-weight", type=float, default=0.4)
     parser.add_argument(
@@ -206,6 +208,7 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, dict[str, An
             "num_blocks": int(args.num_blocks),
             "bias": bool(args.model_bias),
             "deploy": False,
+            "space_to_depth_factor": int(args.space_to_depth_factor),
         }
         return (
             MRLFN(
@@ -215,6 +218,7 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, dict[str, An
                 num_blocks=args.num_blocks,
                 bias=args.model_bias,
                 deploy=False,
+                space_to_depth_factor=args.space_to_depth_factor,
             ),
             architecture,
         )
@@ -397,6 +401,11 @@ def main() -> None:
         raise ValueError("val-crops-per-image and validate-every must be positive")
     if args.feature_channels <= 0 or args.num_blocks <= 0:
         raise ValueError("feature-channels and num-blocks must be positive")
+    if args.model == "mrlfn" and args.space_to_depth_factor != 1:
+        if args.space_to_depth_factor < 2 or args.space_to_depth_factor % 2:
+            raise ValueError("space-to-depth-factor must be 1 or an even integer >= 2")
+        if (2 * args.patch_size) % args.space_to_depth_factor:
+            raise ValueError("Twice the packed patch size must be divisible by space-to-depth-factor")
     if args.model == "mrlfn" and list(args.chromatic_channel_order) != [0, 1, 3, 2]:
         print("Warning: current packed RAW order is [R,G1,G2,B]; the aligned semantic order is [0,1,3,2]")
 

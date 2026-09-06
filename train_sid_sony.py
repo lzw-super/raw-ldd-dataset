@@ -38,6 +38,7 @@ from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
 from noise.sid_noise_synthesis import synthesize_sid_noise
 from tools.calculate_model_info import calculate_model_info, format_model_info
+from utils.argparse_compat import add_boolean_optional_argument
 from utils.model_deployment import deploy_state_dict, prepare_model_for_inference
 
 
@@ -76,7 +77,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--decoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--feature-channels", type=int, default=16, help="MRLFN feature depth d")
     parser.add_argument("--num-blocks", type=int, default=4, help="MRLFN mRLFB count N")
-    parser.add_argument("--model-bias", action=argparse.BooleanOptionalAction, default=True)
+    add_boolean_optional_argument(parser, "--model-bias", default=True)
+    parser.add_argument(
+        "--space-to-depth-factor",
+        type=int,
+        default=1,
+        help="MRLFN mosaic-domain S2D/D2S factor; paper Model A/B use k=4",
+    )
     parser.add_argument("--raw-loss-weight", type=float, default=0.6)
     parser.add_argument("--chromatic-loss-weight", type=float, default=0.4)
     parser.add_argument(
@@ -89,6 +96,7 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument("--epochs", type=int, default=1000)
+    parser.add_argument("--max-steps", type=int, default=None, help="Optional exact total optimization-step budget")
     parser.add_argument("--steps-per-epoch", type=int, default=None, help="Defaults to all clean patches in the manifest")
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--num-workers", type=int, default=2)
@@ -106,8 +114,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--synthesis", choices=["ratio_aware", "paper_literal"], default="ratio_aware")
     parser.add_argument("--k-scale", type=float, default=0.1, help="K=ISO/100*k_scale; paper setting is 0.1")
     parser.add_argument("--learning-rate", type=float, default=2e-4)
+    parser.add_argument("--min-learning-rate", type=float, default=0.0, help="Final LR of cosine annealing")
     parser.add_argument("--beta1", type=float, default=0.9)
     parser.add_argument("--beta2", type=float, default=0.999)
+    parser.add_argument("--adam-epsilon", type=float, default=1e-8)
     parser.add_argument("--weight-decay", type=float, default=0.0)
     parser.add_argument("--warmup-epochs", type=int, default=5)
     parser.add_argument("--grad-clip", type=float, default=None)
@@ -153,9 +163,22 @@ def make_loader(dataset: SIDSyntheticTrainDataset, args: argparse.Namespace, shu
     return DataLoader(dataset, **kwargs)
 
 
-def build_scheduler(optimizer: torch.optim.Optimizer, total_steps: int, warmup_steps: int) -> LambdaLR:
+def build_scheduler(
+    optimizer: torch.optim.Optimizer,
+    total_steps: int,
+    warmup_steps: int,
+    min_learning_rate: float = 0.0,
+) -> LambdaLR:
     total_steps = max(1, int(total_steps))
     warmup_steps = min(max(0, int(warmup_steps)), total_steps - 1)
+    initial_learning_rates = [float(group["lr"]) for group in optimizer.param_groups]
+    if not initial_learning_rates or any(rate <= 0 for rate in initial_learning_rates):
+        raise ValueError("Optimizer learning rates must be positive")
+    if min_learning_rate < 0 or any(min_learning_rate > rate for rate in initial_learning_rates):
+        raise ValueError("min-learning-rate must be between zero and every initial learning rate")
+    min_multiplier = float(min_learning_rate) / initial_learning_rates[0]
+    if any(not math.isclose(rate, initial_learning_rates[0]) for rate in initial_learning_rates):
+        raise ValueError("This scheduler requires the same initial learning rate for all parameter groups")
 
     def multiplier(step: int) -> float:
         if warmup_steps and step < warmup_steps:
@@ -163,7 +186,8 @@ def build_scheduler(optimizer: torch.optim.Optimizer, total_steps: int, warmup_s
         if total_steps <= warmup_steps + 1:
             return 1.0
         progress = (step - warmup_steps) / float(total_steps - warmup_steps)
-        return 0.5 * (1.0 + math.cos(math.pi * min(max(progress, 0.0), 1.0)))
+        cosine = 0.5 * (1.0 + math.cos(math.pi * min(max(progress, 0.0), 1.0)))
+        return min_multiplier + (1.0 - min_multiplier) * cosine
 
     return LambdaLR(optimizer, multiplier)
 
@@ -196,6 +220,7 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, ob
             "num_blocks": int(args.num_blocks),
             "bias": bool(args.model_bias),
             "deploy": False,
+            "space_to_depth_factor": int(args.space_to_depth_factor),
         }
         return (
             MRLFN(
@@ -205,6 +230,7 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, ob
                 num_blocks=args.num_blocks,
                 bias=args.model_bias,
                 deploy=False,
+                space_to_depth_factor=args.space_to_depth_factor,
             ),
             config,
         )
@@ -319,10 +345,19 @@ def main() -> None:
     args = parse_args()
     if args.epochs <= 0 or args.batch_size <= 0 or args.crops_per_image <= 0:
         raise ValueError("epochs, batch-size, and crops-per-image must be positive")
+    if args.max_steps is not None and args.max_steps <= 0:
+        raise ValueError("max-steps must be positive")
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
     if args.feature_channels <= 0 or args.num_blocks <= 0:
         raise ValueError("feature-channels and num-blocks must be positive")
+    if args.adam_epsilon <= 0:
+        raise ValueError("adam-epsilon must be positive")
+    if args.model == "mrlfn" and args.space_to_depth_factor != 1:
+        if args.space_to_depth_factor < 2 or args.space_to_depth_factor % 2:
+            raise ValueError("space-to-depth-factor must be 1 or an even integer >= 2")
+        if (2 * args.patch_size) % args.space_to_depth_factor:
+            raise ValueError("Twice the packed patch size must be divisible by space-to-depth-factor")
     if args.model == "mrlfn" and list(args.chromatic_channel_order) != [0, 1, 3, 2]:
         print("Warning: current packed RAW order is [R,G1,G2,B]; the aligned semantic order is [0,1,3,2]")
     device = torch.device(args.device)
@@ -410,8 +445,20 @@ def main() -> None:
     )
     print(format_model_info(model_info))
     del profile_model
-    optimizer = Adam(model.parameters(), lr=args.learning_rate, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
-    scheduler = build_scheduler(optimizer, args.epochs * steps_per_epoch, args.warmup_epochs * steps_per_epoch)
+    optimizer = Adam(
+        model.parameters(),
+        lr=args.learning_rate,
+        betas=(args.beta1, args.beta2),
+        eps=args.adam_epsilon,
+        weight_decay=args.weight_decay,
+    )
+    total_steps = int(args.max_steps) if args.max_steps is not None else args.epochs * steps_per_epoch
+    scheduler = build_scheduler(
+        optimizer,
+        total_steps,
+        args.warmup_epochs * steps_per_epoch,
+        args.min_learning_rate,
+    )
     scaler = torch.cuda.amp.GradScaler(enabled=bool(args.amp))
     start_epoch, global_step = 1, 0
     if args.resume:
@@ -445,6 +492,8 @@ def main() -> None:
         epoch_start = time.perf_counter()
         for step, batch in enumerate(train_loader, start=1):
             if step > steps_per_epoch:
+                break
+            if global_step >= total_steps:
                 break
             clean, dark, iso, ratio = to_device(batch, device)
             noisy, target = synthesize_sid_noise(clean, dark, iso, ratio, k_scale=args.k_scale, mode=args.synthesis)
@@ -504,6 +553,9 @@ def main() -> None:
         if epoch % args.save_every == 0 or epoch == args.epochs:
             save_checkpoint(checkpoint_dir / f"epoch_{epoch:04d}.pth", model, optimizer, scheduler, scaler, epoch, global_step, args)
             prune_checkpoints(checkpoint_dir, args.keep_checkpoints)
+        if global_step >= total_steps:
+            print(f"Reached total optimization-step budget: {total_steps}")
+            break
 
 
 if __name__ == "__main__":

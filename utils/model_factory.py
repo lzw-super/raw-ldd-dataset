@@ -12,6 +12,7 @@
 """
 from __future__ import annotations
 
+import math
 from typing import Any, Sequence
 
 import torch
@@ -47,6 +48,7 @@ def build_denoiser_from_checkpoint(
     feature_channels: int | None = None,
     num_blocks: int | None = None,
     model_bias: bool | None = None,
+    space_to_depth_factor: int | None = None,
 ) -> tuple[torch.nn.Module, dict]:
     """从 checkpoint 还原 4 通道 packed-RAW 去噪器。
 
@@ -92,6 +94,11 @@ def build_denoiser_from_checkpoint(
         num_blocks if num_blocks is not None else checkpoint_args.get("num_blocks", _DEFAULT_MRLFN_BLOCKS)
     )
     mrlfn_bias = bool(model_bias if model_bias is not None else checkpoint_args.get("model_bias", True))
+    mrlfn_s2d_factor = int(
+        space_to_depth_factor
+        if space_to_depth_factor is not None
+        else checkpoint_args.get("space_to_depth_factor", 1)
+    )
 
     packaged_checkpoint = isinstance(checkpoint, dict) and (
         "model" in checkpoint or "model_deploy" in checkpoint
@@ -108,6 +115,21 @@ def build_denoiser_from_checkpoint(
             and isinstance(state_dict, dict)
             and any(".reparam_conv." in key for key in state_dict)
         )
+
+    # Parameterless S2D/D2S modules leave no state-dict keys.  For a bare
+    # paper-aligned checkpoint, infer k from the Figure-6 stem/head widths.
+    if (
+        model_name == "mrlfn"
+        and space_to_depth_factor is None
+        and "space_to_depth_factor" not in checkpoint_args
+        and isinstance(state_dict, dict)
+    ):
+        stem_weight = state_dict.get("shallow_conv.weight")
+        output_weight = state_dict.get("output_conv.weight")
+        if stem_weight is not None and output_weight is not None and stem_weight.shape[1] > 4:
+            inferred_factor = math.isqrt(int(stem_weight.shape[1]))
+            if inferred_factor**2 == stem_weight.shape[1] == output_weight.shape[0]:
+                mrlfn_s2d_factor = inferred_factor
 
     # 3) 按模型名构造网络
     if model_name == "unet":
@@ -128,6 +150,7 @@ def build_denoiser_from_checkpoint(
             num_blocks=mrlfn_blocks,
             bias=mrlfn_bias,
             deploy=build_deploy,
+            space_to_depth_factor=mrlfn_s2d_factor,
         )
     else:
         raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn)")
@@ -151,6 +174,7 @@ def build_denoiser_from_checkpoint(
         "feature_channels": mrlfn_features,
         "num_blocks": mrlfn_blocks,
         "model_bias": mrlfn_bias,
+        "space_to_depth_factor": mrlfn_s2d_factor,
         "graph_state": "deploy" if model_name == "mrlfn" else "native",
         "weight_source": weight_source,
     }

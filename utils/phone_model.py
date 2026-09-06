@@ -37,6 +37,7 @@ def build_phone_model(model_args: dict[str, Any], *, deploy: bool = False) -> tu
                 num_blocks=int(model_args.get("num_blocks", 4)),
                 bias=bool(model_args.get("model_bias", True)),
                 deploy=deploy,
+                space_to_depth_factor=int(model_args.get("space_to_depth_factor", 1)),
             ),
             model_name,
         )
