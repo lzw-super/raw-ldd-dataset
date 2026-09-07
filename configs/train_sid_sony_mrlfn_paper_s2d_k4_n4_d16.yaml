@@ -2,9 +2,9 @@
 # existing no-S2D MRLFN configs. The repository still exposes/returns
 # [R,G1,G2,B] packed RAW, while the model reconstructs a one-plane Bayer
 # mosaic internally and applies the paper's k=4 S2D (16 channels) and D2S.
-patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
-pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
-sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
+pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
+sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
 val_manifest: infos/SID_validation_clean_raw.json
@@ -12,7 +12,7 @@ dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
 
 model: mrlfn
-feature_channels: 16       # paper Model A: d=16
+feature_channels: 16       # paper Model A: d=32
 num_blocks: 4              # paper Model A: N=4
 model_bias: true
 space_to_depth_factor: 4   # paper Model A: k=4
@@ -29,8 +29,8 @@ output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d16
 # The paper specifies batch 16 and 256x256 packed-RAW patches. It does not
 # disclose the epoch/iteration budget; max_steps retains the prior LED
 # reproduction budget so this run is finite and directly repeatable.
-epochs: 2000
-max_steps: 257600
+epochs: 1000
+# max_steps: 257600
 steps_per_epoch: null
 batch_size: 16
 num_workers: 8
@@ -46,16 +46,16 @@ k_scale: 0.1
 # Paper: Adam, initial LR 1e-4, cosine annealing. No warmup or nonzero
 # terminal LR is reported, so the literal TensorFlow-style cosine is used.
 # Adam epsilon 1e-7 is TensorFlow/Keras's default (not explicitly reported).
-learning_rate: 0.0001
+learning_rate: 0.0002
 min_learning_rate: 0.0
 beta1: 0.9
 beta2: 0.999
 adam_epsilon: 0.0000001
 weight_decay: 0.0
-warmup_epochs: 0
+warmup_epochs: 5
 grad_clip: null
 amp: false
-device: cuda:1
+device: cuda:0
 seed: 2026
 
 validate_every: 10
