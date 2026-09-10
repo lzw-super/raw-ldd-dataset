@@ -55,7 +55,7 @@ weight_decay: 0.0
 warmup_epochs: 10
 grad_clip: null
 amp: false
-device: cuda:0
+device: cuda:1
 seed: 2026
 
 validate_every: 50
