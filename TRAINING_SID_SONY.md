@@ -66,3 +66,21 @@ done
 The test script uses `infos/SID_evaltest.info`, PMN dark shading, the official
 RAW preprocessing order, and ELD global illuminance correction.  It is a real
 SID metric rather than the small synthetic sanity metric logged during training.
+
+### 真实配对验证与最佳权重
+
+`train_sid_sony.py` 的验证现在读取 `--val-pair-list`（默认取训练 pair-list
+同目录的 `Sony_val_list.txt`），仅接受 `2` 开头的验证场景；训练仍使用合成噪声。
+验证采用完整 RAW 图像，复用 SID 测试的数据预处理，并与
+`test_denoise_sideld.py` 一样进行 `ELDIlluminanceCorrect`、截断到 `[0,1]`
+和 `PMN_metric`，最终对每对图像的 PSNR 做算术平均。
+
+`validate_steps: -1` 表示验证所有配对，`0` 禁用，正数表示使用列表中前 N 个匹配配对
+（计数单位是图像对，与训练 batch_size 无关）。`validate_every` 控制 epoch 间隔，
+最后一个 epoch 或达到 max_steps 时也会验证。全量整图验证比原合成 patch 验证耗时更长。
+
+每当 `real_psnr` 严格超过历史最佳值时，保存 `<output_dir>/checkpoints/best.pth`。
+它包含训练状态及可用的部署权重，不受 `keep_checkpoints` 清理影响；`latest.pth`
+和定期 epoch 权重仍保留。各权重记录 `best_psnr`、`best_epoch`，续训自动恢复；
+旧权重没有最佳分数时，从续训后的首次真实验证开始选优。
+指定的 k4/n4/d32 配置默认每 10 个 epoch 验证全部真实配对。

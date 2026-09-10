@@ -120,9 +120,12 @@ class SIDEvalDataset(Dataset):
         out = np.clip(out, 0, 1) if clip else out
         return out.astype(np.float32)
 
+    def load_raw_pair(self, idx):
+        return self.cache[idx]
+
     def __getitem__(self, idx):
         ## load data
-        hr_raw, lr_raw, lr_id = self.cache[idx]
+        hr_raw, lr_raw, lr_id = self.load_raw_pair(idx)
         dgain = self.data_info[idx]["ratio"][lr_id]
 
         ## subtract dark shading

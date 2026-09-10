@@ -17,7 +17,7 @@ import os
 from pathlib import Path
 import random
 import time
-from typing import Dict, Iterable
+from typing import Dict
 
 import numpy as np
 import torch
@@ -32,6 +32,8 @@ from datasets.sid_synthetic_train import (
     build_sid_patch_manifest,
     build_sid_raw_manifest,
 )
+from datasets.sid_real_validation import SIDRealValidationDataset
+from utils.utils import ELDIlluminanceCorrect, PMN_metric, tensor_dim5to4
 from losses.mrlfn_loss import RawReconstructionChromaticLoss
 from models.ELD_models import UNetSeeInDark
 from models.mrlfn_arch import MRLFN
@@ -63,7 +65,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sid-long-dir", default="/home/shared_files/dataset/SID/Sony/long")
     parser.add_argument("--clean-source", choices=["raw", "packed"], default="raw")
     parser.add_argument("--manifest", default="infos/SID_train_clean_raw.json")
-    parser.add_argument("--val-manifest", default="infos/SID_validation_clean_raw.json")
+    parser.add_argument("--val-manifest", default=None, help="Legacy option; real validation uses val-pair-list")
+    parser.add_argument("--val-pair-list", default=None, help="Defaults to Sony_val_list.txt beside pair-list")
     parser.add_argument("--rebuild-manifest", action="store_true")
     parser.add_argument("--dark-root", default="biasframe_et_1_30")
     parser.add_argument("--pmn-resource-dir", default="resources/SonyA7S2")
@@ -125,8 +128,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--seed", type=int, default=1)
 
-    parser.add_argument("--validate-every", type=int, default=10, help="Epoch interval for synthetic sanity validation")
-    parser.add_argument("--validate-steps", type=int, default=4, help="0 disables synthetic sanity validation")
+    parser.add_argument("--validate-every", type=int, default=10, help="Epoch interval for real-pair validation")
+    parser.add_argument("--validate-steps", type=int, default=-1, help="Real validation pairs: -1 for all, 0 disables, positive limits pairs")
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--keep-checkpoints", type=int, default=3)
     parser.add_argument("--log-every", type=int, default=20)
@@ -255,33 +258,25 @@ def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, ob
     )
 
 
-@torch.no_grad()
-def synthetic_validate(
-    model: torch.nn.Module, loader: Iterable[Dict[str, object]], args: argparse.Namespace, device: torch.device
-) -> Dict[str, object]:
-    if args.validate_steps <= 0:
-        return {}
+@torch.inference_mode()
+def real_validate(model, loader, args, device):
     was_training = model.training
     inference_model, graph_state = prepare_model_for_inference(model)
-    l1_sum, mse_sum, image_count = 0.0, 0.0, 0
-    for step, batch in enumerate(loader):
-        if step >= args.validate_steps:
-            break
-        clean, dark, iso, ratio = to_device(batch, device)
-        noisy, target = synthesize_sid_noise(clean, dark, iso, ratio, k_scale=args.k_scale, mode=args.synthesis)
-        prediction = torch.clamp(inference_model(noisy), 0.0, 1.0)
-        l1_sum += float(F.l1_loss(prediction, target, reduction="mean"))
-        mse_sum += float(F.mse_loss(prediction, target, reduction="mean"))
-        image_count += 1
-    model.train(was_training)
-    if not image_count:
-        return {}
-    mse = mse_sum / image_count
-    return {
-        "synthetic_l1": l1_sum / image_count,
-        "synthetic_psnr": -10.0 * math.log10(max(mse, 1e-12)),
-        "validation_graph": graph_state,
-    }
+    scores, ssims = [], []
+    try:
+        for batch in loader:
+            target = tensor_dim5to4(batch["hr"]).to(device)
+            noisy = tensor_dim5to4(batch["lr"]).to(device)
+            prediction = ELDIlluminanceCorrect().correct(inference_model(noisy), target)
+            metric = PMN_metric(prediction.clamp(0, 1), target.clamp(0, 1))
+            scores.append(float(metric["psnr"]))
+            ssims.append(float(metric["ssim"]))
+            if len(scores) == 1 or len(scores) % 20 == 0:
+                print(f"Real validation: {len(scores)} pairs, mean PSNR={np.mean(scores):.4f}", flush=True)
+    finally:
+        model.train(was_training)
+    return {"real_psnr": float(np.mean(scores)), "real_ssim": float(np.mean(ssims)),
+            "validation_pairs": len(scores), "validation_graph": graph_state}
 
 
 def save_checkpoint(
@@ -293,11 +288,15 @@ def save_checkpoint(
     epoch: int,
     global_step: int,
     args: argparse.Namespace,
+    best_psnr: float = -math.inf,
+    best_epoch: int = 0,
 ) -> None:
     fused_state = deploy_state_dict(model)
     state = {
         "epoch": epoch,
         "global_step": global_step,
+        "best_psnr": best_psnr,
+        "best_epoch": best_epoch,
         "model": model.state_dict(),
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict(),
@@ -345,6 +344,8 @@ def main() -> None:
     args = parse_args()
     if args.epochs <= 0 or args.batch_size <= 0 or args.crops_per_image <= 0:
         raise ValueError("epochs, batch-size, and crops-per-image must be positive")
+    if args.validate_every <= 0 or args.save_every <= 0 or args.validate_steps < -1:
+        raise ValueError("validate-every/save-every must be positive; validate-steps must be >= -1")
     if args.max_steps is not None and args.max_steps <= 0:
         raise ValueError("max-steps must be positive")
     if args.device.startswith("cuda") and not torch.cuda.is_available():
@@ -373,16 +374,6 @@ def main() -> None:
             manifest = build_sid_patch_manifest(args.patch_dir, args.pair_list, manifest_path, args.sid_long_dir)
             print(f"Built packed training manifest with {manifest['summary']['records']} patches")
 
-    val_manifest_path = Path(args.val_manifest)
-    if args.clean_source == "raw" and (args.rebuild_manifest or not val_manifest_path.is_file()):
-        val_manifest = build_sid_raw_manifest(args.sid_long_dir, val_manifest_path, scene_prefixes=("2",))
-        print(f"Built held-out raw validation manifest with {val_manifest['summary']['records']} scenes")
-    elif args.clean_source == "packed" and not val_manifest_path.is_file():
-        # Packed mode is kept only for reproducing/diagnosing the old fixed
-        # patch run. It has no independent synthetic validation split.
-        val_manifest_path = manifest_path
-        print("Warning: packed clean source reuses its training manifest for synthetic validation")
-
     train_dataset = SIDSyntheticTrainDataset(
         manifest_path,
         args.dark_root,
@@ -397,22 +388,16 @@ def main() -> None:
         clean_source=args.clean_source,
         allowed_scene_prefixes=("0",),
     )
-    val_dataset = SIDSyntheticTrainDataset(
-        val_manifest_path,
-        args.dark_root,
-        args.pmn_resource_dir,
-        patch_size=args.patch_size,
-        crops_per_image=1,
-        ratios=tuple(args.ratios),
-        cache_size=2,
-        dark_cache_size=1,
-        augment=False,
-        seed=args.seed + 10000,
-        clean_source=args.clean_source,
-        allowed_scene_prefixes=("2",) if args.clean_source == "raw" else ("0",),
-    )
     train_loader = make_loader(train_dataset, args, shuffle=True, workers=args.num_workers)
-    val_loader = make_loader(val_dataset, args, shuffle=False, workers=0)
+    val_loader = None
+    if args.validate_steps:
+        val_dataset = SIDRealValidationDataset(
+            args.val_pair_list or Path(args.pair_list).with_name("Sony_val_list.txt"),
+            args.sid_long_dir, args.pmn_resource_dir, ratios=args.ratios,
+            max_items=args.validate_steps if args.validate_steps > 0 else None,
+        )
+        val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=0)
+        print(f"Real SID validation: {len(val_dataset)} full-resolution pairs")
     available_steps = len(train_loader)
     steps_per_epoch = args.steps_per_epoch or available_steps
     if steps_per_epoch > available_steps:
@@ -461,8 +446,13 @@ def main() -> None:
     )
     scaler = torch.cuda.amp.GradScaler(enabled=bool(args.amp))
     start_epoch, global_step = 1, 0
+    best_psnr, best_epoch = -math.inf, 0
     if args.resume:
         epoch, global_step = load_checkpoint(args.resume, model, optimizer, scheduler, scaler)
+        resume_state = torch.load(args.resume, map_location="cpu")
+        best_psnr = float(resume_state.get("best_psnr", -math.inf))
+        best_epoch = int(resume_state.get("best_epoch", 0))
+        del resume_state
         start_epoch = epoch + 1
         print(f"Resumed {args.resume} at epoch {start_epoch}, global step {global_step}")
     elif args.init_checkpoint:
@@ -543,15 +533,21 @@ def main() -> None:
             # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，
             # 此处不再重复写入每个 epoch 的 metrics，避免日志与 metrics.jsonl 冗余。
         }
-        if args.validate_steps and (epoch % args.validate_every == 0 or epoch == args.epochs):
-            metrics.update(synthetic_validate(model, val_loader, args, device))
+        if args.validate_steps and (epoch % args.validate_every == 0 or epoch == args.epochs or global_step >= total_steps):
+            metrics.update(real_validate(model, val_loader, args, device))
+            if metrics["real_psnr"] > best_psnr:
+                best_psnr, best_epoch = metrics["real_psnr"], epoch
+                save_checkpoint(checkpoint_dir / "best.pth", model, optimizer, scheduler, scaler,
+                                epoch, global_step, args, best_psnr, best_epoch)
+                print(f"Saved best.pth: PSNR={best_psnr:.4f}, epoch={best_epoch}")
+        metrics.update(best_psnr=best_psnr if best_epoch else None, best_epoch=best_epoch)
         with log_path.open("a", encoding="utf-8") as log_file:
             log_file.write(json.dumps(metrics, ensure_ascii=False) + "\n")
         print("epoch summary", json.dumps(metrics, ensure_ascii=False))
 
-        save_checkpoint(checkpoint_dir / "latest.pth", model, optimizer, scheduler, scaler, epoch, global_step, args)
+        save_checkpoint(checkpoint_dir / "latest.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch)
         if epoch % args.save_every == 0 or epoch == args.epochs:
-            save_checkpoint(checkpoint_dir / f"epoch_{epoch:04d}.pth", model, optimizer, scheduler, scaler, epoch, global_step, args)
+            save_checkpoint(checkpoint_dir / f"epoch_{epoch:04d}.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch)
             prune_checkpoints(checkpoint_dir, args.keep_checkpoints)
         if global_step >= total_steps:
             print(f"Reached total optimization-step budget: {total_steps}")

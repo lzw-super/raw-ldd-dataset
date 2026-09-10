@@ -7,7 +7,7 @@ pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
 sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
-val_manifest: infos/SID_validation_clean_raw.json
+val_pair_list: ../../Datasets/SID-sub/Sony_val_list.txt
 dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
 
@@ -32,7 +32,7 @@ output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32
 epochs: 1000
 # max_steps: 257600
 steps_per_epoch: null
-batch_size: 16
+batch_size: 32
 num_workers: 8
 patch_size: 256
 crops_per_image: 16
@@ -52,14 +52,14 @@ beta1: 0.9
 beta2: 0.999
 adam_epsilon: 0.0000001
 weight_decay: 0.0
-warmup_epochs: 5
+warmup_epochs: 10
 grad_clip: null
 amp: false
 device: cuda:0
 seed: 2026
 
 validate_every: 10
-validate_steps: 20
+validate_steps: -1  # All real validation pairs; 0 disables validation
 save_every: 10
 keep_checkpoints: 3
 log_every: 20
