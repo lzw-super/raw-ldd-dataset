@@ -1,6 +1,7 @@
 """Held-out SID real pairs, with the same preprocessing as SIDEvalDataset."""
 from pathlib import Path
 import pickle
+import random
 
 import numpy as np
 import rawpy
@@ -9,7 +10,7 @@ from datasets.real_dataset import SIDEvalDataset
 
 
 class SIDRealValidationDataset(SIDEvalDataset):
-    def __init__(self, pair_list, sid_long_dir, resource_dir, ratios=(100, 250, 300), max_items=None):
+    def __init__(self, pair_list, sid_long_dir, resource_dir, ratios=(100, 250, 300), max_items=None, seed=1):
         self.wl, self.bl = 16383, 512
         self.clip_low, self.clip_high = float('-inf'), 1
         resource_dir = Path(resource_dir)
@@ -43,7 +44,10 @@ class SIDRealValidationDataset(SIDEvalDataset):
                                        ratio=[ratio], ISO=int(iso[3:]),
                                        wb=np.ones(4), ccm=np.eye(3)))
         if max_items is not None:
-            self.data_info = self.data_info[:max_items]
+            # A local RNG keeps the subset reproducible without changing training randomness.
+            self.data_info = random.Random(seed).sample(
+                self.data_info, min(max_items, len(self.data_info))
+            )
         if not self.data_info:
             raise ValueError('No real SID validation pairs match the requested ratios')
 

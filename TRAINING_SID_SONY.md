@@ -75,12 +75,13 @@ SID metric rather than the small synthetic sanity metric logged during training.
 `test_denoise_sideld.py` 一样进行 `ELDIlluminanceCorrect`、截断到 `[0,1]`
 和 `PMN_metric`，最终对每对图像的 PSNR 做算术平均。
 
-`validate_steps: -1` 表示验证所有配对，`0` 禁用，正数表示使用列表中前 N 个匹配配对
-（计数单位是图像对，与训练 batch_size 无关）。`validate_every` 控制 epoch 间隔，
+`validate_steps: -1` 表示验证所有配对，`0` 禁用，正数表示从匹配配对中无放回随机抽取 N 对（不足 N 对时使用全部）
+使用配置中的 `seed` 固定抽样，各次验证及相同配置的续训使用同一子集。
+计数单位是图像对，与训练 batch_size 无关。`validate_every` 控制 epoch 间隔，
 最后一个 epoch 或达到 max_steps 时也会验证。全量整图验证比原合成 patch 验证耗时更长。
 
 每当 `real_psnr` 严格超过历史最佳值时，保存 `<output_dir>/checkpoints/best.pth`。
 它包含训练状态及可用的部署权重，不受 `keep_checkpoints` 清理影响；`latest.pth`
 和定期 epoch 权重仍保留。各权重记录 `best_psnr`、`best_epoch`，续训自动恢复；
 旧权重没有最佳分数时，从续训后的首次真实验证开始选优。
-指定的 k4/n4/d32 配置默认每 10 个 epoch 验证全部真实配对。
+指定的 k4/n4/d32 配置默认每 10 个 epoch 验证固定随机抽取的 40 对真实配对。

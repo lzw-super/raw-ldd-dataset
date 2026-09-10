@@ -7,12 +7,12 @@ pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
 sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
-val_manifest: infos/SID_validation_clean_raw.json
+val_pair_list: ../../Datasets/SID-sub/Sony_val_list.txt
 dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
 
 model: mrlfn
-feature_channels: 16       # paper Model A: d=32
+feature_channels: 32       # paper Model A: d=32
 num_blocks: 4              # paper Model A: N=4
 model_bias: true
 space_to_depth_factor: 4   # paper Model A: k=4
@@ -24,7 +24,7 @@ raw_loss_weight: 0.6
 chromatic_loss_weight: 0.4
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d16
+output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32_wavelet_ll_l3_haar_w010
 
 # The paper specifies batch 16 and 256x256 packed-RAW patches. It does not
 # disclose the epoch/iteration budget; max_steps retains the prior LED
@@ -59,7 +59,12 @@ device: cuda:0
 seed: 2026
 
 validate_every: 10
-validate_steps: 20
+validate_steps: -1  # All real validation pairs; 0 disables validation
 save_every: 10
 keep_checkpoints: 3
 log_every: 20
+
+# Auxiliary loss: mean L1 over LL_1, LL_2, LL_3, symmetric DWT.
+wavelet_loss_weight: 0.1
+wavelet_levels: 3
+wavelet_basis: haar

@@ -35,6 +35,7 @@ from datasets.sid_synthetic_train import (
 from datasets.sid_real_validation import SIDRealValidationDataset
 from utils.utils import ELDIlluminanceCorrect, PMN_metric, tensor_dim5to4
 from losses.mrlfn_loss import RawReconstructionChromaticLoss
+from losses.wavelet_ll_loss import WaveletLLLoss
 from models.ELD_models import UNetSeeInDark
 from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
@@ -87,6 +88,9 @@ def parse_args() -> argparse.Namespace:
         default=1,
         help="MRLFN mosaic-domain S2D/D2S factor; paper Model A/B use k=4",
     )
+    parser.add_argument("--wavelet-loss-weight", type=float, default=0.0, help="Auxiliary LL loss weight; zero disables it")
+    parser.add_argument("--wavelet-basis", choices=WaveletLLLoss.SUPPORTED, default="haar")
+    parser.add_argument("--wavelet-levels", type=int, default=3)
     parser.add_argument("--raw-loss-weight", type=float, default=0.6)
     parser.add_argument("--chromatic-loss-weight", type=float, default=0.4)
     parser.add_argument(
@@ -129,7 +133,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=1)
 
     parser.add_argument("--validate-every", type=int, default=10, help="Epoch interval for real-pair validation")
-    parser.add_argument("--validate-steps", type=int, default=-1, help="Real validation pairs: -1 for all, 0 disables, positive limits pairs")
+    parser.add_argument("--validate-steps", type=int, default=-1, help="Real validation pairs: -1 for all, 0 disables, positive randomly samples pairs using seed")
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--keep-checkpoints", type=int, default=3)
     parser.add_argument("--log-every", type=int, default=20)
@@ -361,7 +365,18 @@ def main() -> None:
             raise ValueError("Twice the packed patch size must be divisible by space-to-depth-factor")
     if args.model == "mrlfn" and list(args.chromatic_channel_order) != [0, 1, 3, 2]:
         print("Warning: current packed RAW order is [R,G1,G2,B]; the aligned semantic order is [0,1,3,2]")
+    if not math.isfinite(args.wavelet_loss_weight) or args.wavelet_loss_weight < 0:
+        raise ValueError("wavelet-loss-weight must be finite and non-negative")
+    if args.wavelet_levels < 1 or args.wavelet_basis not in WaveletLLLoss.SUPPORTED:
+        raise ValueError("Invalid wavelet-levels or wavelet-basis")
     device = torch.device(args.device)
+    wavelet_criterion = (WaveletLLLoss(args.wavelet_basis, args.wavelet_levels).to(device)
+                         if args.wavelet_loss_weight > 0 else None)
+    if wavelet_criterion is not None:
+        with torch.no_grad():
+            probe = torch.zeros(1, 1, args.patch_size, args.patch_size, device=device)
+            wavelet_criterion(probe, probe)
+        del probe
     seed_everything(args.seed)
     torch.backends.cudnn.benchmark = True
 
@@ -395,6 +410,7 @@ def main() -> None:
             args.val_pair_list or Path(args.pair_list).with_name("Sony_val_list.txt"),
             args.sid_long_dir, args.pmn_resource_dir, ratios=args.ratios,
             max_items=args.validate_steps if args.validate_steps > 0 else None,
+            seed=args.seed,
         )
         val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=0)
         print(f"Real SID validation: {len(val_dataset)} full-resolution pairs")
@@ -424,6 +440,11 @@ def main() -> None:
         if args.model == "mrlfn"
         else {"name": "L1Loss"}
     )
+    model_info["loss_config"]["wavelet_auxiliary"] = {
+        "weight": args.wavelet_loss_weight, "basis": args.wavelet_basis,
+        "levels": args.wavelet_levels, "aggregation": "mean_of_all_levels",
+        "boundary": "symmetric", "coefficient_normalization": "none",
+    }
     (output_dir / "model_info.json").write_text(
         json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -479,6 +500,7 @@ def main() -> None:
     for epoch in range(start_epoch, args.epochs + 1):
         model.train()
         epoch_loss, epoch_raw_l1, epoch_chromatic_l1, epoch_samples = 0.0, 0.0, 0.0, 0
+        epoch_wavelet_l1 = 0.0
         epoch_start = time.perf_counter()
         for step, batch in enumerate(train_loader, start=1):
             if step > steps_per_epoch:
@@ -501,6 +523,10 @@ def main() -> None:
                     loss = F.l1_loss(torch.clamp(prediction, 0.0, 1.0), target)
                     raw_l1 = loss
                     chromatic_l1 = loss.new_zeros(())
+                wavelet_l1 = (wavelet_criterion(prediction, target)
+                              if wavelet_criterion is not None else loss.new_zeros(()))
+                if wavelet_criterion is not None:
+                    loss = loss + args.wavelet_loss_weight * wavelet_l1
             scaler.scale(loss).backward()
             if args.grad_clip is not None:
                 scaler.unscale_(optimizer)
@@ -509,6 +535,7 @@ def main() -> None:
             scaler.update()
             scheduler.step()
             global_step += 1
+            epoch_wavelet_l1 += float(wavelet_l1.detach()) * clean.shape[0]
             epoch_loss += float(loss.detach()) * clean.shape[0]
             epoch_raw_l1 += float(raw_l1.detach()) * clean.shape[0]
             epoch_chromatic_l1 += float(chromatic_l1.detach()) * clean.shape[0]
@@ -517,6 +544,7 @@ def main() -> None:
                 print(
                     f"epoch {epoch:04d} step {step:04d}/{steps_per_epoch} "
                     f"loss={float(loss.detach()):.6f} raw_l1={float(raw_l1.detach()):.6f} "
+                    f"wavelet_ll_l1={float(wavelet_l1.detach()):.6f} "
                     f"chromatic_l1={float(chromatic_l1.detach()):.6f} lr={scheduler.get_last_lr()[0]:.3e} "
                     f"iso={int(iso[0])} ratio={int(ratio[0])}"
                 )
@@ -524,10 +552,13 @@ def main() -> None:
         metrics: Dict[str, object] = {
             "epoch": epoch,
             "global_step": global_step,
+            "train_wavelet_ll_l1": epoch_wavelet_l1 / max(1, epoch_samples),
+            "train_wavelet_weighted": args.wavelet_loss_weight * epoch_wavelet_l1 / max(1, epoch_samples),
             "train_loss": epoch_loss / max(1, epoch_samples),
             "train_l1": epoch_raw_l1 / max(1, epoch_samples),
             "train_chromatic_l1": epoch_chromatic_l1 / max(1, epoch_samples),
-            "loss_name": "raw_reconstruction_chromatic" if criterion is not None else "l1",
+            "loss_name": ("raw_reconstruction_chromatic" if criterion is not None else "l1")
+                         + ("+wavelet_ll" if wavelet_criterion is not None else ""),
             "learning_rate": scheduler.get_last_lr()[0],
             "seconds": time.perf_counter() - epoch_start,
             # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，

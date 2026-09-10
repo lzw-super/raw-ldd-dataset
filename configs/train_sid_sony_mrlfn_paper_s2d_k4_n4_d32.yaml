@@ -59,7 +59,8 @@ device: cuda:0
 seed: 2026
 
 validate_every: 10
-validate_steps: -1  # All real validation pairs; 0 disables validation
+# 验证配对数：随机抽取并固定子集；可改为任意正整数，-1 全量，0 禁用。
+validate_steps: 40  # 使用上面的 seed 保证各轮验证配对一致
 save_every: 10
 keep_checkpoints: 3
 log_every: 20
