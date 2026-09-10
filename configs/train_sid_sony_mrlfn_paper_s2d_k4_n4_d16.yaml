@@ -58,8 +58,8 @@ amp: false
 device: cuda:0
 seed: 2026
 
-validate_every: 10
-validate_steps: 20
+validate_every: 50
+validate_steps: 40
 save_every: 10
 keep_checkpoints: 3
 log_every: 20
