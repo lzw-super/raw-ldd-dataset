@@ -78,7 +78,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
 # ---- 运行环境：复用已装齐依赖的 LED-ICCV23 conda 环境 ----
-PY=/home/zhengwu/anaconda3/envs/LED-ICCV23/bin/python
+PY=/opt/conda/envs/LED-ICCV23/bin/python
 
 # 计算实际生效的输出路径：OUT_PATH 非空就用它，否则按 OUT_DIR + 前缀 + ratio 自动命名
 if [ -n "$OUT_PATH" ]; then

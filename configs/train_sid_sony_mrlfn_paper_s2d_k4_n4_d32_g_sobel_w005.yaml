@@ -1,0 +1,69 @@
+# Paper-aligned single-frame Model A for a controlled comparison with the
+# existing no-S2D MRLFN configs. The repository still exposes/returns
+# [R,G1,G2,B] packed RAW, while the model reconstructs a one-plane Bayer
+# mosaic internally and applies the paper's k=4 S2D (16 channels) and D2S.
+patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
+pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
+sid_long_dir: ../../Datasets/SID-sub/Sony/long
+clean_source: raw
+manifest: infos/SID_train_clean_raw.json
+val_pair_list: ../../Datasets/SID-sub/Sony_val_list.txt
+dark_root: biasframe_et_1_30
+pmn_resource_dir: resources/SonyA7S2
+
+model: mrlfn
+feature_channels: 32       # paper Model A: d=32
+num_blocks: 4              # paper Model A: N=4
+model_bias: true
+space_to_depth_factor: 4   # paper Model A: k=4
+
+# Equation (5): L = 0.6 L_raw + 0.4 L_chromatic.
+# Repository tensors are [R,G1,G2,B]; the loss argument is semantic
+# [R,G1,B,G2], hence the index mapping below.
+raw_loss_weight: 0.6
+chromatic_loss_weight: 0.4
+chromatic_channel_order: [0, 1, 3, 2]
+
+output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32_g_sobel_w005
+
+# The paper specifies batch 16 and 256x256 packed-RAW patches. It does not
+# disclose the epoch/iteration budget; max_steps retains the prior LED
+# reproduction budget so this run is finite and directly repeatable.
+epochs: 1000
+# max_steps: 257600
+steps_per_epoch: null
+batch_size: 32
+num_workers: 8
+patch_size: 256
+crops_per_image: 16
+ratios: [100, 250, 300]
+clean_cache_size: 16
+dark_cache_size: 2
+
+synthesis: ratio_aware
+k_scale: 0.1
+
+# Paper: Adam, initial LR 1e-4, cosine annealing. No warmup or nonzero
+# terminal LR is reported, so the literal TensorFlow-style cosine is used.
+# Adam epsilon 1e-7 is TensorFlow/Keras's default (not explicitly reported).
+learning_rate: 0.0002
+min_learning_rate: 0.0
+beta1: 0.9
+beta2: 0.999
+adam_epsilon: 0.0000001
+weight_decay: 0.0
+warmup_epochs: 10
+grad_clip: null
+amp: false
+device: cuda:0
+seed: 2026
+
+validate_every: 50
+# 验证配对数：随机抽取并固定子集；可改为任意正整数，-1 全量，0 禁用。
+validate_steps: 40  # 使用上面的 seed 保证各轮验证配对一致
+save_every: 10
+keep_checkpoints: 3
+log_every: 20
+
+# Independent detail-loss ablation; weights are initial experimental settings.
+gradient_loss_weight: 0.05

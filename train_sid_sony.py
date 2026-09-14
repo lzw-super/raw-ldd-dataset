@@ -36,6 +36,7 @@ from datasets.sid_real_validation import SIDRealValidationDataset
 from utils.utils import ELDIlluminanceCorrect, PMN_metric, tensor_dim5to4
 from losses.mrlfn_loss import RawReconstructionChromaticLoss
 from losses.wavelet_ll_loss import WaveletLLLoss
+from losses.detail_loss import GradientLoss, WaveletHFLoss
 from models.ELD_models import UNetSeeInDark
 from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
@@ -88,6 +89,10 @@ def parse_args() -> argparse.Namespace:
         default=1,
         help="MRLFN mosaic-domain S2D/D2S factor; paper Model A/B use k=4",
     )
+    parser.add_argument("--gradient-loss-weight", type=float, default=0.0)
+    parser.add_argument("--wavelet-hf-loss-weight", type=float, default=0.0)
+    parser.add_argument("--wavelet-hf-basis", choices=WaveletLLLoss.SUPPORTED, default="haar")
+    parser.add_argument("--wavelet-hf-levels", type=int, default=2)
     parser.add_argument("--wavelet-loss-weight", type=float, default=0.0, help="Auxiliary LL loss weight; zero disables it")
     parser.add_argument("--wavelet-basis", choices=WaveletLLLoss.SUPPORTED, default="haar")
     parser.add_argument("--wavelet-levels", type=int, default=3)
@@ -377,6 +382,19 @@ def main() -> None:
             probe = torch.zeros(1, 1, args.patch_size, args.patch_size, device=device)
             wavelet_criterion(probe, probe)
         del probe
+    for weight in (args.gradient_loss_weight, args.wavelet_hf_loss_weight):
+        if not math.isfinite(weight) or weight < 0:
+            raise ValueError("Detail loss weights must be finite and non-negative")
+    if args.wavelet_hf_basis not in WaveletLLLoss.SUPPORTED or args.wavelet_hf_levels < 1:
+        raise ValueError("Invalid wavelet-hf-basis or wavelet-hf-levels")
+    gradient_criterion = GradientLoss().to(device) if args.gradient_loss_weight > 0 else None
+    hf_criterion = (WaveletHFLoss(args.wavelet_hf_basis, args.wavelet_hf_levels).to(device)
+                    if args.wavelet_hf_loss_weight > 0 else None)
+    if hf_criterion is not None:
+        with torch.no_grad():
+            probe = torch.zeros(1, 1, args.patch_size, args.patch_size, device=device)
+            hf_criterion(probe, probe)
+        del probe
     seed_everything(args.seed)
     torch.backends.cudnn.benchmark = True
 
@@ -445,6 +463,15 @@ def main() -> None:
         "levels": args.wavelet_levels, "aggregation": "mean_of_all_levels",
         "boundary": "symmetric", "coefficient_normalization": "none",
     }
+    model_info["loss_config"]["gradient_auxiliary"] = {
+        "weight": args.gradient_loss_weight, "operator": "sobel/8",
+        "padding": "replicate", "aggregation": "mean_xy_channels_pixels",
+    }
+    model_info["loss_config"]["wavelet_hf_auxiliary"] = {
+        "weight": args.wavelet_hf_loss_weight, "basis": args.wavelet_hf_basis,
+        "levels": args.wavelet_hf_levels, "boundary": "symmetric",
+        "aggregation": "equal_mean_levels_and_three_bands", "coefficient_normalization": "none",
+    }
     (output_dir / "model_info.json").write_text(
         json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -501,6 +528,7 @@ def main() -> None:
         model.train()
         epoch_loss, epoch_raw_l1, epoch_chromatic_l1, epoch_samples = 0.0, 0.0, 0.0, 0
         epoch_wavelet_l1 = 0.0
+        epoch_gradient_l1, epoch_hf_l1 = 0.0, 0.0
         epoch_start = time.perf_counter()
         for step, batch in enumerate(train_loader, start=1):
             if step > steps_per_epoch:
@@ -527,6 +555,14 @@ def main() -> None:
                               if wavelet_criterion is not None else loss.new_zeros(()))
                 if wavelet_criterion is not None:
                     loss = loss + args.wavelet_loss_weight * wavelet_l1
+                gradient_l1 = (gradient_criterion(prediction, target)
+                               if gradient_criterion is not None else loss.new_zeros(()))
+                hf_l1 = (hf_criterion(prediction, target)
+                         if hf_criterion is not None else loss.new_zeros(()))
+                if gradient_criterion is not None:
+                    loss = loss + args.gradient_loss_weight * gradient_l1
+                if hf_criterion is not None:
+                    loss = loss + args.wavelet_hf_loss_weight * hf_l1
             scaler.scale(loss).backward()
             if args.grad_clip is not None:
                 scaler.unscale_(optimizer)
@@ -535,6 +571,8 @@ def main() -> None:
             scaler.update()
             scheduler.step()
             global_step += 1
+            epoch_gradient_l1 += float(gradient_l1.detach()) * clean.shape[0]
+            epoch_hf_l1 += float(hf_l1.detach()) * clean.shape[0]
             epoch_wavelet_l1 += float(wavelet_l1.detach()) * clean.shape[0]
             epoch_loss += float(loss.detach()) * clean.shape[0]
             epoch_raw_l1 += float(raw_l1.detach()) * clean.shape[0]
@@ -544,6 +582,7 @@ def main() -> None:
                 print(
                     f"epoch {epoch:04d} step {step:04d}/{steps_per_epoch} "
                     f"loss={float(loss.detach()):.6f} raw_l1={float(raw_l1.detach()):.6f} "
+                    f"gradient_l1={float(gradient_l1.detach()):.6f} wavelet_hf_l1={float(hf_l1.detach()):.6f} "
                     f"wavelet_ll_l1={float(wavelet_l1.detach()):.6f} "
                     f"chromatic_l1={float(chromatic_l1.detach()):.6f} lr={scheduler.get_last_lr()[0]:.3e} "
                     f"iso={int(iso[0])} ratio={int(ratio[0])}"
@@ -552,13 +591,19 @@ def main() -> None:
         metrics: Dict[str, object] = {
             "epoch": epoch,
             "global_step": global_step,
+            "train_gradient_l1": epoch_gradient_l1 / max(1, epoch_samples),
+            "train_gradient_weighted": args.gradient_loss_weight * epoch_gradient_l1 / max(1, epoch_samples),
+            "train_wavelet_hf_l1": epoch_hf_l1 / max(1, epoch_samples),
+            "train_wavelet_hf_weighted": args.wavelet_hf_loss_weight * epoch_hf_l1 / max(1, epoch_samples),
             "train_wavelet_ll_l1": epoch_wavelet_l1 / max(1, epoch_samples),
             "train_wavelet_weighted": args.wavelet_loss_weight * epoch_wavelet_l1 / max(1, epoch_samples),
             "train_loss": epoch_loss / max(1, epoch_samples),
             "train_l1": epoch_raw_l1 / max(1, epoch_samples),
             "train_chromatic_l1": epoch_chromatic_l1 / max(1, epoch_samples),
             "loss_name": ("raw_reconstruction_chromatic" if criterion is not None else "l1")
-                         + ("+wavelet_ll" if wavelet_criterion is not None else ""),
+                         + ("+wavelet_ll" if wavelet_criterion is not None else "")
+                         + ("+gradient" if gradient_criterion is not None else "")
+                         + ("+wavelet_hf" if hf_criterion is not None else ""),
             "learning_rate": scheduler.get_last_lr()[0],
             "seconds": time.perf_counter() - epoch_start,
             # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，

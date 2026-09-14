@@ -2,7 +2,7 @@
 
 调研日期：2026-09-10。场景：SID Sony、4 通道 packed RAW、MRLFN 去噪，希望保留物体轮廓与细纹理，允许适量残留噪声。
 
-本文基于原始论文、作者代码与官方文档，并核对当前仓库实现。论文结论与针对本项目的实验建议分别标注；建议权重尚未经过本项目验证。本次交付为调研文档，文中候选 loss 和模型选择方案不代表已经接入训练代码。
+本文基于原始论文、作者代码与官方文档，并核对当前仓库实现。论文结论与针对本项目的实验建议分别标注；建议权重尚未经过本项目验证。初版为调研文档；G/W 已于 2026-09-11 实现，入口见 5.1.1，其余候选 loss 和模型选择方案仍为建议。
 
 ## 1. 针对当前需求的选择
 
@@ -194,6 +194,27 @@ r = λ_aux × ||∂L_aux/∂P||₂ / (||∂L_base/∂P||₂ + ε)
 ```
 
 初始可让 r 大致落在 5%–20% 作为保守搜索起点，再用验证结果决定是否增加。这是工程启发式，不是质量保证；参数梯度还受模型 Jacobian 影响。记录 loss 原值、加权值和梯度范数，避免只看数值大小猜测影响。
+
+### 5.1.1 G / W 已实现的训练入口（2026-09-11）
+
+G、W 已接入 `train_sid_sony.py`，实现位于 [detail_loss.py](../losses/detail_loss.py)。其他候选仍为调研建议。
+两份配置以当前 B1 配置为基准，保留 `0.6 RAW + 0.4 chromatic`、训练参数和验证设置，分别使用独立输出目录。B0、LL 配置不变。
+
+```bash
+# G：B1 + 0.05 × Sobel 梯度 L1
+python train_sid_sony.py --config configs/train_sid_sony_mrlfn_paper_s2d_k4_n4_d32_g_sobel_w005.yaml
+
+# W：B1 + 0.1 × 两层 Haar 高频 L1
+python train_sid_sony.py --config configs/train_sid_sony_mrlfn_paper_s2d_k4_n4_d32_w_hf_haar_l2_w010.yaml
+```
+
+G 对四通道分别计算有符号 x/y Sobel，核除以 8、replicate 边界，两方向与所有通道/像素等权平均。参数为 `gradient_loss_weight` / `--gradient-loss-weight`，默认 0 关闭。
+
+W 递归分解 LL，每层只监督三个高频子带，先对子带/通道/像素平均，再对层平均；使用 symmetric 边界、标准 DWT 系数，无阈值或额外归一化。参数为 `wavelet_hf_loss_weight`、`wavelet_hf_basis`、`wavelet_hf_levels`，CLI 对应 `--wavelet-hf-loss-weight`、`--wavelet-hf-basis`、`--wavelet-hf-levels`。基函数支持 haar、db2、sym4、coif1、bior2.2。HF 权重默认 0，层数默认 2。
+
+0.05 和 0.1 是本轮起始设置，不代表已验证最优。LL 原有 `wavelet_loss_weight`、`wavelet_basis`、`wavelet_levels` 保持独立，G/W 默认不启用 LL，也不互相叠加。改变权重继续做实验时请另设 `--output-dir`。
+
+日志新增 `train_gradient_l1`、`train_gradient_weighted`、`train_wavelet_hf_l1`、`train_wavelet_hf_weighted`，同时记录总损失；`model_info.json` 记录算子与聚合方式，checkpoint args 保存参数。最佳权重仍按原真实配对 PSNR 选择。
 
 ### 5.2 第二轮：必要时补充结构或感知目标
 
