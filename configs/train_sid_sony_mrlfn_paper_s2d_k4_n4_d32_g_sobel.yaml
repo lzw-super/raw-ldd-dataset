@@ -21,10 +21,10 @@ space_to_depth_factor: 4   # paper Model A: k=4
 # Repository tensors are [R,G1,G2,B]; the loss argument is semantic
 # [R,G1,B,G2], hence the index mapping below.
 raw_loss_weight: 0.6
-chromatic_loss_weight: 0.4
+chromatic_loss_weight: 0.0
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32_g_sobel_w005
+output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32_g_sobel_w04
 
 # The paper specifies batch 16 and 256x256 packed-RAW patches. It does not
 # disclose the epoch/iteration budget; max_steps retains the prior LED
@@ -66,4 +66,4 @@ keep_checkpoints: 3
 log_every: 20
 
 # Independent detail-loss ablation; weights are initial experimental settings.
-gradient_loss_weight: 0.05
+gradient_loss_weight: 0.4
