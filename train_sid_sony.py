@@ -40,6 +40,7 @@ from losses.detail_loss import GradientLoss, WaveletHFLoss
 from models.ELD_models import UNetSeeInDark
 from models.mrlfn_arch import MRLFN
 from models.natnet_arch import NAFNet
+from learning_wt.learning_dwt import LearningDWT, DWT_DEFAULTS, learning_dwt_kwargs
 from noise.sid_noise_synthesis import synthesize_sid_noise
 from tools.calculate_model_info import calculate_model_info, format_model_info
 from utils.argparse_compat import add_boolean_optional_argument
@@ -75,7 +76,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="experiments/sid_sony_paper_fair")
     parser.add_argument("--resume", default=None, help="Checkpoint produced by this script")
     parser.add_argument("--init-checkpoint", default=None, help="Model-only checkpoint; do not use the official test checkpoint")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn"], default="unet")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt"], default="unet")
+    for key, default in DWT_DEFAULTS.items():
+        flag = "--" + key.replace("_", "-")
+        if isinstance(default, bool):
+            add_boolean_optional_argument(parser, flag, default=default)
+        else:
+            parser.add_argument(flag, type=type(default), default=default)
     parser.add_argument("--model-width", type=int, default=32)
     parser.add_argument("--encoder-blocks", type=int, nargs="+", default=[2, 2, 2, 2])
     parser.add_argument("--middle-blocks", type=int, default=2)
@@ -214,6 +221,9 @@ def to_device(batch: Dict[str, object], device: torch.device) -> tuple[torch.Ten
 
 def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, object]]:
     """Construct the selected 4-channel packed-RAW denoiser."""
+    if args.model == "learning_dwt":
+        config = learning_dwt_kwargs(args)
+        return LearningDWT(**config), {"model": "learning_dwt", **config}
     if args.model == "unet":
         config: Dict[str, object] = {
             "model": "unet",
@@ -448,6 +458,8 @@ def main() -> None:
     model_info = calculate_model_info(profile_model, (1, 4, args.patch_size, args.patch_size), device)
     model_info["architecture_config"] = {**architecture_config, "deploy": profile_graph == "deploy"}
     model_info["graph_state"] = profile_graph
+    if args.model == "learning_dwt":
+        model_info["profiling_note"] = "CNN MACs only; functional DWT/IWT convolutions and atlas/shrink operations excluded"
     model_info["loss_config"] = (
         {
             "name": "RawReconstructionChromaticLoss",
@@ -455,7 +467,7 @@ def main() -> None:
             "chromatic_weight": args.chromatic_loss_weight,
             "channel_order_for_R_G1_B_G2": list(args.chromatic_channel_order),
         }
-        if args.model == "mrlfn"
+        if args.model in ("mrlfn", "learning_dwt")
         else {"name": "L1Loss"}
     )
     model_info["loss_config"]["wavelet_auxiliary"] = {
@@ -513,7 +525,7 @@ def main() -> None:
             chromatic_weight=args.chromatic_loss_weight,
             channel_order=tuple(args.chromatic_channel_order),
         )
-        if args.model == "mrlfn"
+        if args.model in ("mrlfn", "learning_dwt")
         else None
     )
 

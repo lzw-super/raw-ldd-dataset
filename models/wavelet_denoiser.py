@@ -4,7 +4,10 @@ import pywt
 
 
 class WaveletDenoiser:
-    def __init__(self, levels=3, wavelet='sym4'):
+    def __init__(self, levels=3, wavelet='sym4', boundary='symmetric'):
+        if boundary not in ('symmetric', 'periodization'):
+            raise ValueError('boundary must be symmetric or periodization')
+        self.boundary = boundary
         self.wavelet = pywt.Wavelet(wavelet)
         if not self.wavelet.orthogonal:
             raise ValueError('BayesShrink requires an orthogonal wavelet (e.g. haar/db2/sym4/coif1)')
@@ -22,7 +25,7 @@ class WaveletDenoiser:
         output = np.empty(image.shape, dtype=np.float32)
         for c, channel in enumerate(image):
             coeffs = pywt.wavedec2(channel.astype(np.float32), self.wavelet,
-                                   mode='symmetric', level=self.levels)
+                                   mode=self.boundary, level=self.levels)
             # Robust Gaussian noise estimate from finest diagonal detail.
             hh = coeffs[-1][2]
             nonzero = hh[hh != 0]  # Ignore exact zeros introduced by symmetric padding.
@@ -42,6 +45,6 @@ class WaveletDenoiser:
                         result = np.sign(detail) * np.maximum(np.abs(detail) - threshold, 0)
                     subbands.append(result)
                 filtered.append(tuple(subbands))
-            restored = pywt.waverec2(filtered, self.wavelet, mode='symmetric')
+            restored = pywt.waverec2(filtered, self.wavelet, mode=self.boundary)
             output[c] = restored[:image.shape[1], :image.shape[2]]
         return output

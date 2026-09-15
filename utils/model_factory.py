@@ -54,7 +54,7 @@ def build_denoiser_from_checkpoint(
 
     参数优先级：显式参数 > ``checkpoint["args"]`` > 默认值。
 
-    - ``model``：``unet`` / ``nafnet`` / ``natnet`` / ``mrlfn``。
+    - ``model``：``unet`` / ``nafnet`` / ``natnet`` / ``mrlfn`` / ``learning_dwt``。
       为 None 时按 ``checkpoint["args"]["model"]`` 推断，再回退到 ``unet``。
     - 兼容两种 checkpoint：可恢复字典（权重在 ``"model"`` 键下）与官方纯 state_dict。
 
@@ -152,8 +152,11 @@ def build_denoiser_from_checkpoint(
             deploy=build_deploy,
             space_to_depth_factor=mrlfn_s2d_factor,
         )
+    elif model_name == "learning_dwt":
+        from learning_wt.learning_dwt import LearningDWT, learning_dwt_kwargs
+        net = LearningDWT(**learning_dwt_kwargs(checkpoint_args))
     else:
-        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn)")
+        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn / learning_dwt)")
 
     # 4) 载入权重：可恢复字典取 "model" 键，否则视为纯 state_dict
     net.load_state_dict(state_dict, strict=True)
@@ -178,4 +181,6 @@ def build_denoiser_from_checkpoint(
         "graph_state": "deploy" if model_name == "mrlfn" else "native",
         "weight_source": weight_source,
     }
+    if model_name == "learning_dwt":
+        meta["learning_dwt"] = learning_dwt_kwargs(checkpoint_args)
     return net, meta

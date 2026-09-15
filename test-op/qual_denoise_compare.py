@@ -71,7 +71,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from utils.utils import rggb_to_srgb, ELDIlluminanceCorrect, PMN_metric  # noqa: E402
 from utils.model_factory import build_denoiser_from_checkpoint  # noqa: E402
-from datasets.real_dataset import SIDEvalDataset  # noqa: E402
+from datasets.real_dataset import SIDEvalDataset
+from models.wavelet_denoiser import WaveletDenoiser  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -120,7 +121,7 @@ def raw_to_srgb_uint8(img_tensor: torch.Tensor, wb: np.ndarray, ccm: np.ndarray,
 # 单张图去噪并取出（含噪 / 去噪 / GT）显示画面
 # ---------------------------------------------------------------------------
 @torch.inference_mode()
-def denoise_one(model, dataset, idx, device, crop_size, full, crop_dy, crop_dx, gamma):
+def denoise_one(model, dataset, idx, device, crop_size, full, crop_dy, crop_dx, gamma, with_wavelet_baseline=False):
     """对数据集中第 idx 张图做去噪，返回单行对比所需的三个 sRGB 画面。
 
     返回 dict: {noisy, dn, gt, psnr, name, iso}
@@ -150,7 +151,7 @@ def denoise_one(model, dataset, idx, device, crop_size, full, crop_dy, crop_dx, 
 
     # 三者尺寸一致，用同一裁剪参数保证区域严格对齐
     crop_args = (crop_size, full, crop_dy, crop_dx)
-    return {
+    row = {
         "noisy": _crop_or_full(noisy_full, *crop_args),
         "dn": _crop_or_full(dn_full, *crop_args),
         "gt": _crop_or_full(gt_full, *crop_args),
@@ -158,6 +159,15 @@ def denoise_one(model, dataset, idx, device, crop_size, full, crop_dy, crop_dx, 
         "name": str(data["name"]),
         "iso": int(data["iso"]),
     }
+
+    if with_wavelet_baseline:
+        baseline = torch.from_numpy(WaveletDenoiser(levels=3, wavelet="sym4")(
+            data["lr"][0].numpy())).unsqueeze(0).to(device)
+        baseline = ELDIlluminanceCorrect()(baseline, imgs_hr).clamp(0, 1)
+        row["baseline_psnr"] = float(PMN_metric(baseline.cpu(), imgs_hr.cpu())["psnr"])
+        baseline_rgb = raw_to_srgb_uint8(baseline, wb, ccm, gamma=gamma)
+        row["baseline"] = _crop_or_full(baseline_rgb, *crop_args)
+    return row
 
 
 def _crop_or_full(rgb: np.ndarray, crop_size: int, full: bool, dy: int, dx: int):
@@ -183,23 +193,30 @@ def make_comparison_figure(rows, ratio, out_path, dpi, full, model_label=""):
     rows: list of dict {noisy, dn, gt, psnr, name, iso}
     """
     n = len(rows)
+    with_baseline = "baseline" in rows[0]
+    columns = 4 if with_baseline else 3
     panel_h, panel_w = rows[0]["noisy"].shape[:2]
 
     # 让每个面板在最终图里尽量接近 1:1 像素显示，保证裁剪细节清晰
     panel_in_w = panel_w / dpi
     panel_in_h = panel_h / dpi
-    fig_w = 3 * panel_in_w + 0.7   # 三列 + 左侧行标签留白
+    fig_w = columns * panel_in_w + 0.7   # 三列 + 左侧行标签留白
     fig_h = n * panel_in_h + 0.5   # n 行 + 顶部列标题留白
-    fig, axes = plt.subplots(n, 3, figsize=(fig_w, fig_h), dpi=dpi)
+    fig, axes = plt.subplots(n, columns, figsize=(fig_w, fig_h), dpi=dpi)
     if n == 1:
         axes = axes[np.newaxis, :]
 
     for r, row in enumerate(rows):
-        ax_l, ax_m, ax_r = axes[r, 0], axes[r, 1], axes[r, 2]
+        ax_l, ax_m, ax_r = axes[r, 0], axes[r, -2], axes[r, -1]
+        if with_baseline:
+            axes[r, 1].imshow(row["baseline"], interpolation="nearest")
+            axes[r, 1].text(0.015, 0.02, f"PSNR {row['baseline_psnr']:.2f} dB",
+                            transform=axes[r, 1].transAxes, color="yellow", fontsize=11,
+                            bbox=dict(fc="black", alpha=0.55, ec="none"))
         ax_l.imshow(row["noisy"], interpolation="nearest")
         ax_m.imshow(row["dn"], interpolation="nearest")
         ax_r.imshow(row["gt"], interpolation="nearest")
-        for ax in (ax_l, ax_m, ax_r):
+        for ax in axes[r]:
             ax.set_axis_off()
         # 去噪面板左下角标注 PSNR（去噪 vs GT），便于参考
         ax_m.text(
@@ -219,9 +236,11 @@ def make_comparison_figure(rows, ratio, out_path, dpi, full, model_label=""):
         )
 
     # 顶部列标题
-    axes[0, 0].set_title("含噪输入  Noisy input", fontsize=13, pad=8)
-    axes[0, 1].set_title("去噪结果  Denoised", fontsize=13, pad=8)
-    axes[0, 2].set_title("干净参考  GT", fontsize=13, pad=8)
+    axes[0, 0].set_title("Noisy input", fontsize=13, pad=8)
+    if with_baseline:
+        axes[0, 1].set_title("BayesShrink sym4 L3", fontsize=13, pad=8)
+    axes[0, -2].set_title("Denoised", fontsize=13, pad=8)
+    axes[0, -1].set_title("GT", fontsize=13, pad=8)
 
     fig.subplots_adjust(left=0.07, right=0.99, top=0.97, bottom=0.01,
                         wspace=0.03, hspace=0.05)
@@ -238,7 +257,7 @@ def main():
     parser = argparse.ArgumentParser(description="SID Sony 去噪定性可视化（单张左右对比图）")
     parser.add_argument("--cp-dir", default="experiments/sid_sony_paper_fair/checkpoints/latest.pth",
                         help="checkpoint 路径")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn"], default=None,
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt"], default=None,
                         help="强制模型类型；留空则按 checkpoint 的 args 自动推断（推荐）")
     parser.add_argument("--model-width", type=int, default=None,
                         help="特征通道数；留空则用 checkpoint 记录值，再回退到 32")
@@ -255,6 +274,8 @@ def main():
     parser.add_argument("--device", default="cuda:0", help="推理设备，如 cuda:0 / cpu")
     parser.add_argument("--ratio", type=int, default=100, choices=[100, 250, 300],
                         help="SID 评估放大倍率（越大噪声越强、去噪难度越高）")
+    parser.add_argument("--with-wavelet-baseline", action="store_true",
+                        help="Add sym4 L3 symmetric BayesShrink, with the same GT illuminance correction")
     parser.add_argument("--num", type=int, default=4, help="抽样展示的图片数量")
     parser.add_argument("--indices", type=int, nargs="*", default=None,
                         help="直接指定测试集下标（优先于 --num 的均匀抽样）")
@@ -272,6 +293,7 @@ def main():
     parser.add_argument("--out-path", default="",
                         help="对比图完整保存路径（含文件名）。留空则用 --out-dir/<prefix>denoise_comparison_ratio{R}.png")
     args = parser.parse_args()
+    torch.set_num_threads(4)
 
     # 注册中文字体，确保图中的中文标题/标签正常显示
     _setup_cjk_font()
@@ -294,6 +316,10 @@ def main():
             f"[info] resolved model = mrlfn N={meta['num_blocks']} d={meta['feature_channels']} "
             f"graph={meta['graph_state']} weights={meta['weight_source']}"
         )
+    elif meta["model"] == "learning_dwt":
+        cfg = meta["learning_dwt"]
+        print(f"[info] learning_dwt width={cfg['width']} depth={cfg['depth']} "
+              f"{cfg['wavelet']} L{cfg['levels']} {cfg['context']} {cfg['shrink_mode']}")
     else:
         print(
             f"[info] resolved model = {meta['model']} width={meta['model_width']} "
@@ -321,6 +347,7 @@ def main():
             model, valid_set, idx, device,
             crop_size=args.crop_size, full=args.full,
             crop_dy=args.crop_dy, crop_dx=args.crop_dx, gamma=args.gamma,
+            with_wavelet_baseline=args.with_wavelet_baseline,
         )
         rows.append(row)
         print(f"[{i + 1}/{len(idxs)}] idx={idx} {row['name']} ISO{row['iso']}  PSNR={row['psnr']:.2f} dB")
@@ -334,6 +361,9 @@ def main():
             args.out_dir, f"{args.out_prefix}denoise_comparison_ratio{args.ratio}.png"
         )
     model_label = f"{meta['model']} ({meta['graph_state']})"
+    if meta["model"] == "learning_dwt":
+        cfg = meta["learning_dwt"]
+        model_label = f"LearningDWT d={cfg['width']} {cfg['context']} {cfg['shrink_mode']}"
     make_comparison_figure(rows, args.ratio, out_path, args.dpi, args.full, model_label=model_label)
     print(f"\n[done] 对比图已保存: {os.path.abspath(out_path)}")
 

@@ -1,21 +1,13 @@
-# Paper-aligned single-frame Model A for a controlled comparison with the
-# existing no-S2D MRLFN configs. The repository still exposes/returns
-# [R,G1,G2,B] packed RAW, while the model reconstructs a one-plane Bayer
-# mosaic internally and applies the paper's k=4 S2D (16 channels) and D2S.
 patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
 pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
 sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
-val_manifest: infos/SID_validation_clean_raw.json
+val_pair_list: ../../Datasets/SID-sub/Sony_val_list.txt
 dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
 
-model: mrlfn
-feature_channels: 64       # paper Model A: d=32
-num_blocks: 4              # paper Model A: N=4
-model_bias: true
-space_to_depth_factor: 4   # paper Model A: k=4
+model: learning_dwt
 
 # Equation (5): L = 0.6 L_raw + 0.4 L_chromatic.
 # Repository tensors are [R,G1,G2,B]; the loss argument is semantic
@@ -24,11 +16,10 @@ raw_loss_weight: 0.6
 chromatic_loss_weight: 0.4
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d64
+output_dir: experiments/sid_sony_learning_dwt_sym4_l3_d64_atlas
 
-# The paper specifies batch 16 and 256x256 packed-RAW patches. It does not
-# disclose the epoch/iteration budget; max_steps retains the prior LED
-# reproduction budget so this run is finite and directly repeatable.
+# Training settings copied from the MRLFN d32 reference for comparison.
+# This is a new threshold-learning model, not a paper-reproduction claim.
 epochs: 1000
 # max_steps: 257600
 steps_per_epoch: null
@@ -43,9 +34,7 @@ dark_cache_size: 2
 synthesis: ratio_aware
 k_scale: 0.1
 
-# Paper: Adam, initial LR 1e-4, cosine annealing. No warmup or nonzero
-# terminal LR is reported, so the literal TensorFlow-style cosine is used.
-# Adam epsilon 1e-7 is TensorFlow/Keras's default (not explicitly reported).
+# Same Adam/LR/warmup settings as the supplied d32 reference.
 learning_rate: 0.0002
 min_learning_rate: 0.0
 beta1: 0.9
@@ -63,3 +52,20 @@ validate_steps: 40
 save_every: 10
 keep_checkpoints: 3
 log_every: 20
+
+# Fixed sym4 DWT/IWT; CNN predicts coefficient thresholds.
+dwt_width: 32
+dwt_depth: 4
+dwt_context: atlas
+dwt_shrink_ll: true
+dwt_leak: 0.0
+dwt_normalize_bands: true
+dwt_pad_input: true
+dwt_init_threshold: 0.01
+dwt_init_ll_threshold: 0.001
+dwt_wavelet: sym4
+dwt_levels: 3
+dwt_magnitude_input: true
+dwt_condition_bands: false
+dwt_ll_max_threshold: 0.01
+dwt_shrink_mode: smooth  # Continuous shrinkage avoids a zero-gradient threshold interval.

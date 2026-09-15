@@ -149,7 +149,8 @@ SID 预训练：
 ```bash
 conda run --no-capture-output -n LED-ICCV23 \
   python train_sid_sony.py \
-  --config configs/train_sid_sony_mrlfn_n4_d16.yaml
+  --config configs/train_sid_sony_mrlfn_n4_d16.yaml \
+  --resume
 ```
 
 MEY-AN00 微调：
@@ -220,6 +221,13 @@ conda run --no-capture-output -n LED-ICCV23 \
 
 该结果是独立 scene-prefix 2 上的合成噪声指标，不能替代真实 SID short/long 指标。
 
+### 6.2 LearningDWT（32通道、atlas）
+
+同一入口支持`learning_dwt`，自动从checkpoint恢复结构。当前文件名含d64的
+`experiments/sid_sony_learning_dwt_sym4_l3_d64_atlas/checkpoints/latest.pth`
+实际是32通道sym4三层模型，1000epoch。三倍率PSNR为40.522/36.667/33.752 dB。
+与传统小波的同口径指标及完整命令见 [LearningDWT网络结构与评测](LearningDWT网络结构与评测.md)。
+
 ## 7. SID 定性可视化
 
 可视化入口为 `test-op/run_qual_compare.sh`，底层调用
@@ -274,6 +282,20 @@ CP_DIR=/path/to/bare_mrlfn_state_dict.pth \
 OUT_DIR=experiments/mrlfn_bare/qualitative \
   bash test-op/run_qual_compare.sh 0 100
 ```
+
+### 7.1 LearningDWT与传统小波四列对照
+
+```bash
+for r in 100 250 300; do
+  CP_DIR=experiments/sid_sony_learning_dwt_sym4_l3_d64_atlas/checkpoints/latest.pth \
+  OUT_DIR=experiments/sid_sony_learning_dwt_sym4_l3_d64_atlas/qualitative_baseline \
+  EXTRA="--indices 0 10 20 30 --crop-size 512 --with-wavelet-baseline" \
+    bash test-op/run_qual_compare.sh 0 "$r"
+done
+```
+
+四列：输入 / 传统sym4 L3 BayesShrink / LearningDWT / GT。两种输出采用相同照度校正。
+标签从checkpoint读取真实32通道结构，不按目录名推断。标注PSNR为整图RAW指标。
 
 ## 8. 手机微调模型的定量与定性评测
 
