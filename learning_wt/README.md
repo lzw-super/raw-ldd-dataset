@@ -203,3 +203,8 @@ conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
 先检查学习曲线及阈值分布，再决定正式训练预算。高频阈值若长期远高于系数幅值，
 单纯延长训练不保证能解决问题；下一步可单独研究从输入估计噪声尺度并归一化阈值，
 以及合成噪声与真实short噪声的幅度分布是否一致。此处不声称这些后续方案已经验证。
+
+## LL3直接恢复实验
+
+新增LL3-only和LL3四子带输入的独立恢复CNN，替换LL阈值路径，高频仍由原网络处理。
+配置、残差输出定义与手动训练命令见 [LL_RESTORATION_EXPERIMENTS.md](LL_RESTORATION_EXPERIMENTS.md)。

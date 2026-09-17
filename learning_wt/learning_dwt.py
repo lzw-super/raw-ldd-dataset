@@ -4,7 +4,8 @@ Input/output: floating NCHW tensors [N, 4, H, W], NOT RGB or Bayer mosaic.
 Fixed sym4 periodization analysis is channel-wise (Haar is also supported). Only LL is recursively decomposed. The ten
 terminal bands are tiled without resizing into an H x W coefficient atlas.
 A small sequential CNN predicts thresholds, not clean pixels. LL shrinkage
-is enabled by default, with a smaller initial threshold. No calibrated sigma
+is enabled by default, with a smaller initial threshold. Optional LL restoration
+branches predict recovered LL from LL alone or all four deepest-level bands. No calibrated sigma
 is required. See README.md for assumptions, limits, and halo caveats.
 
 Run: python learning_dwt.py --demo
@@ -163,6 +164,42 @@ class ThresholdCNN(nn.Module):
         return x
 
 
+class LLRestorationCNN(nn.Module):
+    """Restore LL with residual addition or learned concatenation/1x1 fusion.
+
+    Inputs are normalized wavelet coefficients; the first four channels are LL.
+    Both fusion modes start near the input without restricting LL to shrinkage.
+    """
+    def __init__(self, in_channels: int, width: int = 32, depth: int = 4, fusion: str = "residual"):
+        super().__init__()
+        if width < 1 or depth < 2:
+            raise ValueError("LL CNN requires width >= 1 and depth >= 2")
+        layers = [nn.Conv2d(in_channels, width, 3, padding=1), nn.ReLU()]
+        for _ in range(depth - 2):
+            layers.extend([nn.Conv2d(width, width, 3, padding=1), nn.ReLU()])
+        layers.append(nn.Conv2d(width, 4, 3, padding=1))
+        self.layers = nn.Sequential(*layers)
+        nn.init.normal_(self.layers[-1].weight, std=1e-3)
+        nn.init.zeros_(self.layers[-1].bias)
+        if fusion not in ("residual", "concat_1x1"):
+            raise ValueError("LL fusion must be residual or concat_1x1")
+        self.fusion = nn.Conv2d(8, 4, 1) if fusion == "concat_1x1" else None
+        if self.fusion is not None:
+            # Start equivalent to residual addition, then learn all cross-channel weights.
+            with torch.no_grad():
+                self.fusion.weight.zero_()
+                self.fusion.bias.zero_()
+                for channel in range(4):
+                    self.fusion.weight[channel, channel, 0, 0] = 1
+                    self.fusion.weight[channel, channel + 4, 0, 0] = 1
+
+    def forward(self, x: Tensor) -> Tensor:
+        cnn_output = self.layers(x)
+        if self.fusion is not None:
+            return self.fusion(torch.cat((cnn_output, x[:, :4]), dim=1))
+        return x[:, :4] + cnn_output
+
+
 class LearningDWT(nn.Module):
     """User's atlas-threshold design plus explicit comparison switches.
 
@@ -184,7 +221,9 @@ class LearningDWT(nn.Module):
                  pad_input: bool = False, init_threshold: float = 0.01,
                  init_ll_threshold: float = 0.001, wavelet: str = "sym4", levels: int = 3,
                  magnitude_input: bool = False, condition_bands: bool = False,
-                 ll_max_threshold: float | None = None, shrink_mode: str = "soft"):
+                 ll_max_threshold: float | None = None, shrink_mode: str = "soft",
+                 ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
+                 ll_fusion: str = "residual"):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -219,6 +258,11 @@ class LearningDWT(nn.Module):
         if ll_max_threshold is not None:
             bias[0] = math.log(init_ll_threshold / (ll_max_threshold - init_ll_threshold))
         self.band_bias = nn.Parameter(bias)
+        if ll_mode not in ("threshold", "ll_only", "level_bands"):
+            raise ValueError("ll_mode must be threshold, ll_only or level_bands")
+        self.ll_mode = ll_mode
+        self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion)
+                            if ll_mode != "threshold" else None)
 
     def _maps(self, atlas: Tensor, bands: list[Band]) -> tuple[Tensor, Tensor, Tensor]:
         h, w = atlas.shape[-2:]
@@ -229,7 +273,7 @@ class LearningDWT(nn.Module):
             if self.normalize_bands:
                 scale[..., band.rows, band.cols] = 2 ** band.level
             bias[..., band.rows, band.cols] = self.band_bias[i].view(1, 4, 1, 1)
-            if band.kind == "LL" and not self.shrink_ll:
+            if band.kind == "LL" and (not self.shrink_ll or self.ll_mode != "threshold"):
                 mask[..., band.rows, band.cols] = 0
         return scale, bias, mask
 
@@ -276,6 +320,15 @@ class LearningDWT(nn.Module):
             filtered = smooth_shrink(atlas, threshold, self.leak)
         else:
             filtered = soft_shrink(atlas, threshold, self.leak)
+        if self.ll_restorer is not None:
+            # Read ORIGINAL deepest-level bands; no thresholded inputs or GT.
+            selected = bands[:1] if self.ll_mode == "ll_only" else bands[:4]
+            ll_input = torch.cat([atlas[..., b.rows, b.cols] for b in selected], dim=1)
+            ll_scale = float(2 ** self.levels)
+            recovered_ll = self.ll_restorer(ll_input / ll_scale) * ll_scale
+            ll = bands[0]
+            filtered = filtered.clone()
+            filtered[..., ll.rows, ll.cols] = recovered_ll
         restored = (self.transform.decode(filtered, self.levels) if self.transform is not None
                     else iwt_atlas(filtered, self.levels))[..., :h, :w]
         # No [0,1] clipping: signed read-noise residuals and gradient preserved.
@@ -291,7 +344,9 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_pad_input=True, dwt_init_threshold=0.01,
                     dwt_init_ll_threshold=0.001, dwt_wavelet="sym4", dwt_levels=3,
                     dwt_magnitude_input=True, dwt_condition_bands=True,
-                    dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft")
+                    dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
+                    dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
+                    dwt_ll_fusion="residual")
 
 
 def learning_dwt_kwargs(options):
