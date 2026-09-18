@@ -257,7 +257,7 @@ def main():
     parser = argparse.ArgumentParser(description="SID Sony 去噪定性可视化（单张左右对比图）")
     parser.add_argument("--cp-dir", default="experiments/sid_sony_paper_fair/checkpoints/latest.pth",
                         help="checkpoint 路径")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt"], default=None,
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb"], default=None,
                         help="强制模型类型；留空则按 checkpoint 的 args 自动推断（推荐）")
     parser.add_argument("--model-width", type=int, default=None,
                         help="特征通道数；留空则用 checkpoint 记录值，再回退到 32")

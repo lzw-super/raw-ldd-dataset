@@ -103,7 +103,7 @@ def build_denoiser_from_checkpoint(
     packaged_checkpoint = isinstance(checkpoint, dict) and (
         "model" in checkpoint or "model_deploy" in checkpoint
     )
-    if packaged_checkpoint and model_name == "mrlfn" and "model_deploy" in checkpoint:
+    if packaged_checkpoint and model_name in ("mrlfn", "learning_dwt_repncb") and "model_deploy" in checkpoint:
         state_dict = checkpoint["model_deploy"]
         weight_source = "model_deploy"
         build_deploy = True
@@ -111,7 +111,7 @@ def build_denoiser_from_checkpoint(
         state_dict = checkpoint["model"] if packaged_checkpoint and "model" in checkpoint else checkpoint
         weight_source = "model" if packaged_checkpoint else "bare_state_dict"
         build_deploy = bool(
-            model_name == "mrlfn"
+            model_name in ("mrlfn", "learning_dwt_repncb")
             and isinstance(state_dict, dict)
             and any(".reparam_conv." in key for key in state_dict)
         )
@@ -152,15 +152,20 @@ def build_denoiser_from_checkpoint(
             deploy=build_deploy,
             space_to_depth_factor=mrlfn_s2d_factor,
         )
+    elif model_name == "learning_dwt_repncb":
+        from learning_wt.learning_dwt import learning_dwt_kwargs
+        from models.learning_dwt_repncb import LearningDWTRepNCB, refiner_kwargs
+        net = LearningDWTRepNCB(learning_dwt_kwargs(checkpoint_args), deploy=build_deploy,
+                                refine_config=refiner_kwargs(checkpoint_args))
     elif model_name == "learning_dwt":
         from learning_wt.learning_dwt import LearningDWT, learning_dwt_kwargs
         net = LearningDWT(**learning_dwt_kwargs(checkpoint_args))
     else:
-        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn / learning_dwt)")
+        raise ValueError(f"Unsupported model: {model_name!r} (expected unet / nafnet / natnet / mrlfn / learning_dwt / learning_dwt_repncb)")
 
     # 4) 载入权重：可恢复字典取 "model" 键，否则视为纯 state_dict
     net.load_state_dict(state_dict, strict=True)
-    if model_name == "mrlfn" and not build_deploy:
+    if model_name in ("mrlfn", "learning_dwt_repncb") and not build_deploy:
         net = net.deploy()
         weight_source += "->fused"
 
@@ -178,9 +183,15 @@ def build_denoiser_from_checkpoint(
         "num_blocks": mrlfn_blocks,
         "model_bias": mrlfn_bias,
         "space_to_depth_factor": mrlfn_s2d_factor,
-        "graph_state": "deploy" if model_name == "mrlfn" else "native",
+        "graph_state": "deploy" if model_name in ("mrlfn", "learning_dwt_repncb") else "native",
         "weight_source": weight_source,
     }
-    if model_name == "learning_dwt":
+    if model_name in ("learning_dwt", "learning_dwt_repncb"):
         meta["learning_dwt"] = learning_dwt_kwargs(checkpoint_args)
+    if model_name == "learning_dwt_repncb":
+        refine_config = refiner_kwargs(checkpoint_args)
+        meta["space_to_depth_factor"] = refine_config["s2d_factor"]
+        meta["feature_channels"] = refine_config["width"]
+        meta["num_blocks"] = refine_config["num_blocks"]
+        meta["refinement"] = {**refine_config, "activation": "prelu", "expand_ratio": 2, "s2d_domain": "packed_raw"}
     return net, meta

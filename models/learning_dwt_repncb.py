@@ -1,0 +1,152 @@
+"""Two-stage packed-RAW denoiser with exactly reparameterizable smoothing blocks."""
+import copy
+
+import torch
+from torch import nn
+from torch.nn import functional as F
+
+from learning_wt.learning_dwt import LearningDWT
+
+
+REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
+                        refine_num_blocks=4, refine_skip_source="noisy")
+
+
+def refiner_kwargs(options):
+    values = options if isinstance(options, dict) else vars(options)
+    return {key[len("refine_"):]: values.get(key, default)
+            for key, default in REFINER_DEFAULTS.items()}
+
+
+class SpatialBranch(nn.Module):
+    """Biased 1x1 followed by dense or fixed depthwise 3x3, with bias padding."""
+
+    def __init__(self, channels, kernel=None):
+        super().__init__()
+        hidden = channels * 2 if kernel is None else channels
+        self.project = nn.Conv2d(channels, hidden, 1)
+        if kernel is None:
+            self.spatial = nn.Conv2d(hidden, channels, 3)
+        else:
+            self.register_buffer('mask', torch.tensor(kernel, dtype=torch.float32).reshape(1, 1, 3, 3))
+            self.scale = nn.Parameter(torch.randn(channels, 1, 1, 1) * 1e-3)
+            self.bias = nn.Parameter(torch.zeros(channels))
+
+    def forward(self, x):
+        # Project AFTER padding: outside-image values equal project.bias,
+        # which is required for an exact spatially constant fused bias.
+        y = self.project(F.pad(x, (1, 1, 1, 1)))
+        if hasattr(self, 'spatial'):
+            return self.spatial(y)
+        return F.conv2d(y, self.scale * self.mask, self.bias, groups=x.shape[1])
+
+    def equivalent(self):
+        point = self.project.weight[:, :, 0, 0]
+        if hasattr(self, 'spatial'):
+            weight = torch.einsum('omhw,mi->oihw', self.spatial.weight, point)
+            bias = self.spatial.bias + torch.einsum('omhw,m->o', self.spatial.weight, self.project.bias)
+        else:
+            spatial = self.scale * self.mask
+            weight = spatial * point[:, :, None, None]
+            bias = self.bias + spatial.sum((1, 2, 3)) * self.project.bias
+        return weight, bias
+
+
+class RepNCB(nn.Module):
+    """Five linear branches -> sum -> channel-wise PReLU; deploy as 3x3 + PReLU."""
+
+    def __init__(self, channels=16, deploy=False):
+        super().__init__()
+        self.activation = nn.PReLU(channels)
+        if deploy:
+            self.reparam_conv = nn.Conv2d(channels, channels, 3, padding=1)
+        else:
+            self.direct = nn.Conv2d(channels, channels, 3, padding=1)
+            self.expand = SpatialBranch(channels)
+            self.gaussian = SpatialBranch(channels, [[1/16, 2/16, 1/16], [2/16, 4/16, 2/16], [1/16, 2/16, 1/16]])
+            self.horizontal = SpatialBranch(channels, [[0, 0, 0], [1/4, 2/4, 1/4], [0, 0, 0]])
+            self.vertical = SpatialBranch(channels, [[0, 1/4, 0], [0, 2/4, 0], [0, 1/4, 0]])
+
+    def forward(self, x):
+        if hasattr(self, 'reparam_conv'):
+            y = self.reparam_conv(x)
+        else:
+            y = self.direct(x) + self.expand(x) + self.gaussian(x) + self.horizontal(x) + self.vertical(x)
+        return self.activation(y)
+
+    @torch.no_grad()
+    def switch_to_deploy(self):
+        if hasattr(self, 'reparam_conv'):
+            return self
+        weight, bias = self.direct.weight.clone(), self.direct.bias.clone()
+        for name in ('expand', 'gaussian', 'horizontal', 'vertical'):
+            w, b = getattr(self, name).equivalent()
+            weight += w
+            bias += b
+        conv = nn.Conv2d(weight.shape[1], weight.shape[0], 3, padding=1).to(device=weight.device, dtype=weight.dtype)
+        conv.weight.copy_(weight)
+        conv.bias.copy_(bias)
+        self.reparam_conv = conv
+        for name in ('direct', 'expand', 'gaussian', 'horizontal', 'vertical'):
+            delattr(self, name)
+        return self
+
+
+class PackedRAWRefiner(nn.Module):
+    """Configurable packed-RAW refinement with a concatenated input bypass."""
+
+    def __init__(self, deploy=False, s2d_factor=2, width=16, num_blocks=4,
+                 skip_source="noisy"):
+        super().__init__()
+        for name, value in (("s2d_factor", s2d_factor), ("width", width), ("num_blocks", num_blocks)):
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+        if skip_source not in ("noisy", "preliminary"):
+            raise ValueError("skip_source must be 'noisy' (I) or 'preliminary' (I-)")
+        self.s2d_factor = s2d_factor
+        self.skip_source = skip_source
+        packed_channels = 4 * s2d_factor ** 2
+        self.s2d = nn.PixelUnshuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
+        self.stem = nn.Conv2d(packed_channels, width, 3, padding=1)
+        self.blocks = nn.Sequential(*(RepNCB(width, deploy) for _ in range(num_blocks)))
+        self.head = nn.Conv2d(width, packed_channels, 3, padding=1)
+        self.fusion = nn.Conv2d(2 * packed_channels, packed_channels, 1)
+        self.d2s = nn.PixelShuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
+
+    def forward(self, preliminary, noisy):
+        if preliminary.shape != noisy.shape or noisy.ndim != 4 or noisy.shape[1] != 4:
+            raise ValueError('Expected two matching N x 4 x H x W packed RAW tensors')
+        h, w = noisy.shape[-2:]
+        padding = (0, (-w) % self.s2d_factor, 0, (-h) % self.s2d_factor)
+        preliminary = F.pad(preliminary, padding, mode='replicate')
+        noisy = F.pad(noisy, padding, mode='replicate')
+        features = self.head(self.blocks(self.stem(self.s2d(preliminary))))
+        skip = noisy if self.skip_source == "noisy" else preliminary
+        fused = self.fusion(torch.cat((features, self.s2d(skip)), dim=1))
+        return self.d2s(fused)[..., :h, :w]
+
+
+class LearningDWTRepNCB(nn.Module):
+    def __init__(self, dwt_config=None, deploy=False, refine_config=None):
+        super().__init__()
+        config = dict(width=32, context='atlas', shrink_ll=False, pad_input=True,
+                      wavelet='sym4', levels=3, magnitude_input=True, condition_bands=False,
+                      shrink_mode='smooth', ll_mode='ll_only', ll_width=32,
+                      ll_depth=4, ll_fusion='concat_1x1')
+        config.update(dwt_config or {})
+        self.wavelet = LearningDWT(**config)
+        self.refiner = PackedRAWRefiner(deploy=deploy, **(refine_config or {}))
+
+    def forward(self, noisy, return_aux=False):
+        preliminary = self.wavelet(noisy)
+        restored = self.refiner(preliminary, noisy)
+        return (restored, {'preliminary': preliminary}) if return_aux else restored
+
+    @torch.no_grad()
+    def switch_to_deploy(self):
+        for block in self.refiner.blocks:
+            block.switch_to_deploy()
+        return self
+
+    def deploy(self):
+        return copy.deepcopy(self).switch_to_deploy()

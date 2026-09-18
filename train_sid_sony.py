@@ -76,8 +76,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="experiments/sid_sony_paper_fair")
     parser.add_argument("--resume", default=None, help="Checkpoint produced by this script")
     parser.add_argument("--init-checkpoint", default=None, help="Model-only checkpoint; do not use the official test checkpoint")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt"], default="unet")
-    for key, default in DWT_DEFAULTS.items():
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb"], default="unet")
+    from models.learning_dwt_repncb import REFINER_DEFAULTS
+    for key, default in {**DWT_DEFAULTS, **REFINER_DEFAULTS}.items():
         flag = "--" + key.replace("_", "-")
         if isinstance(default, bool):
             add_boolean_optional_argument(parser, flag, default=default)
@@ -221,6 +222,11 @@ def to_device(batch: Dict[str, object], device: torch.device) -> tuple[torch.Ten
 
 def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, object]]:
     """Construct the selected 4-channel packed-RAW denoiser."""
+    if args.model == "learning_dwt_repncb":
+        from models.learning_dwt_repncb import LearningDWTRepNCB, refiner_kwargs
+        config = learning_dwt_kwargs(args)
+        refine_config = refiner_kwargs(args)
+        return LearningDWTRepNCB(config, refine_config=refine_config), {"model": args.model, **config, "refinement": refine_config}
     if args.model == "learning_dwt":
         config = learning_dwt_kwargs(args)
         return LearningDWT(**config), {"model": "learning_dwt", **config}
@@ -458,7 +464,7 @@ def main() -> None:
     model_info = calculate_model_info(profile_model, (1, 4, args.patch_size, args.patch_size), device)
     model_info["architecture_config"] = {**architecture_config, "deploy": profile_graph == "deploy"}
     model_info["graph_state"] = profile_graph
-    if args.model == "learning_dwt":
+    if args.model in ("learning_dwt", "learning_dwt_repncb"):
         model_info["profiling_note"] = "CNN MACs only; functional DWT/IWT convolutions and atlas/shrink operations excluded"
     model_info["loss_config"] = (
         {
@@ -467,7 +473,7 @@ def main() -> None:
             "chromatic_weight": args.chromatic_loss_weight,
             "channel_order_for_R_G1_B_G2": list(args.chromatic_channel_order),
         }
-        if args.model in ("mrlfn", "learning_dwt")
+        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb")
         else {"name": "L1Loss"}
     )
     model_info["loss_config"]["wavelet_auxiliary"] = {
@@ -525,7 +531,7 @@ def main() -> None:
             chromatic_weight=args.chromatic_loss_weight,
             channel_order=tuple(args.chromatic_channel_order),
         )
-        if args.model in ("mrlfn", "learning_dwt")
+        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb")
         else None
     )
 
