@@ -83,3 +83,9 @@ done
 参数也可通过 CLI 覆盖：`--refine-s2d-factor`、`--refine-width`、`--refine-num-blocks`、`--refine-skip-source`。checkpoint 中的参数用于自动恢复结构；早期没有这些字段的 checkpoint 按 K=2、D=16、N=4、noisy 还原，保留旧权重兼容性。
 
 K=1、D=16 时：stem 4→16，主干 16→16，head 16→4，与 4 通道旁路拼接为 8 通道，fusion 8→4。K=2、D=16 的原有结构不变。此前 head 输出 D 的 K=1 版本权重与修正后的结构不兼容，应使用修正后的配置从头训练。
+
+## 标准 3×3 卷积对照
+
+`configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_conv3x3.yaml` 基于 `_repncb_w32.yaml`，新增 `refine_block_type: conv3x3` 并设置独立输出目录。默认 `refine_block_type: repncb` 保持原结构和已有 checkpoint 兼容；也支持 CLI `--refine-block-type`。
+
+本组四个主干块均为普通 `Conv3×3(32→32, bias=True, padding=1) + PReLU(32)`，从头训练单个卷积，没有多分支或固定平滑核。其余小波网络、K=2、输入旁路 I、stem 16→32、head 32→16、fusion 32→16、训练超参数均与 w32 基准一致。保留激活以单独比较多分支重参数化训练与标准卷积训练；两者部署时的主干算子结构相同。标准卷积组沿用 checkpoint 保存/加载流程，部署复制不会改变其卷积权重。

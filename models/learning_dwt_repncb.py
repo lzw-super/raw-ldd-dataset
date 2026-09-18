@@ -9,7 +9,8 @@ from learning_wt.learning_dwt import LearningDWT
 
 
 REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
-                        refine_num_blocks=4, refine_skip_source="noisy")
+                        refine_num_blocks=4, refine_skip_source="noisy",
+                        refine_block_type="repncb")
 
 
 def refiner_kwargs(options):
@@ -96,19 +97,24 @@ class PackedRAWRefiner(nn.Module):
     """Configurable packed-RAW refinement with a concatenated input bypass."""
 
     def __init__(self, deploy=False, s2d_factor=2, width=16, num_blocks=4,
-                 skip_source="noisy"):
+                 skip_source="noisy", block_type="repncb"):
         super().__init__()
         for name, value in (("s2d_factor", s2d_factor), ("width", width), ("num_blocks", num_blocks)):
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ValueError(f"{name} must be a positive integer")
         if skip_source not in ("noisy", "preliminary"):
             raise ValueError("skip_source must be 'noisy' (I) or 'preliminary' (I-)")
+        if block_type not in ("repncb", "conv3x3"):
+            raise ValueError("block_type must be repncb or conv3x3")
         self.s2d_factor = s2d_factor
         self.skip_source = skip_source
         packed_channels = 4 * s2d_factor ** 2
         self.s2d = nn.PixelUnshuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
         self.stem = nn.Conv2d(packed_channels, width, 3, padding=1)
-        self.blocks = nn.Sequential(*(RepNCB(width, deploy) for _ in range(num_blocks)))
+        self.blocks = nn.Sequential(*(
+            RepNCB(width, deploy) if block_type == "repncb" else
+            nn.Sequential(nn.Conv2d(width, width, 3, padding=1), nn.PReLU(width))
+            for _ in range(num_blocks)))
         self.head = nn.Conv2d(width, packed_channels, 3, padding=1)
         self.fusion = nn.Conv2d(2 * packed_channels, packed_channels, 1)
         self.d2s = nn.PixelShuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
@@ -145,7 +151,8 @@ class LearningDWTRepNCB(nn.Module):
     @torch.no_grad()
     def switch_to_deploy(self):
         for block in self.refiner.blocks:
-            block.switch_to_deploy()
+            if isinstance(block, RepNCB):
+                block.switch_to_deploy()
         return self
 
     def deploy(self):

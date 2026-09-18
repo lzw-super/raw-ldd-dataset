@@ -110,10 +110,41 @@ def test_ablation_configs():
         assert config[key] == value
         assert config['output_dir'] not in directories
         directories.add(config['output_dir'])
-        assert {k for k in base if base[k]!=config[k]} == {key,'output_dir'}
+        # Device placement may differ for concurrent offline experiments.
+        assert {k for k in base if k != 'device' and base[k]!=config[k]} == {key,'output_dir'}
 
 
 @pytest.mark.parametrize('config', [{'s2d_factor':0},{'width':0},{'num_blocks':-1},{'skip_source':'invalid'}])
 def test_invalid_refiner_settings(config):
     with pytest.raises(ValueError):
         PackedRAWRefiner(**config)
+
+
+def test_standard_conv_ablation(tmp_path):
+    from models.learning_dwt_repncb import refiner_kwargs
+    prefix = 'configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32'
+    base = yaml.safe_load(Path(prefix+'.yaml').read_text())
+    args = yaml.safe_load(Path(prefix+'_conv3x3.yaml').read_text())
+    assert args['refine_block_type'] == 'conv3x3'
+    assert {k for k in base if base[k] != args[k]} == {'output_dir'}
+    net = LearningDWTRepNCB(learning_dwt_kwargs(args), refine_config=refiner_kwargs(args))
+    assert not any(isinstance(m, RepNCB) for m in net.modules())
+    assert len(net.refiner.blocks) == 4
+    for block in net.refiner.blocks:
+        assert isinstance(block[0], torch.nn.Conv2d)
+        assert block[0].weight.shape == (32,32,3,3)
+        assert isinstance(block[1], torch.nn.PReLU)
+    x = torch.rand(1,4,33,41)
+    y = net(x)
+    y.square().mean().backward()
+    assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in net.parameters())
+    torch.testing.assert_close(net.deploy()(x),y,rtol=0,atol=0)
+    for deploy in (False,True):
+        cp = {'args':args,'model':net.state_dict()}
+        if deploy:
+            cp['model_deploy'] = net.deploy().state_dict()
+        path = tmp_path/'conv.pth'
+        torch.save(cp,path)
+        loaded,meta = build_denoiser_from_checkpoint(str(path),'cpu')
+        torch.testing.assert_close(loaded(x),y,rtol=0,atol=0)
+        assert meta['refinement']['block_type'] == 'conv3x3'
