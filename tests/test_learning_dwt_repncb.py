@@ -126,7 +126,7 @@ def test_standard_conv_ablation(tmp_path):
     base = yaml.safe_load(Path(prefix+'.yaml').read_text())
     args = yaml.safe_load(Path(prefix+'_conv3x3.yaml').read_text())
     assert args['refine_block_type'] == 'conv3x3'
-    assert {k for k in base if base[k] != args[k]} == {'output_dir'}
+    assert {k for k in base if k != 'device' and base[k] != args[k]} == {'output_dir'}
     net = LearningDWTRepNCB(learning_dwt_kwargs(args), refine_config=refiner_kwargs(args))
     assert not any(isinstance(m, RepNCB) for m in net.modules())
     assert len(net.refiner.blocks) == 4
@@ -148,3 +148,46 @@ def test_standard_conv_ablation(tmp_path):
         loaded,meta = build_denoiser_from_checkpoint(str(path),'cpu')
         torch.testing.assert_close(loaded(x),y,rtol=0,atol=0)
         assert meta['refinement']['block_type'] == 'conv3x3'
+
+
+def test_input_fusion_values_bypass_and_gradients():
+    ref = PackedRAWRefiner(width=32, input_fusion='preliminary_difference', skip_source='fused')
+    preliminary = torch.rand(1,4,17,19,requires_grad=True)
+    noisy = torch.rand_like(preliminary,requires_grad=True)
+    captured = []
+    hook = ref.input_projection.register_forward_pre_hook(lambda m, a: captured.append(a[0]))
+    # Force final fusion to select the bypass; its value must be learned F.
+    with torch.no_grad():
+        ref.fusion.weight.zero_(); ref.fusion.bias.zero_()
+        ref.fusion.weight[:,16:,0,0].copy_(torch.eye(16))
+    result = ref(preliminary,noisy)
+    hook.remove()
+    padded = torch.nn.functional.pad(torch.cat((preliminary,noisy-preliminary),1),(0,1,0,1),mode='replicate')
+    torch.testing.assert_close(captured[0],padded)
+    expected = ref.input_projection(torch.cat((preliminary,noisy-preliminary),1))
+    torch.testing.assert_close(result,expected)
+    result.square().mean().backward()
+    for p in (preliminary,noisy,ref.input_projection.weight):
+        assert p.grad is not None and p.grad.abs().sum()>0
+
+
+def test_input_fusion_checkpoint(tmp_path):
+    from models.learning_dwt_repncb import refiner_kwargs
+    prefix = 'configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32'
+    base = yaml.safe_load(Path(prefix+'.yaml').read_text())
+    args = yaml.safe_load(Path(prefix+'_input_fusion.yaml').read_text())
+    assert {k for k in base if base[k]!=args[k]} == {'output_dir','refine_skip_source'}
+    net = LearningDWTRepNCB(learning_dwt_kwargs(args),refine_config=refiner_kwargs(args))
+    x = torch.rand(1,4,33,41)
+    y = net(x)
+    assert y.shape == x.shape
+    y.square().mean().backward()
+    assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in net.parameters())
+    for deploy in (False,True):
+        cp = {'args':args,'model':net.state_dict()}
+        if deploy:
+            cp['model_deploy'] = net.deploy().state_dict()
+        path=tmp_path/'fusion.pth'; torch.save(cp,path)
+        loaded,meta=build_denoiser_from_checkpoint(str(path),'cpu')
+        torch.testing.assert_close(loaded(x),y,atol=2e-6,rtol=2e-5)
+        assert meta['refinement']['skip_source']=='fused'

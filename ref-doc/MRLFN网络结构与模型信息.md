@@ -150,7 +150,7 @@ SID 预训练：
 conda run --no-capture-output -n LED-ICCV23 \
   python train_sid_sony.py \
   --config configs/train_sid_sony_mrlfn_n4_d16.yaml \
-  --resume
+  --resume 
 ```
 
 MEY-AN00 微调：

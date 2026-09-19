@@ -10,7 +10,7 @@ from learning_wt.learning_dwt import LearningDWT
 
 REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
                         refine_num_blocks=4, refine_skip_source="noisy",
-                        refine_block_type="repncb")
+                        refine_block_type="repncb", refine_input_fusion="none")
 
 
 def refiner_kwargs(options):
@@ -97,15 +97,22 @@ class PackedRAWRefiner(nn.Module):
     """Configurable packed-RAW refinement with a concatenated input bypass."""
 
     def __init__(self, deploy=False, s2d_factor=2, width=16, num_blocks=4,
-                 skip_source="noisy", block_type="repncb"):
+                 skip_source="noisy", block_type="repncb", input_fusion="none"):
         super().__init__()
         for name, value in (("s2d_factor", s2d_factor), ("width", width), ("num_blocks", num_blocks)):
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ValueError(f"{name} must be a positive integer")
-        if skip_source not in ("noisy", "preliminary"):
-            raise ValueError("skip_source must be 'noisy' (I) or 'preliminary' (I-)")
+        if skip_source not in ("noisy", "preliminary", "fused"):
+            raise ValueError("skip_source must be noisy, preliminary, or fused")
         if block_type not in ("repncb", "conv3x3"):
             raise ValueError("block_type must be repncb or conv3x3")
+        if input_fusion not in ("none", "preliminary_difference"):
+            raise ValueError("input_fusion must be none or preliminary_difference")
+        if skip_source == "fused" and input_fusion == "none":
+            raise ValueError("fused skip requires input fusion")
+        self.input_fusion = input_fusion
+        if input_fusion == "preliminary_difference":
+            self.input_projection = nn.Conv2d(8, 4, 1)
         self.s2d_factor = s2d_factor
         self.skip_source = skip_source
         packed_channels = 4 * s2d_factor ** 2
@@ -126,9 +133,18 @@ class PackedRAWRefiner(nn.Module):
         padding = (0, (-w) % self.s2d_factor, 0, (-h) % self.s2d_factor)
         preliminary = F.pad(preliminary, padding, mode='replicate')
         noisy = F.pad(noisy, padding, mode='replicate')
-        features = self.head(self.blocks(self.stem(self.s2d(preliminary))))
-        skip = noisy if self.skip_source == "noisy" else preliminary
-        fused = self.fusion(torch.cat((features, self.s2d(skip)), dim=1))
+        refined_input = preliminary
+        if self.input_fusion == "preliminary_difference":
+            refined_input = self.input_projection(torch.cat((preliminary, noisy - preliminary), dim=1))
+        packed_input = self.s2d(refined_input)
+        features = self.head(self.blocks(self.stem(packed_input)))
+        # The fused-input bypass branches AFTER S2D, sharing the stem input.
+        if self.skip_source == "fused":
+            packed_skip = packed_input
+        else:
+            skip = noisy if self.skip_source == "noisy" else preliminary
+            packed_skip = self.s2d(skip)
+        fused = self.fusion(torch.cat((features, packed_skip), dim=1))
         return self.d2s(fused)[..., :h, :w]
 
 

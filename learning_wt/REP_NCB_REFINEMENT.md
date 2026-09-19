@@ -89,3 +89,20 @@ K=1、D=16 时：stem 4→16，主干 16→16，head 16→4，与 4 通道旁路
 `configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_conv3x3.yaml` 基于 `_repncb_w32.yaml`，新增 `refine_block_type: conv3x3` 并设置独立输出目录。默认 `refine_block_type: repncb` 保持原结构和已有 checkpoint 兼容；也支持 CLI `--refine-block-type`。
 
 本组四个主干块均为普通 `Conv3×3(32→32, bias=True, padding=1) + PReLU(32)`，从头训练单个卷积，没有多分支或固定平滑核。其余小波网络、K=2、输入旁路 I、stem 16→32、head 32→16、fusion 32→16、训练超参数均与 w32 基准一致。保留激活以单独比较多分支重参数化训练与标准卷积训练；两者部署时的主干算子结构相同。标准卷积组沿用 checkpoint 保存/加载流程，部署复制不会改变其卷积权重。
+
+## 前置差值融合 + 融合图旁路
+
+配置：`configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_input_fusion.yaml`。沿用 sym4 w32 基准的全部训练设置，使用独立输出目录。
+
+新增 `refine_input_fusion: preliminary_difference` 和 `refine_skip_source: fused`：
+
+```text
+F = Conv1×1( concat[I-, I - I-] )       # 8→4，直接学习，无额外激活
+Z = S2D(F)                            # 4→16，K=2
+H = Conv3×3(RepNCB×4(Conv3×3(Z)))       # 16→32→32→16
+output = D2S(Conv1×1(concat[H, Z]))     # 32→16→4
+```
+
+差值方向固定为原始输入减初步去噪输出，拼接顺序固定为 `[I-, I - I-]`。前置 1×1 输出 F 同时供主干和旁路使用，两条路径均回传梯度，无 detach。图中的 C 按通道拼接实现，不额外做逐元素残差相加。旁路对 F 同样做 S2D，保证末端空间尺寸和 16 通道匹配。前置卷积采用 PyTorch 默认初始化。
+
+默认 `refine_input_fusion: none` 不创建新卷积，原配置和旧权重结构保持兼容；`refine_skip_source: fused` 必须开启前置融合。此新实验从头联合训练，不直接加载旧 w32 checkpoint。训练由用户离线执行。
