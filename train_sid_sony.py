@@ -315,6 +315,8 @@ def save_checkpoint(
     args: argparse.Namespace,
     best_psnr: float = -math.inf,
     best_epoch: int = 0,
+    best_train_l1: float = math.inf,
+    best_train_l1_epoch: int = 0,
 ) -> None:
     fused_state = deploy_state_dict(model)
     state = {
@@ -322,6 +324,8 @@ def save_checkpoint(
         "global_step": global_step,
         "best_psnr": best_psnr,
         "best_epoch": best_epoch,
+        "best_train_l1": best_train_l1,
+        "best_train_l1_epoch": best_train_l1_epoch,
         "model": model.state_dict(),
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict(),
@@ -513,11 +517,14 @@ def main() -> None:
     scaler = torch.cuda.amp.GradScaler(enabled=bool(args.amp))
     start_epoch, global_step = 1, 0
     best_psnr, best_epoch = -math.inf, 0
+    best_train_l1, best_train_l1_epoch = math.inf, 0
     if args.resume:
         epoch, global_step = load_checkpoint(args.resume, model, optimizer, scheduler, scaler)
         resume_state = torch.load(args.resume, map_location="cpu")
         best_psnr = float(resume_state.get("best_psnr", -math.inf))
         best_epoch = int(resume_state.get("best_epoch", 0))
+        best_train_l1 = float(resume_state.get("best_train_l1", math.inf))
+        best_train_l1_epoch = int(resume_state.get("best_train_l1_epoch", 0))
         del resume_state
         start_epoch = epoch + 1
         print(f"Resumed {args.resume} at epoch {start_epoch}, global step {global_step}")
@@ -627,21 +634,31 @@ def main() -> None:
             # 模型信息(model_info)仅在训练前保存到 model_info.json 并打印一次，
             # 此处不再重复写入每个 epoch 的 metrics，避免日志与 metrics.jsonl 冗余。
         }
+        improved_train_l1 = (epoch_samples > 0 and math.isfinite(metrics["train_l1"])
+                             and metrics["train_l1"] < best_train_l1)
+        if improved_train_l1:
+            best_train_l1, best_train_l1_epoch = metrics["train_l1"], epoch
         if args.validate_steps and (epoch % args.validate_every == 0 or epoch == args.epochs or global_step >= total_steps):
             metrics.update(real_validate(model, val_loader, args, device))
             if metrics["real_psnr"] > best_psnr:
                 best_psnr, best_epoch = metrics["real_psnr"], epoch
                 save_checkpoint(checkpoint_dir / "best.pth", model, optimizer, scheduler, scaler,
-                                epoch, global_step, args, best_psnr, best_epoch)
+                                epoch, global_step, args, best_psnr, best_epoch, best_train_l1, best_train_l1_epoch)
                 print(f"Saved best.pth: PSNR={best_psnr:.4f}, epoch={best_epoch}")
-        metrics.update(best_psnr=best_psnr if best_epoch else None, best_epoch=best_epoch)
+        if improved_train_l1:
+            save_checkpoint(checkpoint_dir / "best_train_l1.pth", model, optimizer, scheduler, scaler,
+                            epoch, global_step, args, best_psnr, best_epoch, best_train_l1, best_train_l1_epoch)
+            print(f"Saved best_train_l1.pth: train_l1={best_train_l1:.6f}, epoch={best_train_l1_epoch}")
+        metrics.update(best_psnr=best_psnr if best_epoch else None, best_epoch=best_epoch,
+                       best_train_l1=best_train_l1 if best_train_l1_epoch else None,
+                       best_train_l1_epoch=best_train_l1_epoch)
         with log_path.open("a", encoding="utf-8") as log_file:
             log_file.write(json.dumps(metrics, ensure_ascii=False) + "\n")
         print("epoch summary", json.dumps(metrics, ensure_ascii=False))
 
-        save_checkpoint(checkpoint_dir / "latest.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch)
+        save_checkpoint(checkpoint_dir / "latest.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch, best_train_l1, best_train_l1_epoch)
         if epoch % args.save_every == 0 or epoch == args.epochs:
-            save_checkpoint(checkpoint_dir / f"epoch_{epoch:04d}.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch)
+            save_checkpoint(checkpoint_dir / f"epoch_{epoch:04d}.pth", model, optimizer, scheduler, scaler, epoch, global_step, args, best_psnr, best_epoch, best_train_l1, best_train_l1_epoch)
             prune_checkpoints(checkpoint_dir, args.keep_checkpoints)
         if global_step >= total_steps:
             print(f"Reached total optimization-step budget: {total_steps}")
