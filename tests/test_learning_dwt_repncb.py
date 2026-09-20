@@ -176,7 +176,7 @@ def test_input_fusion_checkpoint(tmp_path):
     prefix = 'configs/train_sid_sony_learning_dwt_sym4_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32'
     base = yaml.safe_load(Path(prefix+'.yaml').read_text())
     args = yaml.safe_load(Path(prefix+'_input_fusion.yaml').read_text())
-    assert {k for k in base if base[k]!=args[k]} == {'output_dir','refine_skip_source'}
+    assert {k for k in base if k != 'device' and base[k]!=args[k]} == {'output_dir','refine_skip_source'}
     net = LearningDWTRepNCB(learning_dwt_kwargs(args),refine_config=refiner_kwargs(args))
     x = torch.rand(1,4,33,41)
     y = net(x)

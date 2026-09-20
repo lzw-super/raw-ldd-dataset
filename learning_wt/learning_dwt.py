@@ -223,7 +223,8 @@ class LearningDWT(nn.Module):
                  magnitude_input: bool = False, condition_bands: bool = False,
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
-                 ll_fusion: str = "residual"):
+                 ll_fusion: str = "residual", trainable_haar: bool = False,
+                 haar_share_channels: bool = True, haar_share_levels: bool = True):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -236,7 +237,12 @@ class LearningDWT(nn.Module):
             raise ValueError("levels must be a positive integer")
         self.levels = levels
         self.wavelet = wavelet
+        if trainable_haar and wavelet != "haar":
+            raise ValueError("trainable_haar requires wavelet=haar")
         self.transform = PeriodizedWavelet(wavelet) if wavelet != "haar" else None
+        if trainable_haar:
+            from .trainable_haar import TrainableHaar
+            self.transform = TrainableHaar(haar_share_channels, haar_share_levels, levels)
         self.context, self.shrink_ll = context, shrink_ll
         self.leak, self.normalize_bands = leak, normalize_bands
         self.pad_input = pad_input
@@ -346,7 +352,8 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_magnitude_input=True, dwt_condition_bands=True,
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
-                    dwt_ll_fusion="residual")
+                    dwt_ll_fusion="residual", dwt_trainable_haar=False,
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True)
 
 
 def learning_dwt_kwargs(options):

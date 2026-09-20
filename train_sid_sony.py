@@ -356,8 +356,18 @@ def load_checkpoint(
     optimizer: torch.optim.Optimizer | None = None,
     scheduler: LambdaLR | None = None,
     scaler: torch.cuda.amp.GradScaler | None = None,
+    initialize_haar: bool = False,
 ) -> tuple[int, int]:
     state = torch.load(path, map_location="cpu")
+    if initialize_haar:
+        weights = state["model"] if "model" in state else state
+        weights = dict(weights)
+        keys = {"wavelet.transform.analysis", "wavelet.transform.synthesis"}
+        # Only the two NEW Haar tensors may be absent; all CNN keys remain strict.
+        if not keys.intersection(weights):
+            weights.update({k: v for k, v in model.state_dict().items() if k in keys})
+        model.load_state_dict(weights, strict=True)
+        return int(state.get("epoch", 0)), int(state.get("global_step", 0))
     if "model" in state:
         model.load_state_dict(state["model"], strict=True)
         if optimizer is not None:
@@ -463,6 +473,12 @@ def main() -> None:
     (output_dir / "config.json").write_text(json.dumps(vars(args), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     model, architecture_config = build_model(args)
+    if args.dwt_trainable_haar:
+        if args.model != "learning_dwt_repncb" or not (args.init_checkpoint or args.resume):
+            raise ValueError("Haar-kernel fine-tuning requires learning_dwt_repncb and init_checkpoint or resume")
+        for name, parameter in model.named_parameters():
+            parameter.requires_grad_(name in {"wavelet.transform.analysis", "wavelet.transform.synthesis"})
+        print(f"Fine-tuning only Haar analysis/synthesis: {sum(p.numel() for p in model.parameters() if p.requires_grad)} trainable parameters")
     model = model.to(device)
     profile_model, profile_graph = prepare_model_for_inference(model)
     model_info = calculate_model_info(profile_model, (1, 4, args.patch_size, args.patch_size), device)
@@ -501,7 +517,7 @@ def main() -> None:
     print(format_model_info(model_info))
     del profile_model
     optimizer = Adam(
-        model.parameters(),
+        (p for p in model.parameters() if p.requires_grad),
         lr=args.learning_rate,
         betas=(args.beta1, args.beta2),
         eps=args.adam_epsilon,
@@ -529,7 +545,7 @@ def main() -> None:
         start_epoch = epoch + 1
         print(f"Resumed {args.resume} at epoch {start_epoch}, global step {global_step}")
     elif args.init_checkpoint:
-        load_checkpoint(args.init_checkpoint, model)
+        load_checkpoint(args.init_checkpoint, model, initialize_haar=args.dwt_trainable_haar)
         print(f"Initialised model weights from {args.init_checkpoint}")
 
     criterion = (

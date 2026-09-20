@@ -190,6 +190,17 @@ for ratio in 100 250 300; do
 done
 ```
 
+```bash
+for ratio in 100 250 300; do
+  conda run --no-capture-output -n LED-ICCV23 python test_denoise_sideld.py \
+    --cp-dir experiments/sid_sony_mrlfn_n4_d16/checkpoints/best_train_l1.pth \
+    --testset-type sid \
+    --eval-ratio "$ratio" \
+    --device cuda:0 \
+    --num-workers 2 \
+    --result-json "experiments/sid_sony_mrlfn_n4_d16/sid_x${ratio}.json"
+done
+```
 每个 JSON 包含：
 
 ```text
