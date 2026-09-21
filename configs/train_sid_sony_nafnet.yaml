@@ -8,9 +8,9 @@
 #   convolution MACs: 35.042 GMAC
 #   convolution FLOPs: 70.084 GFLOPs (2 FLOPs/MAC)
 
-patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
-pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
-sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
+pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
+sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
 val_manifest: infos/SID_validation_clean_raw.json
@@ -24,13 +24,13 @@ encoder_blocks: [2, 2, 2, 2]
 middle_blocks: 2
 decoder_blocks: [2, 2, 2, 2]
 
-output_dir: experiments/sid_sony_nafnet
+output_dir: experiments/sid_sony_nafnet_new
 epochs: 1000
 steps_per_epoch: null
-batch_size: 1
-num_workers: 2
-patch_size: 512
-crops_per_image: 8
+batch_size: 32
+num_workers: 8
+patch_size: 256
+crops_per_image: 16
 ratios: [100, 250, 300]
 clean_cache_size: 16
 dark_cache_size: 2
@@ -41,14 +41,14 @@ learning_rate: 0.0002
 beta1: 0.9
 beta2: 0.999
 weight_decay: 0.0
-warmup_epochs: 5
+warmup_epochs: 10
 grad_clip: null
 amp: false
 device: cuda:0
 seed: 1
 
-validate_every: 10
-validate_steps: 20
+validate_every: 50
+validate_steps: 40
 save_every: 10
 keep_checkpoints: 3
 log_every: 20

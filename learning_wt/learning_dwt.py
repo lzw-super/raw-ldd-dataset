@@ -170,13 +170,22 @@ class LLRestorationCNN(nn.Module):
     Inputs are normalized wavelet coefficients; the first four channels are LL.
     Both fusion modes start near the input without restricting LL to shrinkage.
     """
-    def __init__(self, in_channels: int, width: int = 32, depth: int = 4, fusion: str = "residual"):
+    def __init__(self, in_channels: int, width: int = 32, depth: int = 4, fusion: str = "residual", block_type: str = "conv3x3"):
         super().__init__()
         if width < 1 or depth < 2:
             raise ValueError("LL CNN requires width >= 1 and depth >= 2")
+        if block_type not in ("conv3x3", "repmbconv", "repncb"):
+            raise ValueError("LL block_type must be conv3x3, repmbconv or repncb")
+        from models.rep_mbconv import RepMBConv
         layers = [nn.Conv2d(in_channels, width, 3, padding=1), nn.ReLU()]
         for _ in range(depth - 2):
-            layers.extend([nn.Conv2d(width, width, 3, padding=1), nn.ReLU()])
+            if block_type == "repncb":
+                from models.learning_dwt_repncb import RepNCB
+                # RepNCB includes its own PReLU; do not append a second activation.
+                layers.append(RepNCB(width))
+            else:
+                block = RepMBConv(width) if block_type == "repmbconv" else nn.Conv2d(width, width, 3, padding=1)
+                layers.extend([block, nn.ReLU()])
         layers.append(nn.Conv2d(width, 4, 3, padding=1))
         self.layers = nn.Sequential(*layers)
         nn.init.normal_(self.layers[-1].weight, std=1e-3)
@@ -224,7 +233,7 @@ class LearningDWT(nn.Module):
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
                  ll_fusion: str = "residual", trainable_haar: bool = False,
-                 haar_share_channels: bool = True, haar_share_levels: bool = True):
+                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3"):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -267,7 +276,7 @@ class LearningDWT(nn.Module):
         if ll_mode not in ("threshold", "ll_only", "level_bands"):
             raise ValueError("ll_mode must be threshold, ll_only or level_bands")
         self.ll_mode = ll_mode
-        self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion)
+        self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion, ll_block_type)
                             if ll_mode != "threshold" else None)
 
     def _maps(self, atlas: Tensor, bands: list[Band]) -> tuple[Tensor, Tensor, Tensor]:
@@ -353,7 +362,7 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
                     dwt_ll_fusion="residual", dwt_trainable_haar=False,
-                    dwt_haar_share_channels=True, dwt_haar_share_levels=True)
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3")
 
 
 def learning_dwt_kwargs(options):

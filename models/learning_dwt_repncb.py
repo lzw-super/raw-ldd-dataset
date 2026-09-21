@@ -158,6 +158,8 @@ class LearningDWTRepNCB(nn.Module):
         config.update(dwt_config or {})
         self.wavelet = LearningDWT(**config)
         self.refiner = PackedRAWRefiner(deploy=deploy, **(refine_config or {}))
+        if deploy:
+            self.switch_to_deploy()
 
     def forward(self, noisy, return_aux=False):
         preliminary = self.wavelet(noisy)
@@ -166,8 +168,9 @@ class LearningDWTRepNCB(nn.Module):
 
     @torch.no_grad()
     def switch_to_deploy(self):
-        for block in self.refiner.blocks:
-            if isinstance(block, RepNCB):
+        from models.rep_mbconv import RepMBConv
+        for block in list(self.modules()):
+            if isinstance(block, (RepNCB, RepMBConv)):
                 block.switch_to_deploy()
         return self
 
