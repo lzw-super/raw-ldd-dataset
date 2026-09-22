@@ -1,0 +1,230 @@
+{
+  "ort": "1.18.0",
+  "providers": [
+    "TensorrtExecutionProvider",
+    "CUDAExecutionProvider",
+    "AzureExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "shape": [
+    1,
+    4,
+    360,
+    640
+  ],
+  "cpu_threads": 4,
+  "cpu_warmup": 5,
+  "cpu_runs": 20,
+  "gpu_warmup": 10,
+  "gpu_runs": 50,
+  "gpu": 0,
+  "tf32": false,
+  "results": [
+    {
+      "name": "sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb",
+      "path": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb/onnx/learning_dwt_repncb_latest_deploy_1x4x360x640.onnx",
+      "cpu": {
+        "mean_ms": 88.30910702235997,
+        "median_ms": 85.59968648478389,
+        "p95_ms": 105.74078694917262,
+        "min_ms": 78.17270513623953,
+        "fps": 11.323860400341257
+      },
+      "gpu_provider_options": {
+        "CPUExecutionProvider": {},
+        "CUDAExecutionProvider": {
+          "prefer_nhwc": "0",
+          "enable_skip_layer_norm_strict_mode": "0",
+          "tunable_op_enable": "0",
+          "enable_cuda_graph": "0",
+          "tunable_op_max_tuning_duration_ms": "0",
+          "tunable_op_tuning_enable": "0",
+          "cudnn_conv_use_max_workspace": "1",
+          "use_tf32": "0",
+          "cudnn_conv1d_pad_to_nc1d": "0",
+          "do_copy_in_default_stream": "1",
+          "cudnn_conv_algo_search": "HEURISTIC",
+          "gpu_external_empty_cache": "0",
+          "gpu_external_free": "0",
+          "gpu_external_alloc": "0",
+          "gpu_mem_limit": "18446744073709551615",
+          "arena_extend_strategy": "kNextPowerOfTwo",
+          "user_compute_stream": "0",
+          "has_user_compute_stream": "0",
+          "use_ep_level_unified_stream": "0",
+          "device_id": "0"
+        }
+      },
+      "gpu_device": {
+        "mean_ms": 3.5242935083806515,
+        "median_ms": 3.131883218884468,
+        "p95_ms": 5.4402765817940235,
+        "min_ms": 3.010496497154236,
+        "fps": 283.74481229274284
+      },
+      "gpu_cpu_max_abs": 6.556510925292969e-07,
+      "gpu_host_io": {
+        "mean_ms": 4.830261487513781,
+        "median_ms": 5.2938866429030895,
+        "p95_ms": 7.064301148056983,
+        "min_ms": 2.775714732706547,
+        "fps": 207.02812934351456
+      }
+    },
+    {
+      "name": "sid_sony_mrlfn_paper_s2d_k4_n4_d32",
+      "path": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/onnx/mrlfn_latest_deploy_1x4x360x640.onnx",
+      "cpu": {
+        "mean_ms": 67.7849620115012,
+        "median_ms": 66.66501751169562,
+        "p95_ms": 78.3033024519682,
+        "min_ms": 54.32414636015892,
+        "fps": 14.752534637849738
+      },
+      "gpu_provider_options": {
+        "CPUExecutionProvider": {},
+        "CUDAExecutionProvider": {
+          "prefer_nhwc": "0",
+          "enable_skip_layer_norm_strict_mode": "0",
+          "tunable_op_enable": "0",
+          "enable_cuda_graph": "0",
+          "tunable_op_max_tuning_duration_ms": "0",
+          "tunable_op_tuning_enable": "0",
+          "cudnn_conv_use_max_workspace": "1",
+          "use_tf32": "0",
+          "cudnn_conv1d_pad_to_nc1d": "0",
+          "do_copy_in_default_stream": "1",
+          "cudnn_conv_algo_search": "HEURISTIC",
+          "gpu_external_empty_cache": "0",
+          "gpu_external_free": "0",
+          "gpu_external_alloc": "0",
+          "gpu_mem_limit": "18446744073709551615",
+          "arena_extend_strategy": "kNextPowerOfTwo",
+          "user_compute_stream": "0",
+          "has_user_compute_stream": "0",
+          "use_ep_level_unified_stream": "0",
+          "device_id": "0"
+        }
+      },
+      "gpu_device": {
+        "mean_ms": 4.697052352130413,
+        "median_ms": 5.017158109694719,
+        "p95_ms": 5.059934174641967,
+        "min_ms": 2.7885427698493004,
+        "fps": 212.89947929714603
+      },
+      "gpu_cpu_max_abs": 7.152557373046875e-07,
+      "gpu_host_io": {
+        "mean_ms": 2.707841582596302,
+        "median_ms": 2.793611027300358,
+        "p95_ms": 3.273133374750613,
+        "min_ms": 1.9374890252947807,
+        "fps": 369.29782245281547
+      }
+    },
+    {
+      "name": "sid_sony_nafnet_new",
+      "path": "experiments/sid_sony_nafnet_new/onnx/nafnet_latest_deploy_1x4x360x640.onnx",
+      "cpu": {
+        "mean_ms": 1110.042908694595,
+        "median_ms": 1133.528965525329,
+        "p95_ms": 1213.7159598525614,
+        "min_ms": 848.7440012395382,
+        "fps": 0.9008660765879717
+      },
+      "gpu_provider_options": {
+        "CPUExecutionProvider": {},
+        "CUDAExecutionProvider": {
+          "prefer_nhwc": "0",
+          "enable_skip_layer_norm_strict_mode": "0",
+          "tunable_op_enable": "0",
+          "enable_cuda_graph": "0",
+          "tunable_op_max_tuning_duration_ms": "0",
+          "tunable_op_tuning_enable": "0",
+          "cudnn_conv_use_max_workspace": "1",
+          "use_tf32": "0",
+          "cudnn_conv1d_pad_to_nc1d": "0",
+          "do_copy_in_default_stream": "1",
+          "cudnn_conv_algo_search": "HEURISTIC",
+          "gpu_external_empty_cache": "0",
+          "gpu_external_free": "0",
+          "gpu_external_alloc": "0",
+          "gpu_mem_limit": "18446744073709551615",
+          "arena_extend_strategy": "kNextPowerOfTwo",
+          "user_compute_stream": "0",
+          "has_user_compute_stream": "0",
+          "use_ep_level_unified_stream": "0",
+          "device_id": "0"
+        }
+      },
+      "gpu_device": {
+        "mean_ms": 29.58945633843541,
+        "median_ms": 26.43005596473813,
+        "p95_ms": 39.98162383213639,
+        "min_ms": 20.584141835570335,
+        "fps": 33.795822017217795
+      },
+      "gpu_cpu_max_abs": 8.344650268554688e-07,
+      "gpu_host_io": {
+        "mean_ms": 38.68806088343263,
+        "median_ms": 39.54803943634033,
+        "p95_ms": 40.21381316706538,
+        "min_ms": 26.530802249908447,
+        "fps": 25.84776742915615
+      }
+    },
+    {
+      "name": "sid_sony_paper_fair",
+      "path": "experiments/sid_sony_paper_fair/onnx/unet_latest_deploy_1x4x360x640.onnx",
+      "cpu": {
+        "mean_ms": 342.8665134124458,
+        "median_ms": 338.47989281639457,
+        "p95_ms": 378.25695644132793,
+        "min_ms": 313.51640820503235,
+        "fps": 2.9165869540518994
+      },
+      "gpu_provider_options": {
+        "CPUExecutionProvider": {},
+        "CUDAExecutionProvider": {
+          "prefer_nhwc": "0",
+          "enable_skip_layer_norm_strict_mode": "0",
+          "tunable_op_enable": "0",
+          "enable_cuda_graph": "0",
+          "tunable_op_max_tuning_duration_ms": "0",
+          "tunable_op_tuning_enable": "0",
+          "cudnn_conv_use_max_workspace": "1",
+          "use_tf32": "0",
+          "cudnn_conv1d_pad_to_nc1d": "0",
+          "do_copy_in_default_stream": "1",
+          "cudnn_conv_algo_search": "HEURISTIC",
+          "gpu_external_empty_cache": "0",
+          "gpu_external_free": "0",
+          "gpu_external_alloc": "0",
+          "gpu_mem_limit": "18446744073709551615",
+          "arena_extend_strategy": "kNextPowerOfTwo",
+          "user_compute_stream": "0",
+          "has_user_compute_stream": "0",
+          "use_ep_level_unified_stream": "0",
+          "device_id": "0"
+        }
+      },
+      "gpu_device": {
+        "mean_ms": 6.092319563031197,
+        "median_ms": 7.591013330966234,
+        "p95_ms": 7.691355235874653,
+        "min_ms": 2.990361303091049,
+        "fps": 164.14109431621083
+      },
+      "gpu_cpu_max_abs": 6.556510925292969e-07,
+      "gpu_host_io": {
+        "mean_ms": 7.653059717267752,
+        "median_ms": 7.618980016559362,
+        "p95_ms": 8.528837794438003,
+        "min_ms": 5.0944313406944275,
+        "fps": 130.66669240064599
+      }
+    }
+  ],
+  "gpu_before": "Tue Sep 22 14:24:05 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 575.64.05              Driver Version: 575.64.05      CUDA Version: 12.9     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 4090        On  |   00000000:3C:00.0 Off |                  Off |\n| 59%   54C    P2            182W /  450W |   17429MiB /  24564MiB |     44%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n|   1  NVIDIA GeForce RTX 4090        On  |   00000000:3D:00.0 Off |                  Off |\n| 48%   44C    P2            216W /  450W |   19284MiB /  24564MiB |     64%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n+-----------------------------------------------------------------------------------------+\n",
+  "gpu_after": "Tue Sep 22 14:24:58 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 575.64.05              Driver Version: 575.64.05      CUDA Version: 12.9     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 4090        On  |   00000000:3C:00.0 Off |                  Off |\n| 67%   56C    P2            218W /  450W |   17834MiB /  24564MiB |     98%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n|   1  NVIDIA GeForce RTX 4090        On  |   00000000:3D:00.0 Off |                  Off |\n| 47%   45C    P2            230W /  450W |   19284MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n+-----------------------------------------------------------------------------------------+\n"
+}
