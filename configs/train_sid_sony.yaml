@@ -1,21 +1,21 @@
 # Main paper-fair reproduction configuration.  Values not stated by the paper
 # (LR schedule, worker count, cache sizes) are explicit rather than hidden.
-patch_dir: /home/shared_files/dataset/SID/Sony_train_long_patches
-pair_list: /home/shared_files/dataset/SID/Sony_train_list.txt
-sid_long_dir: /home/shared_files/dataset/SID/Sony/long
+patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
+pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
+sid_long_dir: ../../Datasets/SID-sub/Sony/long
 clean_source: raw
 manifest: infos/SID_train_clean_raw.json
 val_manifest: infos/SID_validation_clean_raw.json
 dark_root: biasframe_et_1_30
 pmn_resource_dir: resources/SonyA7S2
-output_dir: experiments/sid_sony_raw_dynamic
+output_dir: experiments/sid_sony_paper_new
 epochs: 1000
 steps_per_epoch: null
-batch_size: 1
-num_workers: 2
-patch_size: 512
+batch_size: 32
+num_workers: 8
+patch_size: 256
 # Draw eight new random patches from every full-resolution long RAW per epoch.
-crops_per_image: 8
+crops_per_image: 16
 ratios: [100, 250, 300]
 clean_cache_size: 16
 dark_cache_size: 2
@@ -27,10 +27,10 @@ beta2: 0.999
 weight_decay: 0.0
 warmup_epochs: 5
 amp: false
-device: cuda:0
+device: cuda:1
 seed: 1
-validate_every: 10
-validate_steps: 20
+validate_every: 50
+validate_steps: 40
 save_every: 10
 keep_checkpoints: 3
 log_every: 20

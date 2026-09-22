@@ -186,7 +186,7 @@ for ratio in 100 250 300; do
     --eval-ratio "$ratio" \
     --device cuda:0 \
     --num-workers 2 \
-    --result-json "experiments/sid_sony_mrlfn_n4_d16/sid_x${ratio}.json"
+    --result-json "experiments/sid_sony_mrlfn_n4_d16/latest_sid_x${ratio}.json"
 done
 ```
 
@@ -198,7 +198,7 @@ for ratio in 100 250 300; do
     --eval-ratio "$ratio" \
     --device cuda:0 \
     --num-workers 2 \
-    --result-json "experiments/sid_sony_mrlfn_n4_d16/sid_x${ratio}.json"
+    --result-json "experiments/sid_sony_mrlfn_n4_d16/bl1_sid_x${ratio}.json"
 done
 ```
 每个 JSON 包含：

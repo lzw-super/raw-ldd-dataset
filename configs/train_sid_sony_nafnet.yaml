@@ -27,10 +27,10 @@ decoder_blocks: [2, 2, 2, 2]
 output_dir: experiments/sid_sony_nafnet_new
 epochs: 1000
 steps_per_epoch: null
-batch_size: 32
+batch_size: 16
 num_workers: 8
 patch_size: 256
-crops_per_image: 16
+crops_per_image: 8
 ratios: [100, 250, 300]
 clean_cache_size: 16
 dark_cache_size: 2
@@ -44,7 +44,7 @@ weight_decay: 0.0
 warmup_epochs: 10
 grad_clip: null
 amp: false
-device: cuda:0
+device: cuda:1
 seed: 1
 
 validate_every: 50
