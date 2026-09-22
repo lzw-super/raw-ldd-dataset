@@ -101,6 +101,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--wavelet-hf-loss-weight", type=float, default=0.0)
     parser.add_argument("--wavelet-hf-basis", choices=WaveletLLLoss.SUPPORTED, default="haar")
     parser.add_argument("--wavelet-hf-levels", type=int, default=2)
+    parser.add_argument("--teacher-checkpoint", default=None)
+    parser.add_argument("--distill-loss-weight", type=float, default=0.0)
     parser.add_argument("--wavelet-loss-weight", type=float, default=0.0, help="Auxiliary LL loss weight; zero disables it")
     parser.add_argument("--wavelet-basis", choices=WaveletLLLoss.SUPPORTED, default="haar")
     parser.add_argument("--wavelet-levels", type=int, default=3)
@@ -480,6 +482,17 @@ def main() -> None:
             parameter.requires_grad_(name in {"wavelet.transform.analysis", "wavelet.transform.synthesis"})
         print(f"Fine-tuning only Haar analysis/synthesis: {sum(p.numel() for p in model.parameters() if p.requires_grad)} trainable parameters")
     model = model.to(device)
+    if not math.isfinite(args.distill_loss_weight) or args.distill_loss_weight < 0:
+        raise ValueError("distill-loss-weight must be finite and non-negative")
+    teacher = None
+    teacher_meta = None
+    if args.distill_loss_weight > 0:
+        if not args.teacher_checkpoint:
+            raise ValueError("Distillation requires teacher-checkpoint")
+        from utils.model_factory import build_denoiser_from_checkpoint
+        teacher, teacher_meta = build_denoiser_from_checkpoint(args.teacher_checkpoint, device)
+        teacher.requires_grad_(False)
+        teacher.eval()
     profile_model, profile_graph = prepare_model_for_inference(model)
     model_info = calculate_model_info(profile_model, (1, 4, args.patch_size, args.patch_size), device)
     model_info["architecture_config"] = {**architecture_config, "deploy": profile_graph == "deploy"}
@@ -509,6 +522,10 @@ def main() -> None:
         "weight": args.wavelet_hf_loss_weight, "basis": args.wavelet_hf_basis,
         "levels": args.wavelet_hf_levels, "boundary": "symmetric",
         "aggregation": "equal_mean_levels_and_three_bands", "coefficient_normalization": "none",
+    }
+    model_info["loss_config"]["distillation"] = {
+        "weight": args.distill_loss_weight, "teacher_checkpoint": args.teacher_checkpoint,
+        "teacher": teacher_meta, "loss": "output_l1_unclipped",
     }
     (output_dir / "model_info.json").write_text(
         json.dumps(model_info, ensure_ascii=False, indent=2) + "\n",
@@ -568,6 +585,7 @@ def main() -> None:
     for epoch in range(start_epoch, args.epochs + 1):
         model.train()
         epoch_loss, epoch_raw_l1, epoch_chromatic_l1, epoch_samples = 0.0, 0.0, 0.0, 0
+        epoch_distill_l1 = 0.0
         epoch_wavelet_l1 = 0.0
         epoch_gradient_l1, epoch_hf_l1 = 0.0, 0.0
         epoch_start = time.perf_counter()
@@ -604,6 +622,14 @@ def main() -> None:
                     loss = loss + args.gradient_loss_weight * gradient_l1
                 if hf_criterion is not None:
                     loss = loss + args.wavelet_hf_loss_weight * hf_l1
+                distill_l1 = loss.new_zeros(())
+                if teacher is not None:
+                    with torch.no_grad():
+                        teacher_prediction = teacher(noisy)
+                    if teacher_prediction.shape != prediction.shape:
+                        raise ValueError("Teacher/student output shape mismatch")
+                    distill_l1 = F.l1_loss(prediction.float(), teacher_prediction.float())
+                    loss = loss + args.distill_loss_weight * distill_l1
             scaler.scale(loss).backward()
             if args.grad_clip is not None:
                 scaler.unscale_(optimizer)
@@ -615,6 +641,7 @@ def main() -> None:
             epoch_gradient_l1 += float(gradient_l1.detach()) * clean.shape[0]
             epoch_hf_l1 += float(hf_l1.detach()) * clean.shape[0]
             epoch_wavelet_l1 += float(wavelet_l1.detach()) * clean.shape[0]
+            epoch_distill_l1 += float(distill_l1.detach()) * clean.shape[0]
             epoch_loss += float(loss.detach()) * clean.shape[0]
             epoch_raw_l1 += float(raw_l1.detach()) * clean.shape[0]
             epoch_chromatic_l1 += float(chromatic_l1.detach()) * clean.shape[0]
@@ -622,6 +649,7 @@ def main() -> None:
             if step == 1 or step % args.log_every == 0 or step == steps_per_epoch:
                 print(
                     f"epoch {epoch:04d} step {step:04d}/{steps_per_epoch} "
+                    f"distill_l1={float(distill_l1.detach()):.6f} "
                     f"loss={float(loss.detach()):.6f} raw_l1={float(raw_l1.detach()):.6f} "
                     f"gradient_l1={float(gradient_l1.detach()):.6f} wavelet_hf_l1={float(hf_l1.detach()):.6f} "
                     f"wavelet_ll_l1={float(wavelet_l1.detach()):.6f} "
@@ -638,6 +666,8 @@ def main() -> None:
             "train_wavelet_hf_weighted": args.wavelet_hf_loss_weight * epoch_hf_l1 / max(1, epoch_samples),
             "train_wavelet_ll_l1": epoch_wavelet_l1 / max(1, epoch_samples),
             "train_wavelet_weighted": args.wavelet_loss_weight * epoch_wavelet_l1 / max(1, epoch_samples),
+            "train_distill_l1": epoch_distill_l1 / max(1, epoch_samples),
+            "train_distill_weighted": args.distill_loss_weight * epoch_distill_l1 / max(1, epoch_samples),
             "train_loss": epoch_loss / max(1, epoch_samples),
             "train_l1": epoch_raw_l1 / max(1, epoch_samples),
             "train_chromatic_l1": epoch_chromatic_l1 / max(1, epoch_samples),
