@@ -131,8 +131,9 @@ class PackedRAWRefiner(nn.Module):
             raise ValueError('Expected two matching N x 4 x H x W packed RAW tensors')
         h, w = noisy.shape[-2:]
         padding = (0, (-w) % self.s2d_factor, 0, (-h) % self.s2d_factor)
-        preliminary = F.pad(preliminary, padding, mode='replicate')
-        noisy = F.pad(noisy, padding, mode='replicate')
+        if padding[1] or padding[3]:
+            preliminary = F.pad(preliminary, padding, mode='replicate')
+            noisy = F.pad(noisy, padding, mode='replicate')
         refined_input = preliminary
         if self.input_fusion == "preliminary_difference":
             refined_input = self.input_projection(torch.cat((preliminary, noisy - preliminary), dim=1))
@@ -145,7 +146,8 @@ class PackedRAWRefiner(nn.Module):
             skip = noisy if self.skip_source == "noisy" else preliminary
             packed_skip = self.s2d(skip)
         fused = self.fusion(torch.cat((features, packed_skip), dim=1))
-        return self.d2s(fused)[..., :h, :w]
+        result = self.d2s(fused)
+        return result if not (padding[1] or padding[3]) else result[..., :h, :w]
 
 
 class LearningDWTRepNCB(nn.Module):
@@ -169,6 +171,14 @@ class LearningDWTRepNCB(nn.Module):
     @torch.no_grad()
     def switch_to_deploy(self):
         self.wavelet.freeze_hf_thresholds()
+        if self.wavelet.threshold_mode == "band_channel" and self.wavelet.wavelet == "haar":
+            from models.fixed_raw_ops import FixedHaarConv, FixedSpaceDepth
+            reference = next(self.parameters())
+            if self.wavelet.transform is None:
+                self.wavelet.transform = FixedHaarConv().to(reference)
+            if self.refiner.s2d_factor == 2:
+                self.refiner.s2d = FixedSpaceDepth().to(reference)
+                self.refiner.d2s = FixedSpaceDepth(inverse=True).to(reference)
         from models.rep_mbconv import RepMBConv
         for block in list(self.modules()):
             if isinstance(block, (RepNCB, RepMBConv)):

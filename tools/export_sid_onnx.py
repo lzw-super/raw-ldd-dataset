@@ -16,6 +16,8 @@ from utils.model_factory import build_denoiser_from_checkpoint
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('checkpoints',nargs='+')
+    parser.add_argument("--simplify-static", action="store_true", help="Elide static-HF identity arithmetic and provably redundant denominator clamps")
+    parser.add_argument("--tag", default="", help="Optional filename suffix, e.g. conv2x2")
     parser.add_argument('--height',type=int,default=360)
     parser.add_argument('--width',type=int,default=640)
     parser.add_argument("--ort-opt-level", choices=["disabled", "basic", "extended", "all"], default="extended",
@@ -27,8 +29,18 @@ def main():
         path=Path(filename)
         outdir=path.parent.parent/'onnx';outdir.mkdir(exist_ok=True)
         model,meta=build_denoiser_from_checkpoint(str(path),'cpu')
-        output=outdir/f"{meta['model']}_{path.stem}_deploy_1x4x{args.height}x{args.width}.onnx"
+        output=outdir/f"{meta['model']}_{path.stem}_deploy_1x4x{args.height}x{args.width}{'_' + args.tag if args.tag else ''}.onnx"
         x=torch.rand(1,4,args.height,args.width)
+        validation_inputs=[("uniform",x),("signed_raw",torch.randn_like(x)*0.1),("zeros",torch.zeros_like(x)),("tiny",torch.full_like(x,1e-30))]
+        with torch.no_grad():
+            reference_outputs={label:model(test).numpy() for label,test in validation_inputs}
+        if args.simplify_static:
+            wavelet=getattr(model,"wavelet",None)
+            if wavelet is None or not hasattr(wavelet,"fixed_hf_thresholds"):
+                raise ValueError("--simplify-static requires a deployed band_channel model")
+            wavelet.export_simplify_static=True
+            thresholds=wavelet.fixed_hf_thresholds
+            wavelet.export_safe_thresholds=bool(torch.isfinite(thresholds).all() and (thresholds >= torch.finfo(thresholds.dtype).tiny).all())
         with torch.no_grad():
             torch.onnx.export(model,x,str(output),opset_version=17,
                               input_names=['noisy_raw'],output_names=['denoised_raw'],
@@ -43,8 +55,8 @@ def main():
                                             "all": ort.GraphOptimizationLevel.ORT_ENABLE_ALL}[args.ort_opt_level]
         session=ort.InferenceSession(str(output),sess_options=options,providers=['CPUExecutionProvider'])
         checks=[]
-        for label,test in [('uniform',x),('signed_raw',torch.randn_like(x)*0.1),('zeros',torch.zeros_like(x))]:
-            with torch.no_grad():expected=model(test).numpy()
+        for label,test in validation_inputs:
+            expected=reference_outputs[label]
             actual=session.run(None,{'noisy_raw':test.numpy()})[0]
             assert actual.shape==tuple(test.shape)
             assert np.isfinite(actual).all()
@@ -52,7 +64,7 @@ def main():
             passed=bool(np.allclose(actual,expected,rtol=1e-3,atol=1e-4))
             checks.append(dict(input=label,max_abs=float(diff.max()),mean_abs=float(diff.mean()),passed=passed))
             if not passed:raise RuntimeError(f'Parity failed: {output}: {checks[-1]}')
-        report=dict(checkpoint=str(path),onnx=str(output),input_shape=shape,layout='NCHW',dtype='float32',
+        report=dict(simplify_static=args.simplify_static,checkpoint=str(path),onnx=str(output),input_shape=shape,layout='NCHW',dtype='float32',
                     opset=17,model=meta,checks=checks,torch_version=torch.__version__,
                     onnx_version=onnx.__version__,onnxruntime_version=ort.__version__,
                     validation_ort_opt_level=args.ort_opt_level,

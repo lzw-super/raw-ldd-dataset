@@ -204,9 +204,10 @@ class LLRestorationCNN(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         cnn_output = self.layers(x)
+        original_ll = x if x.shape[1] == 4 else x[:, :4]
         if self.fusion is not None:
-            return self.fusion(torch.cat((cnn_output, x[:, :4]), dim=1))
-        return x[:, :4] + cnn_output
+            return self.fusion(torch.cat((cnn_output, original_ll), dim=1))
+        return original_ll + cnn_output
 
 
 class LearningDWT(nn.Module):
@@ -322,6 +323,48 @@ class LearningDWT(nn.Module):
                 noisy = noisy.float()
             return self._forward(noisy, return_aux)
 
+    def _static_subband_forward(self, x):
+        """Deploy path: process HF immediately, recurse only into original LL."""
+        from .trainable_haar import TrainableHaar
+        shrink = smooth_shrink if self.shrink_mode == "smooth" else soft_shrink
+        if getattr(self, "export_simplify_static", False):
+            def shrink(z, threshold, leak):
+                if self.shrink_mode == "smooth":
+                    magnitude = z.abs()
+                    denominator = magnitude + threshold
+                    if not self.export_safe_thresholds:
+                        denominator = denominator.clamp_min(torch.finfo(z.dtype).tiny)
+                    result = z * (magnitude / denominator)
+                else:
+                    result = F.relu(z-threshold) - F.relu(-z-threshold)
+                return result if leak == 0 else leak*z + (1-leak)*result
+
+        def visit(current, level):
+            if self.transform is None:
+                ll, lh, hl, hh = haar_dwt2(current)
+            elif isinstance(self.transform, TrainableHaar):
+                ll, lh, hl, hh = self.transform.dwt2(current, level - 1)
+            else:
+                ll, lh, hl, hh = self.transform.dwt2(current)
+            # Stored order is deepest-first, while decomposition is shallow-first.
+            offset = 3 * (self.levels - level)
+            details = tuple(shrink(band, self.fixed_hf_thresholds[offset+i].view(1,4,1,1), self.leak)
+                            for i, band in enumerate((lh, hl, hh)))
+            if level < self.levels:
+                restored_ll = visit(ll, level + 1)
+            else:
+                # Four-band LL restoration requires ORIGINAL (unshrunk) details.
+                ll_input = ll if self.ll_mode == "ll_only" else torch.cat((ll,lh,hl,hh),1)
+                scale = float(2 ** self.levels)
+                restored_ll = self.ll_restorer(ll_input / scale) * scale
+            if self.transform is None:
+                return haar_iwt2(restored_ll, *details)
+            if isinstance(self.transform, TrainableHaar):
+                return self.transform.iwt2(restored_ll, *details, level=level-1)
+            return self.transform.iwt2(restored_ll, *details)
+
+        return visit(x, 1)
+
     def _forward(self, noisy: Tensor, return_aux: bool = False):
         if noisy.ndim != 4 or noisy.shape[1] != 4 or not noisy.is_floating_point():
             raise ValueError("Input must be floating [N,4,H,W] packed RAW")
@@ -333,6 +376,9 @@ class LearningDWT(nn.Module):
         if (pad_h or pad_w) and not self.pad_input:
             raise ValueError(f"H,W must be multiples of {factor}; or enable pad_input")
         x = F.pad(noisy, (0, pad_w, 0, pad_h), mode="replicate") if pad_h or pad_w else noisy
+        if hasattr(self, "fixed_hf_thresholds") and not return_aux:
+            result = self._static_subband_forward(x)
+            return result if not (pad_h or pad_w) else result[..., :h, :w]
         atlas = (self.transform.encode(x, self.levels) if self.transform is not None
                  else dwt_atlas(x, self.levels))
         bands = band_layout(*atlas.shape[-2:], self.levels)

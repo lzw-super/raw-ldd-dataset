@@ -14,3 +14,18 @@
 conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
   --config configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf.yaml
 ```
+
+## 逐层查表部署（无需 atlas）
+
+默认部署 forward 已改为按层处理：
+
+1. 第一级 DWT(I) 得到 LL1 和三组 HF1，按阈值表缩放 HF1。
+2. 对原始 LL1 分解得到 LL2 和 HF2，按表缩放 HF2。
+3. 对原始 LL2 分解得到 LL3 和 HF3，按表缩放 HF3。
+4. LL 网络恢复 LL3，然后结合对应已缩放高频，从第三级向第一级 IWT 重建。
+
+不再拼接十个子图，不生成全分辨率阈值图；只有每个子带的四通道阈值广播。阈值表已包含 softplus 与子带 scale，仍按深层到浅层排列，查表时映射当前层。smooth 缩放中的 `abs(z)/(abs(z)+T)` 仍依赖输入系数，必须在线计算，离线固化的是 T 而不是整张缩放系数图。
+
+两个 static_hf 配置（包括 depth5）不需要修改或重训。原 best.pth/latest.pth 可直接通过评测模型工厂加载：有 model_deploy 时使用已保存阈值表，只有训练权重时在加载阶段计算一次；训练保存的 model_deploy 已包含该表。没有更改 checkpoint 键或表顺序。默认训练路径保留 atlas，`return_aux=True` 显式调试也保留 atlas 输出。
+
+初始 LL 的归一化与恢复尺度仍保留，这是 LL CNN 的输入/输出语义，不属于高频阈值查表；不会重复做高频 scale 换算。四子带输入的 LL 实验仍使用未缩放的最深层原始四个子带，与原实现一致。尚未给出速度或显存改善的量化结论。
