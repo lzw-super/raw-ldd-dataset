@@ -10,7 +10,7 @@ from learning_wt.learning_dwt import LearningDWT
 
 REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
                         refine_num_blocks=4, refine_skip_source="noisy",
-                        refine_block_type="repncb", refine_input_fusion="none")
+                        refine_block_type="repncb", refine_input_fusion="none", refine_activation="prelu")
 
 
 def refiner_kwargs(options):
@@ -159,7 +159,17 @@ class LearningDWTRepNCB(nn.Module):
                       ll_depth=4, ll_fusion='concat_1x1')
         config.update(dwt_config or {})
         self.wavelet = LearningDWT(**config)
-        self.refiner = PackedRAWRefiner(deploy=deploy, **(refine_config or {}))
+        refine_options = dict(refine_config or {})
+        activation = refine_options.pop("activation", "prelu")
+        if activation not in ("prelu", "relu"):
+            raise ValueError("refine_activation must be prelu or relu")
+        self.refiner = PackedRAWRefiner(deploy=deploy, **refine_options)
+        # This experiment switches ALL PReLUs, including the LL branch.
+        if activation == "relu":
+            for module in list(self.modules()):
+                for name, child in list(module.named_children()):
+                    if isinstance(child, nn.PReLU):
+                        setattr(module, name, nn.ReLU())
         if deploy:
             self.switch_to_deploy()
 

@@ -193,5 +193,5 @@ def build_denoiser_from_checkpoint(
         meta["space_to_depth_factor"] = refine_config["s2d_factor"]
         meta["feature_channels"] = refine_config["width"]
         meta["num_blocks"] = refine_config["num_blocks"]
-        meta["refinement"] = {**refine_config, "activation": "prelu", "expand_ratio": 2, "s2d_domain": "packed_raw"}
+        meta["refinement"] = {**refine_config, "activation": refine_config["activation"], "expand_ratio": 2, "s2d_domain": "packed_raw"}
     return net, meta
