@@ -27,7 +27,7 @@ beta2: 0.999
 weight_decay: 0.0
 warmup_epochs: 5
 amp: false
-device: cuda:1
+device: cuda:0
 seed: 1
 validate_every: 50
 validate_steps: 40

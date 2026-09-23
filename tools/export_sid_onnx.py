@@ -18,6 +18,8 @@ def main():
     parser.add_argument('checkpoints',nargs='+')
     parser.add_argument('--height',type=int,default=360)
     parser.add_argument('--width',type=int,default=640)
+    parser.add_argument("--ort-opt-level", choices=["disabled", "basic", "extended", "all"], default="extended",
+                        help="CPU parity validation optimization; extended avoids observed ORT 1.18 ALL cross-run mismatch")
     args=parser.parse_args()
     torch.set_num_threads(4)
     torch.manual_seed(2026)
@@ -35,6 +37,10 @@ def main():
         shape=[d.dim_value for d in graph.graph.input[0].type.tensor_type.shape.dim]
         assert shape==list(x.shape),shape
         options=ort.SessionOptions();options.intra_op_num_threads=4;options.inter_op_num_threads=1
+        options.graph_optimization_level = {"disabled": ort.GraphOptimizationLevel.ORT_DISABLE_ALL,
+                                            "basic": ort.GraphOptimizationLevel.ORT_ENABLE_BASIC,
+                                            "extended": ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED,
+                                            "all": ort.GraphOptimizationLevel.ORT_ENABLE_ALL}[args.ort_opt_level]
         session=ort.InferenceSession(str(output),sess_options=options,providers=['CPUExecutionProvider'])
         checks=[]
         for label,test in [('uniform',x),('signed_raw',torch.randn_like(x)*0.1),('zeros',torch.zeros_like(x))]:
@@ -49,6 +55,7 @@ def main():
         report=dict(checkpoint=str(path),onnx=str(output),input_shape=shape,layout='NCHW',dtype='float32',
                     opset=17,model=meta,checks=checks,torch_version=torch.__version__,
                     onnx_version=onnx.__version__,onnxruntime_version=ort.__version__,
+                    validation_ort_opt_level=args.ort_opt_level,
                     bytes=output.stat().st_size,onnx_sha256=hashlib.sha256(output.read_bytes()).hexdigest())
         output.with_suffix('.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
         print(json.dumps(report,ensure_ascii=False),flush=True)

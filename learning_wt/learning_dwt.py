@@ -233,7 +233,7 @@ class LearningDWT(nn.Module):
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
                  ll_fusion: str = "residual", trainable_haar: bool = False,
-                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3"):
+                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn"):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -263,7 +263,13 @@ class LearningDWT(nn.Module):
             raise ValueError("shrink_mode must be soft or smooth")
         self.shrink_mode = shrink_mode
         self.ll_max_threshold = ll_max_threshold
-        self.predictor = ThresholdCNN(width, depth, magnitude_input, 1 + 3*levels if condition_bands else 0)
+        if threshold_mode not in ("cnn", "band_channel"):
+            raise ValueError("threshold_mode must be cnn or band_channel")
+        if threshold_mode == "band_channel" and ll_mode == "threshold":
+            raise ValueError("band_channel requires a separate LL restoration network")
+        self.threshold_mode = threshold_mode
+        self.predictor = (ThresholdCNN(width, depth, magnitude_input, 1 + 3*levels if condition_bands else 0)
+                          if threshold_mode == "cnn" else None)
         self.depth = depth
         # 10 band identities x 4 CFA channels, in band_layout order.
         initial = torch.full((1 + 3*levels, 4), init_threshold)
@@ -272,12 +278,29 @@ class LearningDWT(nn.Module):
         bias = initial + torch.log(-torch.expm1(-initial))
         if ll_max_threshold is not None:
             bias[0] = math.log(init_ll_threshold / (ll_max_threshold - init_ll_threshold))
-        self.band_bias = nn.Parameter(bias)
+        if threshold_mode == "cnn":
+            self.band_bias = nn.Parameter(bias)
+        else:
+            self.hf_logits = nn.Parameter(bias[1:].clone())
         if ll_mode not in ("threshold", "ll_only", "level_bands"):
             raise ValueError("ll_mode must be threshold, ll_only or level_bands")
         self.ll_mode = ll_mode
         self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion, ll_block_type)
                             if ll_mode != "threshold" else None)
+
+    def hf_threshold_values(self):
+        """Actual coefficient-domain thresholds, ordered LH_L/HL_L/HH_L ... LH1/HL1/HH1."""
+        values = F.softplus(self.hf_logits)
+        if self.normalize_bands:
+            scales = values.new_tensor([2 ** level for level in range(self.levels,0,-1) for _ in range(3)])
+            values = values * scales[:,None]
+        return values
+
+    @torch.no_grad()
+    def freeze_hf_thresholds(self):
+        if self.threshold_mode == "band_channel" and not hasattr(self, "fixed_hf_thresholds"):
+            self.register_buffer("fixed_hf_thresholds", self.hf_threshold_values().detach().clone())
+            del self.hf_logits
 
     def _maps(self, atlas: Tensor, bands: list[Band]) -> tuple[Tensor, Tensor, Tensor]:
         h, w = atlas.shape[-2:]
@@ -313,23 +336,29 @@ class LearningDWT(nn.Module):
         atlas = (self.transform.encode(x, self.levels) if self.transform is not None
                  else dwt_atlas(x, self.levels))
         bands = band_layout(*atlas.shape[-2:], self.levels)
-        scale, bias, mask = self._maps(atlas, bands)
-        normalized = atlas / scale
-        if self.context == "atlas":
-            logits = self.predictor(normalized)
+        if self.threshold_mode == "band_channel":
+            values = self.fixed_hf_thresholds if hasattr(self, "fixed_hf_thresholds") else self.hf_threshold_values()
+            threshold = atlas.new_zeros((1, 4, *atlas.shape[-2:]))
+            for i, band in enumerate(bands[1:]):
+                threshold[..., band.rows, band.cols] = values[i].view(1,4,1,1)
         else:
-            logits = torch.empty_like(atlas)
-            for band_id, band in enumerate(bands):
-                logits[..., band.rows, band.cols] = self.predictor(
-                    normalized[..., band.rows, band.cols], band_id)
-        positive = F.softplus(logits + bias)
-        if self.ll_max_threshold is not None:
-            ll = bands[0]
-            # Clone before slice replacement to keep the autograd graph intact.
-            positive = positive.clone()
-            positive[..., ll.rows, ll.cols] = self.ll_max_threshold * torch.sigmoid(
-                (logits + bias)[..., ll.rows, ll.cols])
-        threshold = positive * scale * mask
+            scale, bias, mask = self._maps(atlas, bands)
+            normalized = atlas / scale
+            if self.context == "atlas":
+                logits = self.predictor(normalized)
+            else:
+                logits = torch.empty_like(atlas)
+                for band_id, band in enumerate(bands):
+                    logits[..., band.rows, band.cols] = self.predictor(
+                        normalized[..., band.rows, band.cols], band_id)
+            positive = F.softplus(logits + bias)
+            if self.ll_max_threshold is not None:
+                ll = bands[0]
+                # Clone before slice replacement to keep the autograd graph intact.
+                positive = positive.clone()
+                positive[..., ll.rows, ll.cols] = self.ll_max_threshold * torch.sigmoid(
+                    (logits + bias)[..., ll.rows, ll.cols])
+            threshold = positive * scale * mask
         if self.shrink_mode == "smooth":
             # Half-gain at |Z|=T, unlike soft shrink no exactly dead interval.
             filtered = smooth_shrink(atlas, threshold, self.leak)
@@ -362,7 +391,7 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
                     dwt_ll_fusion="residual", dwt_trainable_haar=False,
-                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3")
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn")
 
 
 def learning_dwt_kwargs(options):

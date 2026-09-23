@@ -168,6 +168,7 @@ class LearningDWTRepNCB(nn.Module):
 
     @torch.no_grad()
     def switch_to_deploy(self):
+        self.wavelet.freeze_hf_thresholds()
         from models.rep_mbconv import RepMBConv
         for block in list(self.modules()):
             if isinstance(block, (RepNCB, RepMBConv)):

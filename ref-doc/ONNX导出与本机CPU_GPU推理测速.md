@@ -52,14 +52,24 @@ python tools/export_sid_onnx.py \
 
 测速脚本：[tools/benchmark_sid_onnx.py](../tools/benchmark_sid_onnx.py)。原始统计及前后 nvidia-smi 快照：[onnx_benchmark_results.json](onnx_benchmark_results.json)。
 
-GPU ORT 安装到独立目录，未替换原有 CPU ORT；当前本机执行方式：
+2026-09-23 环境恢复：当前默认 Python 为 `/opt/conda/bin/python`（Python 3.10.8，PyTorch 2.1.2 + CUDA 11.8 / cuDNN 8.7）。依赖已改为安装到当前 Python，不再依赖 `/tmp/sid-ort-gpu` 临时目录。GPU 版 ONNX Runtime 同时支持 CPU 和 CUDA，无需同时安装 CPU 版。
 
 ```bash
-python -m pip install --no-deps --target /tmp/sid-ort-gpu onnxruntime-gpu==1.18.0
-PYTHONPATH=/tmp/sid-ort-gpu python tools/benchmark_sid_onnx.py
+python -m pip install onnx==1.16.2 onnxruntime-gpu==1.18.0 'numpy<2'
+python tools/export_sid_onnx.py --help
+python tools/benchmark_sid_onnx.py
 ```
 
-该临时目录可能被清理；重新安装同版本可复测。脚本先 import torch 加载 CUDA/cuDNN 依赖，如果 CUDA provider 未能启用会报错，不会将静默回退的 CPU 结果标为 GPU。
+如果容器重建或切换 Python/conda 环境，需要在对应解释器下重新安装；用 `which python` 核对。早期统计使用的版本仍以上面的历史记录为准。
+
+导出参数必须是 checkpoint 文件，不是实验目录。例如：
+
+```bash
+python tools/export_sid_onnx.py \
+  experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5/checkpoints/latest.pth
+```
+
+测速脚本先 import torch 加载 CUDA/cuDNN 依赖；如果 CUDA provider 未能启用会报错，不会将静默回退的 CPU 结果标为 GPU。
 
 ONNX 文件：
 
@@ -67,3 +77,23 @@ ONNX 文件：
 - [sid_sony_mrlfn_paper_s2d_k4_n4_d32](../experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/onnx/mrlfn_latest_deploy_1x4x360x640.onnx)
 - [sid_sony_nafnet_new](../experiments/sid_sony_nafnet_new/onnx/nafnet_latest_deploy_1x4x360x640.onnx)
 - [sid_sony_paper_fair](../experiments/sid_sony_paper_fair/onnx/unet_latest_deploy_1x4x360x640.onnx)
+
+## 2026-09-23：static_hf_depth5 导出验证偏差
+
+`Parity failed` 出现在 ONNX 结构检查成功后的 ORT 数值验证，而非导出阶段。固定尺寸检查产生的 TracerWarning 不是这次异常的原因。
+
+对同一个 ONNX、同一个带负值输入：新 session 单独执行可通过；session 先执行正值输入后，再执行 signed_raw，在 ORT 1.18.0 CPU 的 ORT_ENABLE_ALL 下最大差约 0.001463、平均差 1.46e-5；ORT_DISABLE_ALL、BASIC、EXTENDED 最大差约 1.02e-7。当前证据定位到 ALL 级运行时优化相关的跨调用偏差，尚未确定具体优化 pass，不能认定为普通浮点舍入误差。
+
+导出脚本新增 `--ort-opt-level disabled|basic|extended|all`，默认 extended。未放宽比较容差，也未修改权重。重新导出后 uniform/signed_raw/zeros 均通过，报告记录 `validation_ort_opt_level`。
+
+**该设置属于运行时 session，不会嵌入 ONNX 文件。** 使用 ORT 1.18.0 CPU 部署此 static_hf_depth5 模型时，应同步设置：
+
+```python
+options = onnxruntime.SessionOptions()
+options.intra_op_num_threads = 4
+options.inter_op_num_threads = 1
+options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
+session = onnxruntime.InferenceSession(model_path, options, providers=['CPUExecutionProvider'])
+```
+
+旧测速脚本仍显式使用 ALL，不能据此保证新模型的多帧正确性；测试该新模型时应设置相同的 EXTENDED，再重新计时。更换 ORT 版本、GPU 或其他推理框架后，应测试连续不同输入，不只是单次前向。
