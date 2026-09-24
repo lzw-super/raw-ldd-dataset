@@ -260,8 +260,8 @@ class LearningDWT(nn.Module):
             raise ValueError("condition_bands requires bandwise context")
         if ll_max_threshold is not None and (not math.isfinite(ll_max_threshold) or ll_max_threshold <= init_ll_threshold):
             raise ValueError("ll_max_threshold must be finite and exceed init_ll_threshold")
-        if shrink_mode not in ("soft", "smooth"):
-            raise ValueError("shrink_mode must be soft or smooth")
+        if shrink_mode not in ("soft", "smooth", "firm", "pwl"):
+            raise ValueError("shrink_mode must be soft, smooth, firm or pwl")
         self.shrink_mode = shrink_mode
         self.ll_max_threshold = ll_max_threshold
         if threshold_mode not in ("cnn", "band_channel"):
@@ -271,6 +271,9 @@ class LearningDWT(nn.Module):
         self.threshold_mode = threshold_mode
         self.predictor = (ThresholdCNN(width, depth, magnitude_input, 1 + 3*levels if condition_bands else 0)
                           if threshold_mode == "cnn" else None)
+        if shrink_mode in ("firm", "pwl") and (threshold_mode != "band_channel" or leak != 0):
+            raise ValueError("firm/pwl require band_channel and leak=0")
+        self.direct_shrink = None
         self.depth = depth
         # 10 band identities x 4 CFA channels, in band_layout order.
         initial = torch.full((1 + 3*levels, 4), init_threshold)
@@ -282,7 +285,11 @@ class LearningDWT(nn.Module):
         if threshold_mode == "cnn":
             self.band_bias = nn.Parameter(bias)
         else:
-            self.hf_logits = nn.Parameter(bias[1:].clone())
+            if shrink_mode in ("firm", "pwl"):
+                from .direct_shrinkage import DirectShrinkage
+                self.direct_shrink = DirectShrinkage(shrink_mode, levels, normalize_bands)
+            else:
+                self.hf_logits = nn.Parameter(bias[1:].clone())
         if ll_mode not in ("threshold", "ll_only", "level_bands"):
             raise ValueError("ll_mode must be threshold, ll_only or level_bands")
         self.ll_mode = ll_mode
@@ -291,6 +298,8 @@ class LearningDWT(nn.Module):
 
     def hf_threshold_values(self):
         """Actual coefficient-domain thresholds, ordered LH_L/HL_L/HH_L ... LH1/HL1/HH1."""
+        if self.direct_shrink is not None:
+            return self.direct_shrink.scales.new_zeros((3*self.levels,4))
         values = F.softplus(self.hf_logits)
         if self.normalize_bands:
             scales = values.new_tensor([2 ** level for level in range(self.levels,0,-1) for _ in range(3)])
@@ -301,7 +310,10 @@ class LearningDWT(nn.Module):
     def freeze_hf_thresholds(self):
         if self.threshold_mode == "band_channel" and not hasattr(self, "fixed_hf_thresholds"):
             self.register_buffer("fixed_hf_thresholds", self.hf_threshold_values().detach().clone())
-            del self.hf_logits
+            if self.direct_shrink is not None:
+                self.direct_shrink.freeze()
+            else:
+                del self.hf_logits
 
     def _maps(self, atlas: Tensor, bands: list[Band]) -> tuple[Tensor, Tensor, Tensor]:
         h, w = atlas.shape[-2:]
@@ -348,7 +360,8 @@ class LearningDWT(nn.Module):
                 ll, lh, hl, hh = self.transform.dwt2(current)
             # Stored order is deepest-first, while decomposition is shallow-first.
             offset = 3 * (self.levels - level)
-            details = tuple(shrink(band, self.fixed_hf_thresholds[offset+i].view(1,4,1,1), self.leak)
+            details = tuple(self.direct_shrink(band,offset+i) if self.direct_shrink is not None
+                            else shrink(band, self.fixed_hf_thresholds[offset+i].view(1,4,1,1), self.leak)
                             for i, band in enumerate((lh, hl, hh)))
             if level < self.levels:
                 restored_ll = visit(ll, level + 1)
@@ -405,7 +418,11 @@ class LearningDWT(nn.Module):
                 positive[..., ll.rows, ll.cols] = self.ll_max_threshold * torch.sigmoid(
                     (logits + bias)[..., ll.rows, ll.cols])
             threshold = positive * scale * mask
-        if self.shrink_mode == "smooth":
+        if self.direct_shrink is not None:
+            filtered = atlas.clone()
+            for i, band in enumerate(bands[1:]):
+                filtered[...,band.rows,band.cols] = self.direct_shrink(atlas[...,band.rows,band.cols],i)
+        elif self.shrink_mode == "smooth":
             # Half-gain at |Z|=T, unlike soft shrink no exactly dead interval.
             filtered = smooth_shrink(atlas, threshold, self.leak)
         else:
