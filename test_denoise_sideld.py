@@ -118,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--task", type=str, default="sonya7s2")
     parser.add_argument("--device", type=str, default="cuda:1")
     parser.add_argument("--cp-dir", "--cp_dir", dest="cp_dir", type=str, default="./checkpoints/sonya7s2.pth")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb"], default=None)
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb", "brve_single_frame", "splitternet"], default=None)
     parser.add_argument("--model-width", type=int, default=None)
     parser.add_argument("--encoder-blocks", type=int, nargs="+", default=None)
     parser.add_argument("--middle-blocks", type=int, default=None)

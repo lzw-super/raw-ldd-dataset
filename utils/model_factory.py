@@ -132,7 +132,10 @@ def build_denoiser_from_checkpoint(
                 mrlfn_s2d_factor = inferred_factor
 
     # 3) 按模型名构造网络
-    if model_name == "unet":
+    if model_name in ("brve_single_frame", "splitternet"):
+        from models.paper_denoisers import build_paper_denoiser
+        net = build_paper_denoiser(model_name)
+    elif model_name == "unet":
         net = UNetSeeInDark(in_nc=4, out_nc=4, nf=width)
     elif model_name == "nafnet":
         net = NAFNet(

@@ -76,7 +76,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="experiments/sid_sony_paper_fair")
     parser.add_argument("--resume", default=None, help="Checkpoint produced by this script")
     parser.add_argument("--init-checkpoint", default=None, help="Model-only checkpoint; do not use the official test checkpoint")
-    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb"], default="unet")
+    parser.add_argument("--model", choices=["unet", "nafnet", "natnet", "mrlfn", "learning_dwt", "learning_dwt_repncb", "brve_single_frame", "splitternet"], default="unet")
     from models.learning_dwt_repncb import REFINER_DEFAULTS
     for key, default in {**DWT_DEFAULTS, **REFINER_DEFAULTS}.items():
         flag = "--" + key.replace("_", "-")
@@ -224,6 +224,10 @@ def to_device(batch: Dict[str, object], device: torch.device) -> tuple[torch.Ten
 
 def build_model(args: argparse.Namespace) -> tuple[torch.nn.Module, Dict[str, object]]:
     """Construct the selected 4-channel packed-RAW denoiser."""
+    if args.model in ("brve_single_frame", "splitternet"):
+        from models.paper_denoisers import build_paper_denoiser
+        return build_paper_denoiser(args.model), {"model": args.model, "input_channels": 4,
+            "adaptation": "repeat_three_frames_center_output" if args.model == "brve_single_frame" else "rgb_to_packed_raw"}
     if args.model == "learning_dwt_repncb":
         from models.learning_dwt_repncb import LearningDWTRepNCB, refiner_kwargs
         config = learning_dwt_kwargs(args)
@@ -506,7 +510,7 @@ def main() -> None:
             "chromatic_weight": args.chromatic_loss_weight,
             "channel_order_for_R_G1_B_G2": list(args.chromatic_channel_order),
         }
-        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb")
+        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb", "brve_single_frame", "splitternet")
         else {"name": "L1Loss"}
     )
     model_info["loss_config"]["wavelet_auxiliary"] = {
@@ -571,7 +575,7 @@ def main() -> None:
             chromatic_weight=args.chromatic_loss_weight,
             channel_order=tuple(args.chromatic_channel_order),
         )
-        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb")
+        if args.model in ("mrlfn", "learning_dwt", "learning_dwt_repncb", "brve_single_frame", "splitternet")
         else None
     )
 
