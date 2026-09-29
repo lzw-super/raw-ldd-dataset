@@ -19,7 +19,7 @@ chromatic_channel_order:
 output_dir: experiments/sid_sony_brve_single_frame
 epochs: 1000
 steps_per_epoch: null
-batch_size: 32
+batch_size: 4
 num_workers: 8
 patch_size: 256
 crops_per_image: 16

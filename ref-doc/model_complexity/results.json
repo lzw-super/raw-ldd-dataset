@@ -1,0 +1,1328 @@
+{
+  "torch": "2.1.2",
+  "device": "cuda:0",
+  "device_name": "NVIDIA GeForce RTX 4090",
+  "dtype": "float32",
+  "weight_source": "config initialization; no trained checkpoints loaded",
+  "results": [
+    {
+      "config": "configs/train_sid_sony_nafnet.yaml",
+      "model": "nafnet",
+      "graph": "native",
+      "architecture": {
+        "model": "nafnet",
+        "img_channel": 4,
+        "width": 32,
+        "enc_blk_nums": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "middle_blk_num": 2,
+        "dec_blk_nums": [
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 7600228,
+      "parameter_bytes": 30400912,
+      "buffer_bytes": 0,
+      "arithmetic_ops": 64846191744,
+      "conv_matmul_macs": 31483301888,
+      "binary_conv_macs": 0,
+      "live_feature_peak_bytes": 276889600,
+      "live_peak_operator": "aten.add.Tensor",
+      "live_peak_module": "decoders.3.1.norm2",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            4,
+            368,
+            640
+          ],
+          "bytes": 3768320,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "encoders.0.1"
+        },
+        {
+          "shape": [
+            1,
+            64,
+            184,
+            320
+          ],
+          "bytes": 15073280,
+          "module": "encoders.1.1"
+        },
+        {
+          "shape": [
+            1,
+            128,
+            92,
+            160
+          ],
+          "bytes": 7536640,
+          "module": "encoders.2.1"
+        },
+        {
+          "shape": [
+            1,
+            256,
+            46,
+            80
+          ],
+          "bytes": 3768320,
+          "module": "encoders.3.1"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.0"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.1.conv3"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.1"
+        },
+        {
+          "shape": [
+            1,
+            1,
+            368,
+            640
+          ],
+          "bytes": 942080,
+          "module": "decoders.3.1.norm2"
+        },
+        {
+          "shape": [
+            1,
+            1,
+            368,
+            640
+          ],
+          "bytes": 942080,
+          "module": "decoders.3.1.norm2"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.1.norm2"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.1.norm2"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "decoders.3.1.norm2"
+        }
+      ],
+      "cuda_baseline_bytes": 34115584,
+      "cuda_peak_allocated_bytes": 440586240,
+      "cuda_increment_bytes": 406470656,
+      "operator_arithmetic": {
+        "pad": 0,
+        "conv2d": 63441886080,
+        "mean": 234879680,
+        "sub": 229867520,
+        "pow": 114933760,
+        "add": 247446880,
+        "sqrt": 2506080,
+        "div": 114933760,
+        "view": 0,
+        "mul": 402268160,
+        "chunk": 0,
+        "adaptive_avg_pool2d": 57469824,
+        "pixel_shuffle": 0,
+        "slice": 0
+      },
+      "operator_calls": {
+        "pad": 1,
+        "conv2d": 118,
+        "mean": 72,
+        "sub": 72,
+        "pow": 36,
+        "add": 113,
+        "sqrt": 36,
+        "div": 36,
+        "view": 72,
+        "mul": 126,
+        "chunk": 36,
+        "adaptive_avg_pool2d": 18,
+        "pixel_shuffle": 4,
+        "slice": 3
+      },
+      "unclassified_ops": {}
+    },
+    {
+      "config": "configs/train_sid_sony.yaml",
+      "model": "unet",
+      "graph": "native",
+      "architecture": {
+        "model": "unet",
+        "in_channels": 4,
+        "out_channels": 4,
+        "width": 32
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 7760484,
+      "parameter_bytes": 31041936,
+      "buffer_bytes": 0,
+      "arithmetic_ops": 89322891264,
+      "conv_matmul_macs": 44558123008,
+      "binary_conv_macs": 0,
+      "live_feature_peak_bytes": 286616576,
+      "live_peak_operator": "aten.conv2d.default",
+      "live_peak_module": "conv9_2",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            4,
+            368,
+            656
+          ],
+          "bytes": 3862528,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            656
+          ],
+          "bytes": 30900224,
+          "module": "conv1_2"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            184,
+            328
+          ],
+          "bytes": 7725056,
+          "module": "pool1"
+        },
+        {
+          "shape": [
+            1,
+            64,
+            184,
+            328
+          ],
+          "bytes": 15450112,
+          "module": "conv2_2"
+        },
+        {
+          "shape": [
+            1,
+            64,
+            92,
+            164
+          ],
+          "bytes": 3862528,
+          "module": "pool1"
+        },
+        {
+          "shape": [
+            1,
+            128,
+            92,
+            164
+          ],
+          "bytes": 7725056,
+          "module": "conv3_2"
+        },
+        {
+          "shape": [
+            1,
+            128,
+            46,
+            82
+          ],
+          "bytes": 1931264,
+          "module": "pool1"
+        },
+        {
+          "shape": [
+            1,
+            256,
+            46,
+            82
+          ],
+          "bytes": 3862528,
+          "module": "conv4_2"
+        },
+        {
+          "shape": [
+            1,
+            256,
+            23,
+            41
+          ],
+          "bytes": 965632,
+          "module": "pool1"
+        },
+        {
+          "shape": [
+            1,
+            512,
+            23,
+            41
+          ],
+          "bytes": 1931264,
+          "module": "conv5_2"
+        },
+        {
+          "shape": [
+            1,
+            512,
+            46,
+            82
+          ],
+          "bytes": 7725056,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            256,
+            46,
+            82
+          ],
+          "bytes": 3862528,
+          "module": "conv6_2"
+        },
+        {
+          "shape": [
+            1,
+            256,
+            92,
+            164
+          ],
+          "bytes": 15450112,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            128,
+            92,
+            164
+          ],
+          "bytes": 7725056,
+          "module": "conv7_2"
+        },
+        {
+          "shape": [
+            1,
+            128,
+            184,
+            328
+          ],
+          "bytes": 30900224,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            64,
+            184,
+            328
+          ],
+          "bytes": 15450112,
+          "module": "conv8_2"
+        },
+        {
+          "shape": [
+            1,
+            64,
+            368,
+            656
+          ],
+          "bytes": 61800448,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            656
+          ],
+          "bytes": 30900224,
+          "module": "conv9_1"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            656
+          ],
+          "bytes": 30900224,
+          "module": "conv9_2"
+        }
+      ],
+      "cuda_baseline_bytes": 34732032,
+      "cuda_peak_allocated_bytes": 319987200,
+      "cuda_increment_bytes": 285255168,
+      "operator_arithmetic": {
+        "pad": 0,
+        "conv2d": 85220886528,
+        "leaky_relu_": 117807104,
+        "max_pool2d": 14484480,
+        "conv_transpose2d": 3969713152,
+        "cat": 0,
+        "slice": 0
+      },
+      "operator_calls": {
+        "pad": 1,
+        "conv2d": 19,
+        "leaky_relu_": 18,
+        "max_pool2d": 4,
+        "conv_transpose2d": 4,
+        "cat": 4,
+        "slice": 4
+      },
+      "unclassified_ops": {}
+    },
+    {
+      "config": "configs/train_sid_sony_mrlfn_paper_s2d_k4_n4_d32.yaml",
+      "model": "mrlfn",
+      "graph": "deploy",
+      "architecture": {
+        "model": "mrlfn",
+        "in_channels": 4,
+        "out_channels": 4,
+        "feature_channels": 32,
+        "num_blocks": 4,
+        "bias": true,
+        "deploy": false,
+        "space_to_depth_factor": 4
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 130672,
+      "parameter_bytes": 522688,
+      "buffer_bytes": 0,
+      "arithmetic_ops": 15054336000,
+      "conv_matmul_macs": 7490764800,
+      "binary_conv_macs": 0,
+      "live_feature_peak_bytes": 44236800,
+      "live_peak_operator": "aten.conv2d.default",
+      "live_peak_module": "blocks.1.linear",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "bytes": 3686400,
+          "module": "space_to_depth"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "shallow_conv"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "blocks.0"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "blocks.1.conv3.reparam_conv"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "blocks.1"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "blocks.1.linear"
+        }
+      ],
+      "cuda_baseline_bytes": 4216832,
+      "cuda_peak_allocated_bytes": 44767232,
+      "cuda_increment_bytes": 40550400,
+      "operator_arithmetic": {
+        "pixel_shuffle": 0,
+        "pixel_unshuffle": 0,
+        "conv2d": 15017472000,
+        "relu_": 22118400,
+        "add": 14745600,
+        "cat": 0
+      },
+      "operator_calls": {
+        "pixel_shuffle": 2,
+        "pixel_unshuffle": 2,
+        "conv2d": 20,
+        "relu_": 12,
+        "add": 8,
+        "cat": 1
+      },
+      "unclassified_ops": {}
+    },
+    {
+      "config": "configs/train_sid_sony_splitternet.yaml",
+      "model": "splitternet",
+      "graph": "native",
+      "architecture": {
+        "model": "splitternet",
+        "input_channels": 4,
+        "adaptation": "rgb_to_packed_raw"
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 731636,
+      "parameter_bytes": 2926544,
+      "buffer_bytes": 0,
+      "arithmetic_ops": 7826640096,
+      "conv_matmul_macs": 3866577664,
+      "binary_conv_macs": 0,
+      "live_feature_peak_bytes": 139475072,
+      "live_peak_operator": "aten.leaky_relu.default",
+      "live_peak_module": "root",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            4,
+            368,
+            640
+          ],
+          "bytes": 3768320,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "stem"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            184,
+            320
+          ],
+          "bytes": 7536640,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            184,
+            320
+          ],
+          "bytes": 7536640,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            92,
+            160
+          ],
+          "bytes": 1884160,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            92,
+            160
+          ],
+          "bytes": 1884160,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            92,
+            160
+          ],
+          "bytes": 1884160,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            92,
+            160
+          ],
+          "bytes": 1884160,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            46,
+            80
+          ],
+          "bytes": 471040,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            184,
+            320
+          ],
+          "bytes": 7536640,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            184,
+            320
+          ],
+          "bytes": 7536640,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            369,
+            641
+          ],
+          "bytes": 30275712,
+          "module": "up.3.0"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            368,
+            640
+          ],
+          "bytes": 30146560,
+          "module": "root"
+        }
+      ],
+      "cuda_baseline_bytes": 6664704,
+      "cuda_peak_allocated_bytes": 173582848,
+      "cuda_increment_bytes": 166918144,
+      "operator_arithmetic": {
+        "pad": 0,
+        "conv2d": 3679871360,
+        "chunk": 0,
+        "leaky_relu": 44277760,
+        "mean": 957312,
+        "mul": 942080,
+        "add": 16015360,
+        "amax": 471040,
+        "cat": 0,
+        "sigmoid": 58880,
+        "conv_transpose2d": 4084046304,
+        "slice": 0
+      },
+      "operator_calls": {
+        "pad": 79,
+        "conv2d": 96,
+        "chunk": 15,
+        "leaky_relu": 77,
+        "mean": 32,
+        "mul": 32,
+        "add": 48,
+        "amax": 16,
+        "cat": 31,
+        "sigmoid": 16,
+        "conv_transpose2d": 15,
+        "slice": 31
+      },
+      "unclassified_ops": {}
+    },
+    {
+      "config": "configs/train_sid_sony_brve_single_frame.yaml",
+      "model": "brve_single_frame",
+      "graph": "native",
+      "architecture": {
+        "model": "brve_single_frame",
+        "input_channels": 4,
+        "adaptation": "repeat_three_frames_center_output"
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 4508584,
+      "parameter_bytes": 18034336,
+      "buffer_bytes": 0,
+      "arithmetic_ops": 942573956040,
+      "conv_matmul_macs": 465216412176,
+      "binary_conv_macs": 447773184000,
+      "live_feature_peak_bytes": 1220198400,
+      "live_peak_operator": "aten.sign.default",
+      "live_peak_module": "core.stage2.0.up21.conv",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            3,
+            4,
+            360,
+            640
+          ],
+          "bytes": 11059200,
+          "module": "root"
+        },
+        {
+          "shape": [
+            1,
+            3,
+            4,
+            360,
+            640
+          ],
+          "bytes": 11059200,
+          "module": "core"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.feat_extract.main.2.2"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.stage0.0"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.stage1.conv_out"
+        },
+        {
+          "shape": [
+            1,
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core"
+        },
+        {
+          "shape": [
+            3,
+            72,
+            360,
+            640
+          ],
+          "bytes": 199065600,
+          "module": "core"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.fusion"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.stage2.0.encoder_level1.0"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            180,
+            320
+          ],
+          "bytes": 33177600,
+          "module": "core.stage2.0.encoder_level2.2"
+        },
+        {
+          "shape": [
+            3,
+            96,
+            90,
+            160
+          ],
+          "bytes": 16588800,
+          "module": "core.stage2.0.encoder_level3.2"
+        },
+        {
+          "shape": [
+            3,
+            96,
+            90,
+            160
+          ],
+          "bytes": 16588800,
+          "module": "core.stage2.0.decoder_level3.2"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            180,
+            320
+          ],
+          "bytes": 33177600,
+          "module": "core.stage2.0.up32"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            180,
+            320
+          ],
+          "bytes": 33177600,
+          "module": "core.stage2.0.decoder_level2.2"
+        },
+        {
+          "shape": [
+            3,
+            24,
+            360,
+            640
+          ],
+          "bytes": 66355200,
+          "module": "core.stage2.0.skip_conv1"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            360,
+            640
+          ],
+          "bytes": 132710400,
+          "module": "core.stage2.0.up21.up"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            360,
+            640
+          ],
+          "bytes": 132710400,
+          "module": "core.stage2.0.up21.conv.move0"
+        },
+        {
+          "shape": [
+            3,
+            48,
+            360,
+            640
+          ],
+          "bytes": 132710400,
+          "module": "core.stage2.0.up21.conv"
+        }
+      ],
+      "cuda_baseline_bytes": 21925376,
+      "cuda_peak_allocated_bytes": 1243123200,
+      "cuda_increment_bytes": 1221197824,
+      "operator_arithmetic": {
+        "slice": 0,
+        "unsqueeze": 0,
+        "repeat": 0,
+        "mul": 557650368,
+        "view": 0,
+        "conv2d": 930753676800,
+        "leaky_relu_": 33177600,
+        "expand_as": 0,
+        "add": 3583562832,
+        "mean": 558105768,
+        "var": 2202174864,
+        "sqrt": 11664,
+        "abs": 554885568,
+        "adaptive_avg_pool2d": 550552464,
+        "squeeze": 0,
+        "cat": 0,
+        "transpose": 0,
+        "conv1d": 209952,
+        "sigmoid": 46656,
+        "sign": 1038034368,
+        "detach": 0,
+        "clamp": 4344768,
+        "sub": 4344768,
+        "prelu": 1632960000,
+        "avg_pool2d": 95904000,
+        "upsample_bilinear2d": 1001548800,
+        "select": 0,
+        "stack": 0,
+        "roll": 0,
+        "zeros_like": 0,
+        "copy_": 0,
+        "div": 2764800
+      },
+      "operator_calls": {
+        "slice": 5547,
+        "unsqueeze": 77,
+        "repeat": 1,
+        "mul": 197,
+        "view": 287,
+        "conv2d": 166,
+        "leaky_relu_": 1,
+        "expand_as": 360,
+        "add": 685,
+        "mean": 436,
+        "var": 76,
+        "sqrt": 76,
+        "abs": 196,
+        "adaptive_avg_pool2d": 76,
+        "squeeze": 76,
+        "cat": 106,
+        "transpose": 152,
+        "conv1d": 76,
+        "sigmoid": 76,
+        "sign": 240,
+        "detach": 360,
+        "clamp": 120,
+        "sub": 120,
+        "prelu": 120,
+        "avg_pool2d": 7,
+        "upsample_bilinear2d": 7,
+        "select": 7,
+        "stack": 2,
+        "roll": 32,
+        "zeros_like": 28,
+        "copy_": 672,
+        "div": 1
+      },
+      "unclassified_ops": {}
+    },
+    {
+      "config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft.yaml",
+      "model": "learning_dwt_repncb",
+      "graph": "deploy",
+      "architecture": {
+        "model": "learning_dwt_repncb",
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "refinement": {
+          "s2d_factor": 2,
+          "width": 32,
+          "num_blocks": 5,
+          "skip_source": "noisy",
+          "block_type": "repncb",
+          "input_fusion": "none",
+          "activation": "prelu"
+        }
+      },
+      "shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "parameters": 86408,
+      "parameter_bytes": 345632,
+      "buffer_bytes": 3216,
+      "arithmetic_ops": 6848956800,
+      "conv_matmul_macs": 3405427200,
+      "binary_conv_macs": 0,
+      "live_feature_peak_bytes": 40550400,
+      "live_peak_operator": "aten.prelu.default",
+      "live_peak_module": "refiner.blocks.1.activation",
+      "peak_storages": [
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "input_or_root"
+        },
+        {
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "bytes": 3686400,
+          "module": "wavelet"
+        },
+        {
+          "shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "bytes": 3686400,
+          "module": "refiner.s2d"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "refiner.stem"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "refiner.blocks.0.activation"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "refiner.blocks.1.reparam_conv"
+        },
+        {
+          "shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "bytes": 7372800,
+          "module": "refiner.blocks.1.activation"
+        }
+      ],
+      "cuda_baseline_bytes": 4044800,
+      "cuda_peak_allocated_bytes": 40908800,
+      "cuda_increment_bytes": 36864000,
+      "operator_arithmetic": {
+        "conv2d": 6756048000,
+        "split": 0,
+        "select": 0,
+        "view": 0,
+        "sub": 2721600,
+        "relu": 1929600,
+        "neg": 907200,
+        "div": 14400,
+        "prelu": 19123200,
+        "cat": 0,
+        "mul": 14400,
+        "conv_transpose2d": 68198400
+      },
+      "operator_calls": {
+        "conv2d": 19,
+        "split": 3,
+        "select": 9,
+        "view": 9,
+        "sub": 27,
+        "relu": 19,
+        "neg": 9,
+        "div": 1,
+        "prelu": 8,
+        "cat": 5,
+        "mul": 1,
+        "conv_transpose2d": 4
+      },
+      "unclassified_ops": {}
+    }
+  ]
+}
