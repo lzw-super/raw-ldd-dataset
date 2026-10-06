@@ -10,7 +10,7 @@ from learning_wt.learning_dwt import LearningDWT
 
 REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
                         refine_num_blocks=4, refine_skip_source="noisy",
-                        refine_block_type="repncb", refine_input_fusion="none", refine_activation="prelu")
+                        refine_block_type="repncb", refine_input_fusion="none", refine_activation="prelu", refine_stem_activation="none")
 
 
 def refiner_kwargs(options):
@@ -97,7 +97,7 @@ class PackedRAWRefiner(nn.Module):
     """Configurable packed-RAW refinement with a concatenated input bypass."""
 
     def __init__(self, deploy=False, s2d_factor=2, width=16, num_blocks=4,
-                 skip_source="noisy", block_type="repncb", input_fusion="none"):
+                 skip_source="noisy", block_type="repncb", input_fusion="none", stem_activation="none"):
         super().__init__()
         for name, value in (("s2d_factor", s2d_factor), ("width", width), ("num_blocks", num_blocks)):
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
@@ -118,6 +118,9 @@ class PackedRAWRefiner(nn.Module):
         packed_channels = 4 * s2d_factor ** 2
         self.s2d = nn.PixelUnshuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
         self.stem = nn.Conv2d(packed_channels, width, 3, padding=1)
+        if stem_activation not in ("none", "relu"):
+            raise ValueError("stem_activation must be none or relu")
+        self.stem_activation = nn.ReLU() if stem_activation == "relu" else nn.Identity()
         self.blocks = nn.Sequential(*(
             RepNCB(width, deploy) if block_type == "repncb" else
             nn.Sequential(nn.Conv2d(width, width, 3, padding=1), nn.PReLU(width))
@@ -138,7 +141,7 @@ class PackedRAWRefiner(nn.Module):
         if self.input_fusion == "preliminary_difference":
             refined_input = self.input_projection(torch.cat((preliminary, noisy - preliminary), dim=1))
         packed_input = self.s2d(refined_input)
-        features = self.head(self.blocks(self.stem(packed_input)))
+        features = self.head(self.blocks(self.stem_activation(self.stem(packed_input))))
         # The fused-input bypass branches AFTER S2D, sharing the stem input.
         if self.skip_source == "fused":
             packed_skip = packed_input

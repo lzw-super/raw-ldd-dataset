@@ -193,12 +193,12 @@ done
 ```bash
 for ratio in 100 250 300; do
   conda run --no-capture-output -n LED-ICCV23 python test_denoise_sideld.py \
-    --cp-dir experiments/sid_sony_mrlfn_n4_d16/checkpoints/best_train_l1.pth \
+    --cp-dir experiments/sid_sony_mrlfn_n4_d16/checkpoints/best.pth \
     --testset-type sid \
     --eval-ratio "$ratio" \
     --device cuda:0 \
     --num-workers 2 \
-    --result-json "experiments/sid_sony_mrlfn_n4_d16/bl1_sid_x${ratio}.json"
+    --result-json "experiments/sid_sony_mrlfn_n4_d16/b_sid_x${ratio}.json"
 done
 ```
 每个 JSON 包含：

@@ -43,3 +43,22 @@ python tools/export_sid_onnx.py \
 - 四类输入（uniform、signed_raw、zeros、tiny）全部通过，最大绝对误差 7.74860382e-07。验证关闭 ORT 图优化，与简化前的 PyTorch 输出比较。
 
 高频处理为 `ReLU(z-T)-ReLU(-z-T)`，无动态 Div、Abs、Sign、Softplus；阈值已离线包含层级 scale。Haar DWT/IWT 和 S2D/D2S 继续使用固定 2×2 Conv/ConvTranspose。完整图仍保留 LL 归一化的常数除法，其节点为 `/wavelet/Div`，不能据此认为高频仍有动态除法。手机 NPU 实测与量化验证尚未进行。
+
+## LL 常量除法改为乘法（2026-09-29）
+
+新增 `dwt_ll_normalize`，默认 true 兼容旧checkpoint：LL输入由 `/8` 改为 `*0.125`，输出仍 `*8`。训练与部署共用同一实现，测试验证同权重下两种写法输出一致。
+
+新配置 `configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm.yaml` 设置 `dwt_ll_normalize: false`，LL直接输入恢复CNN及原有concat_1x1融合，不做输入/输出尺度变换。高频阈值尺度保持不变。该组从头训练、使用独立输出目录，不是对原模型的等价改写。
+
+原模型当前best权重的导出命令：
+
+```bash
+python tools/export_sid_onnx.py \
+  experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft/checkpoints/best.pth \
+  --height 360 --width 640 --tag conv2x2_clean_mul0125 \
+  --simplify-static --ort-opt-level disabled
+```
+
+输出至原实验onnx目录：`learning_dwt_repncb_best_deploy_1x4x360x640_conv2x2_clean_mul0125.onnx`，旧文件保留。新图Div数量为0，四类输入相对当前PyTorch模型校验通过，最大绝对误差9.536743e-7。
+
+注意：当前checkpoint重新导出的权重与旧clean ONNX有多项initializer差异，因此不能用这两个文件直接衡量仅除法改乘法的误差；原导出权重与当前权重并非相同版本。已有结构文档中的LL /8描述在数学上仍成立，当前代码执行乘0.125。

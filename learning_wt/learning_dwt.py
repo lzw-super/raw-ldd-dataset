@@ -234,7 +234,7 @@ class LearningDWT(nn.Module):
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
                  ll_fusion: str = "residual", trainable_haar: bool = False,
-                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn"):
+                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn", ll_normalize: bool = True):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -293,8 +293,15 @@ class LearningDWT(nn.Module):
         if ll_mode not in ("threshold", "ll_only", "level_bands"):
             raise ValueError("ll_mode must be threshold, ll_only or level_bands")
         self.ll_mode = ll_mode
+        self.ll_normalize = ll_normalize
         self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion, ll_block_type)
                             if ll_mode != "threshold" else None)
+
+    def restore_ll(self, ll_input):
+        if not self.ll_normalize:
+            return self.ll_restorer(ll_input)
+        scale = float(2 ** self.levels)
+        return self.ll_restorer(ll_input * (2.0 ** -self.levels)) * scale
 
     def hf_threshold_values(self):
         """Actual coefficient-domain thresholds, ordered LH_L/HL_L/HH_L ... LH1/HL1/HH1."""
@@ -368,8 +375,7 @@ class LearningDWT(nn.Module):
             else:
                 # Four-band LL restoration requires ORIGINAL (unshrunk) details.
                 ll_input = ll if self.ll_mode == "ll_only" else torch.cat((ll,lh,hl,hh),1)
-                scale = float(2 ** self.levels)
-                restored_ll = self.ll_restorer(ll_input / scale) * scale
+                restored_ll = self.restore_ll(ll_input)
             if self.transform is None:
                 return haar_iwt2(restored_ll, *details)
             if isinstance(self.transform, TrainableHaar):
@@ -431,8 +437,7 @@ class LearningDWT(nn.Module):
             # Read ORIGINAL deepest-level bands; no thresholded inputs or GT.
             selected = bands[:1] if self.ll_mode == "ll_only" else bands[:4]
             ll_input = torch.cat([atlas[..., b.rows, b.cols] for b in selected], dim=1)
-            ll_scale = float(2 ** self.levels)
-            recovered_ll = self.ll_restorer(ll_input / ll_scale) * ll_scale
+            recovered_ll = self.restore_ll(ll_input)
             ll = bands[0]
             filtered = filtered.clone()
             filtered[..., ll.rows, ll.cols] = recovered_ll
@@ -454,7 +459,7 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
                     dwt_ll_fusion="residual", dwt_trainable_haar=False,
-                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn")
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn", dwt_ll_normalize=True)
 
 
 def learning_dwt_kwargs(options):

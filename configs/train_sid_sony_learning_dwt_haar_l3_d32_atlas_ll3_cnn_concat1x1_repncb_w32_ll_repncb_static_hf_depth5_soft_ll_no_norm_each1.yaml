@@ -16,7 +16,7 @@ raw_loss_weight: 0.6
 chromatic_loss_weight: 0.4
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_each1
+output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm_each1
 
 # Training settings copied from the MRLFN d32 reference for comparison.
 # This is a new threshold-learning model, not a paper-reproduction claim.
@@ -44,7 +44,7 @@ weight_decay: 0.0
 warmup_epochs: 10
 grad_clip: null
 amp: false
-device: cuda:1
+device: cuda:0
 seed: 2026
 
 validate_every: 1
@@ -94,3 +94,6 @@ dwt_ll_block_type: repncb
 dwt_threshold_mode: band_channel
 
 # Direct soft coefficient shrinkage; parameter transforms fold offline at deploy.
+
+# Feed original LL into its CNN/fusion; no input/output rescaling.
+dwt_ll_normalize: false

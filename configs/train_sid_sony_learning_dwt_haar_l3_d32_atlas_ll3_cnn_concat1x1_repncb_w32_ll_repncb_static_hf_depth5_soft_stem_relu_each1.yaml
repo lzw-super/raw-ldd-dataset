@@ -16,7 +16,7 @@ raw_loss_weight: 0.6
 chromatic_loss_weight: 0.4
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_each1
+output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_stem_relu_each1
 
 # Training settings copied from the MRLFN d32 reference for comparison.
 # This is a new threshold-learning model, not a paper-reproduction claim.
@@ -94,3 +94,6 @@ dwt_ll_block_type: repncb
 dwt_threshold_mode: band_channel
 
 # Direct soft coefficient shrinkage; parameter transforms fold offline at deploy.
+
+# Add ReLU only after refinement stem; all Rep-NCB PReLUs remain unchanged.
+refine_stem_activation: relu
