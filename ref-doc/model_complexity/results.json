@@ -36,7 +36,7 @@
       "parameters": 7600228,
       "parameter_bytes": 30400912,
       "buffer_bytes": 0,
-      "arithmetic_ops": 64846191744,
+      "arithmetic_ops": 64841176640,
       "conv_matmul_macs": 31483301888,
       "binary_conv_macs": 0,
       "live_feature_peak_bytes": 276889600,
@@ -197,10 +197,947 @@
       "cuda_baseline_bytes": 34115584,
       "cuda_peak_allocated_bytes": 440586240,
       "cuda_increment_bytes": 406470656,
+      "arithmetic_categories": {
+        "non_convolution": 1399290560,
+        "learned_convolution": 63441886080
+      },
+      "convolution_bias_ops": 475282304,
+      "module_arithmetic": {
+        "root": {
+          "pad": 0,
+          "add": 15073280,
+          "slice": 0
+        },
+        "intro": {
+          "conv2d": 550174720
+        },
+        "encoders.0.0.norm1": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "encoders.0.0.conv1": {
+          "conv2d": 979763200
+        },
+        "encoders.0.0.dwconv2": {
+          "conv2d": 286392320
+        },
+        "encoders.0.0.sg": {
+          "chunk": 0,
+          "mul": 15073280
+        },
+        "encoders.0.0.sca.0": {
+          "adaptive_avg_pool2d": 7536640
+        },
+        "encoders.0.0.sca.1": {
+          "conv2d": 2080
+        },
+        "encoders.0.0": {
+          "mul": 22609920,
+          "add": 15073280
+        },
+        "encoders.0.0.conv3": {
+          "conv2d": 489881600
+        },
+        "encoders.0.0.norm2": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "encoders.0.0.conv4": {
+          "conv2d": 979763200
+        },
+        "encoders.0.0.conv5": {
+          "conv2d": 489881600
+        },
+        "encoders.0.1.norm1": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "encoders.0.1.conv1": {
+          "conv2d": 979763200
+        },
+        "encoders.0.1.dwconv2": {
+          "conv2d": 286392320
+        },
+        "encoders.0.1.sg": {
+          "chunk": 0,
+          "mul": 15073280
+        },
+        "encoders.0.1.sca.0": {
+          "adaptive_avg_pool2d": 7536640
+        },
+        "encoders.0.1.sca.1": {
+          "conv2d": 2080
+        },
+        "encoders.0.1": {
+          "mul": 22609920,
+          "add": 15073280
+        },
+        "encoders.0.1.conv3": {
+          "conv2d": 489881600
+        },
+        "encoders.0.1.norm2": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "encoders.0.1.conv4": {
+          "conv2d": 979763200
+        },
+        "encoders.0.1.conv5": {
+          "conv2d": 489881600
+        },
+        "downs.0.downconv": {
+          "conv2d": 968458240
+        },
+        "encoders.1.0.norm1": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "encoders.1.0.conv1": {
+          "conv2d": 972226560
+        },
+        "encoders.1.0.dwconv2": {
+          "conv2d": 143196160
+        },
+        "encoders.1.0.sg": {
+          "chunk": 0,
+          "mul": 7536640
+        },
+        "encoders.1.0.sca.0": {
+          "adaptive_avg_pool2d": 3768320
+        },
+        "encoders.1.0.sca.1": {
+          "conv2d": 8256
+        },
+        "encoders.1.0": {
+          "mul": 11304960,
+          "add": 7536640
+        },
+        "encoders.1.0.conv3": {
+          "conv2d": 486113280
+        },
+        "encoders.1.0.norm2": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "encoders.1.0.conv4": {
+          "conv2d": 972226560
+        },
+        "encoders.1.0.conv5": {
+          "conv2d": 486113280
+        },
+        "encoders.1.1.norm1": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "encoders.1.1.conv1": {
+          "conv2d": 972226560
+        },
+        "encoders.1.1.dwconv2": {
+          "conv2d": 143196160
+        },
+        "encoders.1.1.sg": {
+          "chunk": 0,
+          "mul": 7536640
+        },
+        "encoders.1.1.sca.0": {
+          "adaptive_avg_pool2d": 3768320
+        },
+        "encoders.1.1.sca.1": {
+          "conv2d": 8256
+        },
+        "encoders.1.1": {
+          "mul": 11304960,
+          "add": 7536640
+        },
+        "encoders.1.1.conv3": {
+          "conv2d": 486113280
+        },
+        "encoders.1.1.norm2": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "encoders.1.1.conv4": {
+          "conv2d": 972226560
+        },
+        "encoders.1.1.conv5": {
+          "conv2d": 486113280
+        },
+        "downs.1.downconv": {
+          "conv2d": 966574080
+        },
+        "encoders.2.0.norm1": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "encoders.2.0.conv1": {
+          "conv2d": 968458240
+        },
+        "encoders.2.0.dwconv2": {
+          "conv2d": 71598080
+        },
+        "encoders.2.0.sg": {
+          "chunk": 0,
+          "mul": 3768320
+        },
+        "encoders.2.0.sca.0": {
+          "adaptive_avg_pool2d": 1884160
+        },
+        "encoders.2.0.sca.1": {
+          "conv2d": 32896
+        },
+        "encoders.2.0": {
+          "mul": 5652480,
+          "add": 3768320
+        },
+        "encoders.2.0.conv3": {
+          "conv2d": 484229120
+        },
+        "encoders.2.0.norm2": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "encoders.2.0.conv4": {
+          "conv2d": 968458240
+        },
+        "encoders.2.0.conv5": {
+          "conv2d": 484229120
+        },
+        "encoders.2.1.norm1": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "encoders.2.1.conv1": {
+          "conv2d": 968458240
+        },
+        "encoders.2.1.dwconv2": {
+          "conv2d": 71598080
+        },
+        "encoders.2.1.sg": {
+          "chunk": 0,
+          "mul": 3768320
+        },
+        "encoders.2.1.sca.0": {
+          "adaptive_avg_pool2d": 1884160
+        },
+        "encoders.2.1.sca.1": {
+          "conv2d": 32896
+        },
+        "encoders.2.1": {
+          "mul": 5652480,
+          "add": 3768320
+        },
+        "encoders.2.1.conv3": {
+          "conv2d": 484229120
+        },
+        "encoders.2.1.norm2": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "encoders.2.1.conv4": {
+          "conv2d": 968458240
+        },
+        "encoders.2.1.conv5": {
+          "conv2d": 484229120
+        },
+        "downs.2.downconv": {
+          "conv2d": 965632000
+        },
+        "encoders.3.0.norm1": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "encoders.3.0.conv1": {
+          "conv2d": 966574080
+        },
+        "encoders.3.0.dwconv2": {
+          "conv2d": 35799040
+        },
+        "encoders.3.0.sg": {
+          "chunk": 0,
+          "mul": 1884160
+        },
+        "encoders.3.0.sca.0": {
+          "adaptive_avg_pool2d": 942080
+        },
+        "encoders.3.0.sca.1": {
+          "conv2d": 131328
+        },
+        "encoders.3.0": {
+          "mul": 2826240,
+          "add": 1884160
+        },
+        "encoders.3.0.conv3": {
+          "conv2d": 483287040
+        },
+        "encoders.3.0.norm2": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "encoders.3.0.conv4": {
+          "conv2d": 966574080
+        },
+        "encoders.3.0.conv5": {
+          "conv2d": 483287040
+        },
+        "encoders.3.1.norm1": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "encoders.3.1.conv1": {
+          "conv2d": 966574080
+        },
+        "encoders.3.1.dwconv2": {
+          "conv2d": 35799040
+        },
+        "encoders.3.1.sg": {
+          "chunk": 0,
+          "mul": 1884160
+        },
+        "encoders.3.1.sca.0": {
+          "adaptive_avg_pool2d": 942080
+        },
+        "encoders.3.1.sca.1": {
+          "conv2d": 131328
+        },
+        "encoders.3.1": {
+          "mul": 2826240,
+          "add": 1884160
+        },
+        "encoders.3.1.conv3": {
+          "conv2d": 483287040
+        },
+        "encoders.3.1.norm2": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "encoders.3.1.conv4": {
+          "conv2d": 966574080
+        },
+        "encoders.3.1.conv5": {
+          "conv2d": 483287040
+        },
+        "downs.3.downconv": {
+          "conv2d": 965160960
+        },
+        "middle_blks.0.norm1": {
+          "mean": 942080,
+          "sub": 942080,
+          "pow": 471040,
+          "add": 471960,
+          "sqrt": 920,
+          "div": 471040,
+          "view": 0,
+          "mul": 471040
+        },
+        "middle_blks.0.conv1": {
+          "conv2d": 965632000
+        },
+        "middle_blks.0.dwconv2": {
+          "conv2d": 17899520
+        },
+        "middle_blks.0.sg": {
+          "chunk": 0,
+          "mul": 942080
+        },
+        "middle_blks.0.sca.0": {
+          "adaptive_avg_pool2d": 471040
+        },
+        "middle_blks.0.sca.1": {
+          "conv2d": 524800
+        },
+        "middle_blks.0": {
+          "mul": 1413120,
+          "add": 942080
+        },
+        "middle_blks.0.conv3": {
+          "conv2d": 482816000
+        },
+        "middle_blks.0.norm2": {
+          "mean": 942080,
+          "sub": 942080,
+          "pow": 471040,
+          "add": 471960,
+          "sqrt": 920,
+          "div": 471040,
+          "view": 0,
+          "mul": 471040
+        },
+        "middle_blks.0.conv4": {
+          "conv2d": 965632000
+        },
+        "middle_blks.0.conv5": {
+          "conv2d": 482816000
+        },
+        "middle_blks.1.norm1": {
+          "mean": 942080,
+          "sub": 942080,
+          "pow": 471040,
+          "add": 471960,
+          "sqrt": 920,
+          "div": 471040,
+          "view": 0,
+          "mul": 471040
+        },
+        "middle_blks.1.conv1": {
+          "conv2d": 965632000
+        },
+        "middle_blks.1.dwconv2": {
+          "conv2d": 17899520
+        },
+        "middle_blks.1.sg": {
+          "chunk": 0,
+          "mul": 942080
+        },
+        "middle_blks.1.sca.0": {
+          "adaptive_avg_pool2d": 471040
+        },
+        "middle_blks.1.sca.1": {
+          "conv2d": 524800
+        },
+        "middle_blks.1": {
+          "mul": 1413120,
+          "add": 942080
+        },
+        "middle_blks.1.conv3": {
+          "conv2d": 482816000
+        },
+        "middle_blks.1.norm2": {
+          "mean": 942080,
+          "sub": 942080,
+          "pow": 471040,
+          "add": 471960,
+          "sqrt": 920,
+          "div": 471040,
+          "view": 0,
+          "mul": 471040
+        },
+        "middle_blks.1.conv4": {
+          "conv2d": 965632000
+        },
+        "middle_blks.1.conv5": {
+          "conv2d": 482816000
+        },
+        "ups.0.upconv": {
+          "conv2d": 964689920
+        },
+        "ups.0.pixel_shuffle": {
+          "pixel_shuffle": 0
+        },
+        "decoders.0.0.norm1": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "decoders.0.0.conv1": {
+          "conv2d": 966574080
+        },
+        "decoders.0.0.dwconv2": {
+          "conv2d": 35799040
+        },
+        "decoders.0.0.sg": {
+          "chunk": 0,
+          "mul": 1884160
+        },
+        "decoders.0.0.sca.0": {
+          "adaptive_avg_pool2d": 942080
+        },
+        "decoders.0.0.sca.1": {
+          "conv2d": 131328
+        },
+        "decoders.0.0": {
+          "mul": 2826240,
+          "add": 1884160
+        },
+        "decoders.0.0.conv3": {
+          "conv2d": 483287040
+        },
+        "decoders.0.0.norm2": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "decoders.0.0.conv4": {
+          "conv2d": 966574080
+        },
+        "decoders.0.0.conv5": {
+          "conv2d": 483287040
+        },
+        "decoders.0.1.norm1": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "decoders.0.1.conv1": {
+          "conv2d": 966574080
+        },
+        "decoders.0.1.dwconv2": {
+          "conv2d": 35799040
+        },
+        "decoders.0.1.sg": {
+          "chunk": 0,
+          "mul": 1884160
+        },
+        "decoders.0.1.sca.0": {
+          "adaptive_avg_pool2d": 942080
+        },
+        "decoders.0.1.sca.1": {
+          "conv2d": 131328
+        },
+        "decoders.0.1": {
+          "mul": 2826240,
+          "add": 1884160
+        },
+        "decoders.0.1.conv3": {
+          "conv2d": 483287040
+        },
+        "decoders.0.1.norm2": {
+          "mean": 1884160,
+          "sub": 1884160,
+          "pow": 942080,
+          "add": 945760,
+          "sqrt": 3680,
+          "div": 942080,
+          "view": 0,
+          "mul": 942080
+        },
+        "decoders.0.1.conv4": {
+          "conv2d": 966574080
+        },
+        "decoders.0.1.conv5": {
+          "conv2d": 483287040
+        },
+        "ups.1.upconv": {
+          "conv2d": 964689920
+        },
+        "ups.1.pixel_shuffle": {
+          "pixel_shuffle": 0
+        },
+        "decoders.1.0.norm1": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "decoders.1.0.conv1": {
+          "conv2d": 968458240
+        },
+        "decoders.1.0.dwconv2": {
+          "conv2d": 71598080
+        },
+        "decoders.1.0.sg": {
+          "chunk": 0,
+          "mul": 3768320
+        },
+        "decoders.1.0.sca.0": {
+          "adaptive_avg_pool2d": 1884160
+        },
+        "decoders.1.0.sca.1": {
+          "conv2d": 32896
+        },
+        "decoders.1.0": {
+          "mul": 5652480,
+          "add": 3768320
+        },
+        "decoders.1.0.conv3": {
+          "conv2d": 484229120
+        },
+        "decoders.1.0.norm2": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "decoders.1.0.conv4": {
+          "conv2d": 968458240
+        },
+        "decoders.1.0.conv5": {
+          "conv2d": 484229120
+        },
+        "decoders.1.1.norm1": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "decoders.1.1.conv1": {
+          "conv2d": 968458240
+        },
+        "decoders.1.1.dwconv2": {
+          "conv2d": 71598080
+        },
+        "decoders.1.1.sg": {
+          "chunk": 0,
+          "mul": 3768320
+        },
+        "decoders.1.1.sca.0": {
+          "adaptive_avg_pool2d": 1884160
+        },
+        "decoders.1.1.sca.1": {
+          "conv2d": 32896
+        },
+        "decoders.1.1": {
+          "mul": 5652480,
+          "add": 3768320
+        },
+        "decoders.1.1.conv3": {
+          "conv2d": 484229120
+        },
+        "decoders.1.1.norm2": {
+          "mean": 3768320,
+          "sub": 3768320,
+          "pow": 1884160,
+          "add": 1898880,
+          "sqrt": 14720,
+          "div": 1884160,
+          "view": 0,
+          "mul": 1884160
+        },
+        "decoders.1.1.conv4": {
+          "conv2d": 968458240
+        },
+        "decoders.1.1.conv5": {
+          "conv2d": 484229120
+        },
+        "ups.2.upconv": {
+          "conv2d": 964689920
+        },
+        "ups.2.pixel_shuffle": {
+          "pixel_shuffle": 0
+        },
+        "decoders.2.0.norm1": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "decoders.2.0.conv1": {
+          "conv2d": 972226560
+        },
+        "decoders.2.0.dwconv2": {
+          "conv2d": 143196160
+        },
+        "decoders.2.0.sg": {
+          "chunk": 0,
+          "mul": 7536640
+        },
+        "decoders.2.0.sca.0": {
+          "adaptive_avg_pool2d": 3768320
+        },
+        "decoders.2.0.sca.1": {
+          "conv2d": 8256
+        },
+        "decoders.2.0": {
+          "mul": 11304960,
+          "add": 7536640
+        },
+        "decoders.2.0.conv3": {
+          "conv2d": 486113280
+        },
+        "decoders.2.0.norm2": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "decoders.2.0.conv4": {
+          "conv2d": 972226560
+        },
+        "decoders.2.0.conv5": {
+          "conv2d": 486113280
+        },
+        "decoders.2.1.norm1": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "decoders.2.1.conv1": {
+          "conv2d": 972226560
+        },
+        "decoders.2.1.dwconv2": {
+          "conv2d": 143196160
+        },
+        "decoders.2.1.sg": {
+          "chunk": 0,
+          "mul": 7536640
+        },
+        "decoders.2.1.sca.0": {
+          "adaptive_avg_pool2d": 3768320
+        },
+        "decoders.2.1.sca.1": {
+          "conv2d": 8256
+        },
+        "decoders.2.1": {
+          "mul": 11304960,
+          "add": 7536640
+        },
+        "decoders.2.1.conv3": {
+          "conv2d": 486113280
+        },
+        "decoders.2.1.norm2": {
+          "mean": 7536640,
+          "sub": 7536640,
+          "pow": 3768320,
+          "add": 3827200,
+          "sqrt": 58880,
+          "div": 3768320,
+          "view": 0,
+          "mul": 3768320
+        },
+        "decoders.2.1.conv4": {
+          "conv2d": 972226560
+        },
+        "decoders.2.1.conv5": {
+          "conv2d": 486113280
+        },
+        "ups.3.upconv": {
+          "conv2d": 964689920
+        },
+        "ups.3.pixel_shuffle": {
+          "pixel_shuffle": 0
+        },
+        "decoders.3.0.norm1": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "decoders.3.0.conv1": {
+          "conv2d": 979763200
+        },
+        "decoders.3.0.dwconv2": {
+          "conv2d": 286392320
+        },
+        "decoders.3.0.sg": {
+          "chunk": 0,
+          "mul": 15073280
+        },
+        "decoders.3.0.sca.0": {
+          "adaptive_avg_pool2d": 7536640
+        },
+        "decoders.3.0.sca.1": {
+          "conv2d": 2080
+        },
+        "decoders.3.0": {
+          "mul": 22609920,
+          "add": 15073280
+        },
+        "decoders.3.0.conv3": {
+          "conv2d": 489881600
+        },
+        "decoders.3.0.norm2": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "decoders.3.0.conv4": {
+          "conv2d": 979763200
+        },
+        "decoders.3.0.conv5": {
+          "conv2d": 489881600
+        },
+        "decoders.3.1.norm1": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "decoders.3.1.conv1": {
+          "conv2d": 979763200
+        },
+        "decoders.3.1.dwconv2": {
+          "conv2d": 286392320
+        },
+        "decoders.3.1.sg": {
+          "chunk": 0,
+          "mul": 15073280
+        },
+        "decoders.3.1.sca.0": {
+          "adaptive_avg_pool2d": 7536640
+        },
+        "decoders.3.1.sca.1": {
+          "conv2d": 2080
+        },
+        "decoders.3.1": {
+          "mul": 22609920,
+          "add": 15073280
+        },
+        "decoders.3.1.conv3": {
+          "conv2d": 489881600
+        },
+        "decoders.3.1.norm2": {
+          "mean": 15073280,
+          "sub": 15073280,
+          "pow": 7536640,
+          "add": 7772160,
+          "sqrt": 235520,
+          "div": 7536640,
+          "view": 0,
+          "mul": 7536640
+        },
+        "decoders.3.1.conv4": {
+          "conv2d": 979763200
+        },
+        "decoders.3.1.conv5": {
+          "conv2d": 489881600
+        },
+        "ending": {
+          "conv2d": 543580160
+        }
+      },
+      "fixed_operator_events": [],
       "operator_arithmetic": {
         "pad": 0,
         "conv2d": 63441886080,
-        "mean": 234879680,
+        "mean": 229867520,
         "sub": 229867520,
         "pow": 114933760,
         "add": 247446880,
@@ -209,7 +1146,7 @@
         "view": 0,
         "mul": 402268160,
         "chunk": 0,
-        "adaptive_avg_pool2d": 57469824,
+        "adaptive_avg_pool2d": 57466880,
         "pixel_shuffle": 0,
         "slice": 0
       },
@@ -229,7 +1166,16 @@
         "pixel_shuffle": 4,
         "slice": 3
       },
-      "unclassified_ops": {}
+      "unclassified_ops": {},
+      "retained_feature_metric": {
+        "T_elements": 921600,
+        "multiple": 25,
+        "elements": 23040000,
+        "fp32_bytes": 92160000,
+        "formula": "16T + 8T + T",
+        "stage": "最高分辨率 NAFBlock：64 通道展开特征 + 32 通道块内残差 + RAW 全局残差",
+        "basis": "manual architecture accounting; ignores padding and kernel temporaries; MRLFN counts residual connection slots"
+      }
     },
     {
       "config": "configs/train_sid_sony.yaml",
@@ -250,7 +1196,7 @@
       "parameters": 7760484,
       "parameter_bytes": 31041936,
       "buffer_bytes": 0,
-      "arithmetic_ops": 89322891264,
+      "arithmetic_ops": 89319270144,
       "conv_matmul_macs": 44558123008,
       "binary_conv_macs": 0,
       "live_feature_peak_bytes": 286616576,
@@ -461,11 +1407,99 @@
       "cuda_baseline_bytes": 34732032,
       "cuda_peak_allocated_bytes": 319987200,
       "cuda_increment_bytes": 285255168,
+      "arithmetic_categories": {
+        "non_convolution": 128670464,
+        "learned_convolution": 89190599680
+      },
+      "convolution_bias_ops": 74353664,
+      "module_arithmetic": {
+        "root": {
+          "pad": 0,
+          "cat": 0,
+          "slice": 0
+        },
+        "conv1_1": {
+          "conv2d": 563929088
+        },
+        "relu": {
+          "leaky_relu_": 117807104
+        },
+        "conv1_2": {
+          "conv2d": 4457357312
+        },
+        "pool1": {
+          "max_pool2d": 10863360
+        },
+        "conv2_1": {
+          "conv2d": 2228678656
+        },
+        "conv2_2": {
+          "conv2d": 4453494784
+        },
+        "conv3_1": {
+          "conv2d": 2226747392
+        },
+        "conv3_2": {
+          "conv2d": 4451563520
+        },
+        "conv4_1": {
+          "conv2d": 2225781760
+        },
+        "conv4_2": {
+          "conv2d": 4450597888
+        },
+        "conv5_1": {
+          "conv2d": 2225298944
+        },
+        "conv5_2": {
+          "conv2d": 4450115072
+        },
+        "upv6": {
+          "conv_transpose2d": 989772800
+        },
+        "conv6_1": {
+          "conv2d": 8900230144
+        },
+        "conv6_2": {
+          "conv2d": 4450597888
+        },
+        "upv7": {
+          "conv_transpose2d": 990738432
+        },
+        "conv7_1": {
+          "conv2d": 8901195776
+        },
+        "conv7_2": {
+          "conv2d": 4451563520
+        },
+        "upv8": {
+          "conv_transpose2d": 992669696
+        },
+        "conv8_1": {
+          "conv2d": 8903127040
+        },
+        "conv8_2": {
+          "conv2d": 4453494784
+        },
+        "upv9": {
+          "conv_transpose2d": 996532224
+        },
+        "conv9_1": {
+          "conv2d": 8906989568
+        },
+        "conv9_2": {
+          "conv2d": 4457357312
+        },
+        "conv10_1": {
+          "conv2d": 62766080
+        }
+      },
+      "fixed_operator_events": [],
       "operator_arithmetic": {
         "pad": 0,
         "conv2d": 85220886528,
         "leaky_relu_": 117807104,
-        "max_pool2d": 14484480,
+        "max_pool2d": 10863360,
         "conv_transpose2d": 3969713152,
         "cat": 0,
         "slice": 0
@@ -479,7 +1513,16 @@
         "cat": 4,
         "slice": 4
       },
-      "unclassified_ops": {}
+      "unclassified_ops": {},
+      "retained_feature_metric": {
+        "T_elements": 921600,
+        "multiple": 16,
+        "elements": 14745600,
+        "fp32_bytes": 58982400,
+        "formula": "16T",
+        "stage": "最高分辨率 decoder 的 64 通道拼接结果；对应 skip 已包含在拼接中",
+        "basis": "manual architecture accounting; ignores padding and kernel temporaries; MRLFN counts residual connection slots"
+      }
     },
     {
       "config": "configs/train_sid_sony_mrlfn_paper_s2d_k4_n4_d32.yaml",
@@ -585,6 +1628,133 @@
       "cuda_baseline_bytes": 4216832,
       "cuda_peak_allocated_bytes": 44767232,
       "cuda_increment_bytes": 40550400,
+      "arithmetic_categories": {
+        "non_convolution": 36864000,
+        "learned_convolution": 15017472000
+      },
+      "convolution_bias_ops": 35942400,
+      "module_arithmetic": {
+        "space_to_depth": {
+          "pixel_shuffle": 0,
+          "pixel_unshuffle": 0
+        },
+        "shallow_conv": {
+          "conv2d": 532684800
+        },
+        "blocks.0.conv1.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.0.conv1.activation": {
+          "relu_": 1843200
+        },
+        "blocks.0.conv2.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.0.conv2.activation": {
+          "relu_": 1843200
+        },
+        "blocks.0.conv3.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.0.conv3.activation": {
+          "relu_": 1843200
+        },
+        "blocks.0": {
+          "add": 3686400
+        },
+        "blocks.0.linear": {
+          "conv2d": 119808000
+        },
+        "blocks.1.conv1.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.1.conv1.activation": {
+          "relu_": 1843200
+        },
+        "blocks.1.conv2.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.1.conv2.activation": {
+          "relu_": 1843200
+        },
+        "blocks.1.conv3.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.1.conv3.activation": {
+          "relu_": 1843200
+        },
+        "blocks.1": {
+          "add": 3686400
+        },
+        "blocks.1.linear": {
+          "conv2d": 119808000
+        },
+        "blocks.2.conv1.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.2.conv1.activation": {
+          "relu_": 1843200
+        },
+        "blocks.2.conv2.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.2.conv2.activation": {
+          "relu_": 1843200
+        },
+        "blocks.2.conv3.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.2.conv3.activation": {
+          "relu_": 1843200
+        },
+        "blocks.2": {
+          "add": 3686400
+        },
+        "blocks.2.linear": {
+          "conv2d": 119808000
+        },
+        "blocks.3.conv1.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.3.conv1.activation": {
+          "relu_": 1843200
+        },
+        "blocks.3.conv2.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.3.conv2.activation": {
+          "relu_": 1843200
+        },
+        "blocks.3.conv3.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "blocks.3.conv3.activation": {
+          "relu_": 1843200
+        },
+        "blocks.3": {
+          "add": 3686400
+        },
+        "blocks.3.linear": {
+          "conv2d": 119808000
+        },
+        "deep_fusion": {
+          "conv2d": 1063526400
+        },
+        "shallow_fusion": {
+          "conv2d": 60825600
+        },
+        "root": {
+          "cat": 0
+        },
+        "output_conv": {
+          "conv2d": 118886400
+        },
+        "depth_to_space": {
+          "pixel_shuffle": 0,
+          "pixel_unshuffle": 0
+        }
+      },
+      "fixed_operator_events": [],
       "operator_arithmetic": {
         "pixel_shuffle": 0,
         "pixel_unshuffle": 0,
@@ -601,7 +1771,16 @@
         "add": 8,
         "cat": 1
       },
-      "unclassified_ops": {}
+      "unclassified_ops": {},
+      "retained_feature_metric": {
+        "T_elements": 921600,
+        "multiple": 7,
+        "elements": 6451200,
+        "fp32_bytes": 25804800,
+        "formula": "T + (1+2)×2T",
+        "stage": "RAW 旁路 + mRLFB 当前特征 + 两条块内残差连接（按用户连接位置口径）",
+        "basis": "manual architecture accounting; ignores padding and kernel temporaries; MRLFN counts residual connection slots"
+      }
     },
     {
       "config": "configs/train_sid_sony_splitternet.yaml",
@@ -621,7 +1800,7 @@
       "parameters": 731636,
       "parameter_bytes": 2926544,
       "buffer_bytes": 0,
-      "arithmetic_ops": 7826640096,
+      "arithmetic_ops": 7826610144,
       "conv_matmul_macs": 3866577664,
       "binary_conv_macs": 0,
       "live_feature_peak_bytes": 139475072,
@@ -842,15 +2021,742 @@
       "cuda_baseline_bytes": 6664704,
       "cuda_peak_allocated_bytes": 173582848,
       "cuda_increment_bytes": 166918144,
+      "arithmetic_categories": {
+        "non_convolution": 62692480,
+        "learned_convolution": 7763917664
+      },
+      "convolution_bias_ops": 30762336,
+      "module_arithmetic": {
+        "root": {
+          "pad": 0,
+          "chunk": 0,
+          "leaky_relu": 42393600,
+          "cat": 0,
+          "slice": 0,
+          "add": 15073280
+        },
+        "stem": {
+          "conv2d": 550174720
+        },
+        "down.0.0": {
+          "pad": 0
+        },
+        "down.0.0.conv": {
+          "conv2d": 544522240
+        },
+        "down.0.1": {
+          "pad": 0
+        },
+        "down.0.1.conv": {
+          "conv2d": 544522240
+        },
+        "down.1.0": {
+          "pad": 0
+        },
+        "down.1.0.conv": {
+          "conv2d": 136130560
+        },
+        "down.1.1": {
+          "pad": 0
+        },
+        "down.1.1.conv": {
+          "conv2d": 136130560
+        },
+        "down.1.2": {
+          "pad": 0
+        },
+        "down.1.2.conv": {
+          "conv2d": 136130560
+        },
+        "down.1.3": {
+          "pad": 0
+        },
+        "down.1.3.conv": {
+          "conv2d": 136130560
+        },
+        "down.2.0": {
+          "pad": 0
+        },
+        "down.2.0.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.1": {
+          "pad": 0
+        },
+        "down.2.1.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.2": {
+          "pad": 0
+        },
+        "down.2.2.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.3": {
+          "pad": 0
+        },
+        "down.2.3.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.4": {
+          "pad": 0
+        },
+        "down.2.4.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.5": {
+          "pad": 0
+        },
+        "down.2.5.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.6": {
+          "pad": 0
+        },
+        "down.2.6.conv": {
+          "conv2d": 34032640
+        },
+        "down.2.7": {
+          "pad": 0
+        },
+        "down.2.7.conv": {
+          "conv2d": 34032640
+        },
+        "down.3.0": {
+          "pad": 0
+        },
+        "down.3.0.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.1": {
+          "pad": 0
+        },
+        "down.3.1.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.2": {
+          "pad": 0
+        },
+        "down.3.2.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.3": {
+          "pad": 0
+        },
+        "down.3.3.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.4": {
+          "pad": 0
+        },
+        "down.3.4.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.5": {
+          "pad": 0
+        },
+        "down.3.5.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.6": {
+          "pad": 0
+        },
+        "down.3.6.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.7": {
+          "pad": 0
+        },
+        "down.3.7.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.8": {
+          "pad": 0
+        },
+        "down.3.8.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.9": {
+          "pad": 0
+        },
+        "down.3.9.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.10": {
+          "pad": 0
+        },
+        "down.3.10.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.11": {
+          "pad": 0
+        },
+        "down.3.11.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.12": {
+          "pad": 0
+        },
+        "down.3.12.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.13": {
+          "pad": 0
+        },
+        "down.3.13.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.14": {
+          "pad": 0
+        },
+        "down.3.14.conv": {
+          "conv2d": 8508160
+        },
+        "down.3.15": {
+          "pad": 0
+        },
+        "down.3.15.conv": {
+          "conv2d": 8508160
+        },
+        "middle.0.conv1": {
+          "pad": 0
+        },
+        "middle.0.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.0": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.0.channel": {
+          "conv2d": 2080
+        },
+        "middle.0.conv2": {
+          "pad": 0
+        },
+        "middle.0.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.0.spatial": {
+          "pad": 0
+        },
+        "middle.0.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.1.conv1": {
+          "pad": 0
+        },
+        "middle.1.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.1": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.1.channel": {
+          "conv2d": 2080
+        },
+        "middle.1.conv2": {
+          "pad": 0
+        },
+        "middle.1.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.1.spatial": {
+          "pad": 0
+        },
+        "middle.1.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.2.conv1": {
+          "pad": 0
+        },
+        "middle.2.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.2": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.2.channel": {
+          "conv2d": 2080
+        },
+        "middle.2.conv2": {
+          "pad": 0
+        },
+        "middle.2.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.2.spatial": {
+          "pad": 0
+        },
+        "middle.2.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.3.conv1": {
+          "pad": 0
+        },
+        "middle.3.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.3": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.3.channel": {
+          "conv2d": 2080
+        },
+        "middle.3.conv2": {
+          "pad": 0
+        },
+        "middle.3.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.3.spatial": {
+          "pad": 0
+        },
+        "middle.3.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.4.conv1": {
+          "pad": 0
+        },
+        "middle.4.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.4": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.4.channel": {
+          "conv2d": 2080
+        },
+        "middle.4.conv2": {
+          "pad": 0
+        },
+        "middle.4.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.4.spatial": {
+          "pad": 0
+        },
+        "middle.4.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.5.conv1": {
+          "pad": 0
+        },
+        "middle.5.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.5": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.5.channel": {
+          "conv2d": 2080
+        },
+        "middle.5.conv2": {
+          "pad": 0
+        },
+        "middle.5.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.5.spatial": {
+          "pad": 0
+        },
+        "middle.5.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.6.conv1": {
+          "pad": 0
+        },
+        "middle.6.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.6": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.6.channel": {
+          "conv2d": 2080
+        },
+        "middle.6.conv2": {
+          "pad": 0
+        },
+        "middle.6.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.6.spatial": {
+          "pad": 0
+        },
+        "middle.6.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.7.conv1": {
+          "pad": 0
+        },
+        "middle.7.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.7": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.7.channel": {
+          "conv2d": 2080
+        },
+        "middle.7.conv2": {
+          "pad": 0
+        },
+        "middle.7.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.7.spatial": {
+          "pad": 0
+        },
+        "middle.7.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.8.conv1": {
+          "pad": 0
+        },
+        "middle.8.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.8": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.8.channel": {
+          "conv2d": 2080
+        },
+        "middle.8.conv2": {
+          "pad": 0
+        },
+        "middle.8.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.8.spatial": {
+          "pad": 0
+        },
+        "middle.8.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.9.conv1": {
+          "pad": 0
+        },
+        "middle.9.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.9": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.9.channel": {
+          "conv2d": 2080
+        },
+        "middle.9.conv2": {
+          "pad": 0
+        },
+        "middle.9.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.9.spatial": {
+          "pad": 0
+        },
+        "middle.9.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.10.conv1": {
+          "pad": 0
+        },
+        "middle.10.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.10": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.10.channel": {
+          "conv2d": 2080
+        },
+        "middle.10.conv2": {
+          "pad": 0
+        },
+        "middle.10.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.10.spatial": {
+          "pad": 0
+        },
+        "middle.10.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.11.conv1": {
+          "pad": 0
+        },
+        "middle.11.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.11": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.11.channel": {
+          "conv2d": 2080
+        },
+        "middle.11.conv2": {
+          "pad": 0
+        },
+        "middle.11.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.11.spatial": {
+          "pad": 0
+        },
+        "middle.11.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.12.conv1": {
+          "pad": 0
+        },
+        "middle.12.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.12": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.12.channel": {
+          "conv2d": 2080
+        },
+        "middle.12.conv2": {
+          "pad": 0
+        },
+        "middle.12.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.12.spatial": {
+          "pad": 0
+        },
+        "middle.12.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.13.conv1": {
+          "pad": 0
+        },
+        "middle.13.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.13": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.13.channel": {
+          "conv2d": 2080
+        },
+        "middle.13.conv2": {
+          "pad": 0
+        },
+        "middle.13.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.13.spatial": {
+          "pad": 0
+        },
+        "middle.13.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.14.conv1": {
+          "pad": 0
+        },
+        "middle.14.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.14": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.14.channel": {
+          "conv2d": 2080
+        },
+        "middle.14.conv2": {
+          "pad": 0
+        },
+        "middle.14.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.14.spatial": {
+          "pad": 0
+        },
+        "middle.14.spatial.conv": {
+          "conv2d": 34040
+        },
+        "middle.15.conv1": {
+          "pad": 0
+        },
+        "middle.15.conv1.conv": {
+          "conv2d": 16986880
+        },
+        "middle.15": {
+          "leaky_relu": 117760,
+          "mean": 58880,
+          "mul": 58880,
+          "add": 58880,
+          "amax": 28520,
+          "cat": 0,
+          "sigmoid": 3680
+        },
+        "middle.15.channel": {
+          "conv2d": 2080
+        },
+        "middle.15.conv2": {
+          "pad": 0
+        },
+        "middle.15.conv2.conv": {
+          "conv2d": 16986880
+        },
+        "middle.15.spatial": {
+          "pad": 0
+        },
+        "middle.15.spatial.conv": {
+          "conv2d": 34040
+        },
+        "up.0.0": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.1": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.2": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.3": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.4": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.5": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.6": {
+          "conv_transpose2d": 34036704
+        },
+        "up.0.7": {
+          "conv_transpose2d": 34036704
+        },
+        "up.1.0": {
+          "conv_transpose2d": 136138656
+        },
+        "up.1.1": {
+          "conv_transpose2d": 136138656
+        },
+        "up.1.2": {
+          "conv_transpose2d": 136138656
+        },
+        "up.1.3": {
+          "conv_transpose2d": 136138656
+        },
+        "up.2.0": {
+          "conv_transpose2d": 544538400
+        },
+        "up.2.1": {
+          "conv_transpose2d": 544538400
+        },
+        "up.3.0": {
+          "conv_transpose2d": 2178121248
+        },
+        "head": {
+          "conv2d": 543580160
+        }
+      },
+      "fixed_operator_events": [],
       "operator_arithmetic": {
         "pad": 0,
         "conv2d": 3679871360,
         "chunk": 0,
         "leaky_relu": 44277760,
-        "mean": 957312,
+        "mean": 942080,
         "mul": 942080,
         "add": 16015360,
-        "amax": 471040,
+        "amax": 456320,
         "cat": 0,
         "sigmoid": 58880,
         "conv_transpose2d": 4084046304,
@@ -870,302 +2776,19 @@
         "conv_transpose2d": 15,
         "slice": 31
       },
-      "unclassified_ops": {}
+      "unclassified_ops": {},
+      "retained_feature_metric": {
+        "T_elements": 921600,
+        "multiple": 17,
+        "elements": 15667200,
+        "fp32_bytes": 62668800,
+        "formula": "8T + 8T + T",
+        "stage": "最后 decoder 上采样特征 + stem skip + RAW 全局残差",
+        "basis": "manual architecture accounting; ignores padding and kernel temporaries; MRLFN counts residual connection slots"
+      }
     },
     {
-      "config": "configs/train_sid_sony_brve_single_frame.yaml",
-      "model": "brve_single_frame",
-      "graph": "native",
-      "architecture": {
-        "model": "brve_single_frame",
-        "input_channels": 4,
-        "adaptation": "repeat_three_frames_center_output"
-      },
-      "shape": [
-        1,
-        4,
-        360,
-        640
-      ],
-      "parameters": 4508584,
-      "parameter_bytes": 18034336,
-      "buffer_bytes": 0,
-      "arithmetic_ops": 942573956040,
-      "conv_matmul_macs": 465216412176,
-      "binary_conv_macs": 447773184000,
-      "live_feature_peak_bytes": 1220198400,
-      "live_peak_operator": "aten.sign.default",
-      "live_peak_module": "core.stage2.0.up21.conv",
-      "peak_storages": [
-        {
-          "shape": [
-            1,
-            4,
-            360,
-            640
-          ],
-          "bytes": 3686400,
-          "module": "input_or_root"
-        },
-        {
-          "shape": [
-            1,
-            3,
-            4,
-            360,
-            640
-          ],
-          "bytes": 11059200,
-          "module": "root"
-        },
-        {
-          "shape": [
-            1,
-            3,
-            4,
-            360,
-            640
-          ],
-          "bytes": 11059200,
-          "module": "core"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.feat_extract.main.2.2"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.stage0.0"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.stage1.conv_out"
-        },
-        {
-          "shape": [
-            1,
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core"
-        },
-        {
-          "shape": [
-            3,
-            72,
-            360,
-            640
-          ],
-          "bytes": 199065600,
-          "module": "core"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.fusion"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.stage2.0.encoder_level1.0"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            180,
-            320
-          ],
-          "bytes": 33177600,
-          "module": "core.stage2.0.encoder_level2.2"
-        },
-        {
-          "shape": [
-            3,
-            96,
-            90,
-            160
-          ],
-          "bytes": 16588800,
-          "module": "core.stage2.0.encoder_level3.2"
-        },
-        {
-          "shape": [
-            3,
-            96,
-            90,
-            160
-          ],
-          "bytes": 16588800,
-          "module": "core.stage2.0.decoder_level3.2"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            180,
-            320
-          ],
-          "bytes": 33177600,
-          "module": "core.stage2.0.up32"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            180,
-            320
-          ],
-          "bytes": 33177600,
-          "module": "core.stage2.0.decoder_level2.2"
-        },
-        {
-          "shape": [
-            3,
-            24,
-            360,
-            640
-          ],
-          "bytes": 66355200,
-          "module": "core.stage2.0.skip_conv1"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            360,
-            640
-          ],
-          "bytes": 132710400,
-          "module": "core.stage2.0.up21.up"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            360,
-            640
-          ],
-          "bytes": 132710400,
-          "module": "core.stage2.0.up21.conv.move0"
-        },
-        {
-          "shape": [
-            3,
-            48,
-            360,
-            640
-          ],
-          "bytes": 132710400,
-          "module": "core.stage2.0.up21.conv"
-        }
-      ],
-      "cuda_baseline_bytes": 21925376,
-      "cuda_peak_allocated_bytes": 1243123200,
-      "cuda_increment_bytes": 1221197824,
-      "operator_arithmetic": {
-        "slice": 0,
-        "unsqueeze": 0,
-        "repeat": 0,
-        "mul": 557650368,
-        "view": 0,
-        "conv2d": 930753676800,
-        "leaky_relu_": 33177600,
-        "expand_as": 0,
-        "add": 3583562832,
-        "mean": 558105768,
-        "var": 2202174864,
-        "sqrt": 11664,
-        "abs": 554885568,
-        "adaptive_avg_pool2d": 550552464,
-        "squeeze": 0,
-        "cat": 0,
-        "transpose": 0,
-        "conv1d": 209952,
-        "sigmoid": 46656,
-        "sign": 1038034368,
-        "detach": 0,
-        "clamp": 4344768,
-        "sub": 4344768,
-        "prelu": 1632960000,
-        "avg_pool2d": 95904000,
-        "upsample_bilinear2d": 1001548800,
-        "select": 0,
-        "stack": 0,
-        "roll": 0,
-        "zeros_like": 0,
-        "copy_": 0,
-        "div": 2764800
-      },
-      "operator_calls": {
-        "slice": 5547,
-        "unsqueeze": 77,
-        "repeat": 1,
-        "mul": 197,
-        "view": 287,
-        "conv2d": 166,
-        "leaky_relu_": 1,
-        "expand_as": 360,
-        "add": 685,
-        "mean": 436,
-        "var": 76,
-        "sqrt": 76,
-        "abs": 196,
-        "adaptive_avg_pool2d": 76,
-        "squeeze": 76,
-        "cat": 106,
-        "transpose": 152,
-        "conv1d": 76,
-        "sigmoid": 76,
-        "sign": 240,
-        "detach": 360,
-        "clamp": 120,
-        "sub": 120,
-        "prelu": 120,
-        "avg_pool2d": 7,
-        "upsample_bilinear2d": 7,
-        "select": 7,
-        "stack": 2,
-        "roll": 32,
-        "zeros_like": 28,
-        "copy_": 672,
-        "div": 1
-      },
-      "unclassified_ops": {}
-    },
-    {
-      "config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft.yaml",
+      "config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm.yaml",
       "model": "learning_dwt_repncb",
       "graph": "deploy",
       "architecture": {
@@ -1194,6 +2817,7 @@
         "haar_share_levels": true,
         "ll_block_type": "repncb",
         "threshold_mode": "band_channel",
+        "ll_normalize": false,
         "refinement": {
           "s2d_factor": 2,
           "width": 32,
@@ -1201,7 +2825,8 @@
           "skip_source": "noisy",
           "block_type": "repncb",
           "input_fusion": "none",
-          "activation": "prelu"
+          "activation": "prelu",
+          "stem_activation": "none"
         }
       },
       "shape": [
@@ -1213,7 +2838,7 @@
       "parameters": 86408,
       "parameter_bytes": 345632,
       "buffer_bytes": 3216,
-      "arithmetic_ops": 6848956800,
+      "arithmetic_ops": 6848928000,
       "conv_matmul_macs": 3405427200,
       "binary_conv_macs": 0,
       "live_feature_peak_bytes": 40550400,
@@ -1294,6 +2919,325 @@
       "cuda_baseline_bytes": 4044800,
       "cuda_peak_allocated_bytes": 40908800,
       "cuda_increment_bytes": 36864000,
+      "arithmetic_categories": {
+        "fixed_haar": 77414400,
+        "non_convolution": 24681600,
+        "learned_convolution": 6658358400,
+        "fixed_space_depth": 88473600
+      },
+      "convolution_bias_ops": 13392000,
+      "module_arithmetic": {
+        "wavelet": {
+          "conv2d": 38707200,
+          "split": 0,
+          "select": 0,
+          "view": 0,
+          "sub": 2721600,
+          "relu": 1814400,
+          "neg": 907200,
+          "cat": 0,
+          "conv_transpose2d": 38707200
+        },
+        "wavelet.ll_restorer.layers.0": {
+          "conv2d": 8409600
+        },
+        "wavelet.ll_restorer.layers.1": {
+          "relu": 115200
+        },
+        "wavelet.ll_restorer.layers.2.reparam_conv": {
+          "conv2d": 66470400
+        },
+        "wavelet.ll_restorer.layers.2.activation": {
+          "prelu": 230400
+        },
+        "wavelet.ll_restorer.layers.3.reparam_conv": {
+          "conv2d": 66470400
+        },
+        "wavelet.ll_restorer.layers.3.activation": {
+          "prelu": 230400
+        },
+        "wavelet.ll_restorer.layers.4.reparam_conv": {
+          "conv2d": 66470400
+        },
+        "wavelet.ll_restorer.layers.4.activation": {
+          "prelu": 230400
+        },
+        "wavelet.ll_restorer.layers.5": {
+          "conv2d": 8308800
+        },
+        "wavelet.ll_restorer": {
+          "cat": 0
+        },
+        "wavelet.ll_restorer.fusion": {
+          "conv2d": 244800
+        },
+        "refiner.s2d": {
+          "conv2d": 58982400
+        },
+        "refiner.stem": {
+          "conv2d": 532684800
+        },
+        "refiner.blocks.0.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "refiner.blocks.0.activation": {
+          "prelu": 3686400
+        },
+        "refiner.blocks.1.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "refiner.blocks.1.activation": {
+          "prelu": 3686400
+        },
+        "refiner.blocks.2.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "refiner.blocks.2.activation": {
+          "prelu": 3686400
+        },
+        "refiner.blocks.3.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "refiner.blocks.3.activation": {
+          "prelu": 3686400
+        },
+        "refiner.blocks.4.reparam_conv": {
+          "conv2d": 1063526400
+        },
+        "refiner.blocks.4.activation": {
+          "prelu": 3686400
+        },
+        "refiner.head": {
+          "conv2d": 531763200
+        },
+        "refiner": {
+          "cat": 0
+        },
+        "refiner.fusion": {
+          "conv2d": 59904000
+        },
+        "refiner.d2s": {
+          "conv_transpose2d": 29491200
+        }
+      },
+      "fixed_operator_events": [
+        {
+          "category": "fixed_haar",
+          "operator": "conv2d",
+          "input_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 14745600,
+          "ops": 29491200
+        },
+        {
+          "category": "fixed_haar",
+          "operator": "conv2d",
+          "input_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 3686400,
+          "ops": 7372800
+        },
+        {
+          "category": "fixed_haar",
+          "operator": "conv2d",
+          "input_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 921600,
+          "ops": 1843200
+        },
+        {
+          "category": "fixed_haar",
+          "operator": "conv_transpose2d",
+          "input_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 921600,
+          "ops": 1843200
+        },
+        {
+          "category": "fixed_haar",
+          "operator": "conv_transpose2d",
+          "input_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 3686400,
+          "ops": 7372800
+        },
+        {
+          "category": "fixed_haar",
+          "operator": "conv_transpose2d",
+          "input_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 14745600,
+          "ops": 29491200
+        },
+        {
+          "category": "fixed_space_depth",
+          "operator": "conv2d",
+          "input_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 14745600,
+          "ops": 29491200
+        },
+        {
+          "category": "fixed_space_depth",
+          "operator": "conv2d",
+          "input_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 14745600,
+          "ops": 29491200
+        },
+        {
+          "category": "fixed_space_depth",
+          "operator": "conv_transpose2d",
+          "input_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "weight_shape": [
+            16,
+            4,
+            2,
+            2
+          ],
+          "macs": 14745600,
+          "ops": 29491200
+        }
+      ],
       "operator_arithmetic": {
         "conv2d": 6756048000,
         "split": 0,
@@ -1302,10 +3246,8 @@
         "sub": 2721600,
         "relu": 1929600,
         "neg": 907200,
-        "div": 14400,
         "prelu": 19123200,
         "cat": 0,
-        "mul": 14400,
         "conv_transpose2d": 68198400
       },
       "operator_calls": {
@@ -1316,13 +3258,20 @@
         "sub": 27,
         "relu": 19,
         "neg": 9,
-        "div": 1,
         "prelu": 8,
         "cat": 5,
-        "mul": 1,
         "conv_transpose2d": 4
       },
-      "unclassified_ops": {}
+      "unclassified_ops": {},
+      "retained_feature_metric": {
+        "T_elements": 921600,
+        "multiple": 3,
+        "elements": 2764800,
+        "fp32_bytes": 11059200,
+        "formula": "2T + T",
+        "stage": "半分辨率32通道精修主干 + 原RAW或等元素数S2D旁路",
+        "basis": "manual architecture accounting; ignores padding and kernel temporaries; MRLFN counts residual connection slots"
+      }
     }
   ]
 }
