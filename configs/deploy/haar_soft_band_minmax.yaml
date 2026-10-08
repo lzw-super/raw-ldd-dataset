@@ -1,0 +1,9 @@
+# Same trained checkpoint; deployment-only equivalence ablation.
+name: haar_soft_band_minmax
+checkpoint: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth
+kind: haar
+height: 360
+width: 640
+hf_layout: band
+hf_formula: minmax
+simplify: true

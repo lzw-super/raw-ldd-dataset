@@ -136,7 +136,7 @@ SplitterNet 的 profiler 条目为 **492**。所有名字以 `/Pad` 结尾的条
 
 ## 5. 建议的优化顺序
 
-以下是由当前热点提出的可验证方案，**本次仅分析，尚未执行这些图改写后的 NPU A/B 测速，不能承诺加速比例**。
+以下为初始热点分析提出的优化方案。优先级1的部署对照与实测结果补充在第7节；其他优先级仍是待验证建议，不能承诺加速比例。
 
 ### 优先级 1：减少高频处理的分支与完整特征遍历
 
@@ -208,3 +208,157 @@ python tools/analyze_sid_qaihub_hotspots.py
 脚本只读本地三轮 profile，校验节点集合一致、全部节点在NPU、分组周期合计等于总量，输出 JSON 和 CSV；不请求 API token，不提交新云端任务。
 
 原始数据：[Haar 第一轮](qaihub_w8a8_20261007/haar_ll_no_norm/profile_1.json)、[第二轮](qaihub_w8a8_20261007/haar_ll_no_norm/profile_2.json)、[第三轮](qaihub_w8a8_20261007/haar_ll_no_norm/profile_3.json)。正常推理与逐层测量差异的证据位于 `qaihub_w8a8_20261007/haar_ll_no_norm/profile_logs_1/j5q43m6ng_runtime.log`。
+
+## 7. 优先级1实测：四组 Haar 对照与 SplitterNet clean（2026-10-08）
+
+本节实际实现并导出了优先级1的四组部署图，使用同一个 Haar `best.pth` 和同一套36个高频阈值。四组采用 **2×2交叉对照**，其中 A 是控制组；不新增训练、不改变 LL CNN 或精修网络。其他优先级（例如 IDWT+S2D 折叠）没有混入本次实验。
+
+### 7.1 四组配置与导出实现
+
+| 组别 | 高频组织 | 收缩公式 | 高频处理节点数 | 整图节点数 |
+|---|---|---|---:|---:|
+| A | 每层3个4通道子带分别处理 | 双 ReLU | 54 | 94 |
+| B | 每层3个4通道子带分别处理 | Min/Max | 27 | 67 |
+| C | 每层12通道HF一次处理 | 双 ReLU | 18 | 58 |
+| D | 每层12通道HF一次处理 | Min/Max | 9 | 49 |
+
+公式分别是：
+
+```text
+双 ReLU: y = relu(z-t) - relu(-z-t)
+Min/Max: y = z - min(max(z,-t),t)
+```
+
+按原计算量文档的标量计数规则推导，A/C总量均约6.848928 GOp，B/D约6.8462064 GOp：Min/Max仅把907,200个高频系数的每元素6 Ops变为3 Ops，总算术量减少约0.0397%。12通道合并本身不减少算术量。因此即使速度明显变化，也主要体现执行组织差异，而不是GOp显著下降。
+
+负阈值 `-t` 在导出时固化为常量。C/D 从 DWT 的16通道输出直接分成 `[4 LL, 12 HF]`，没有先拆三个子带再重新拼起来；阈值从 `[3,4]` 按 band-major 顺序展平为 `[1,12,1,1]`。层次仍按原 LL 递归，阈值存储仍使用原模型的 deepest-first 顺序。
+
+实现见 [haar_soft_export.py](../models/haar_soft_export.py)；导出入口见 [export_sid_npu_ablation.py](../tools/export_sid_npu_ablation.py)。四份 YAML 是**部署导出配置**，交给这个新导出脚本使用，不是 `train_sid_sony.py` 的训练配置。
+
+- Haar A：4通道逐子带 + 双 ReLU：[haar_soft_band_relu.yaml](../configs/deploy/haar_soft_band_relu.yaml)
+- Haar B：4通道逐子带 + Min/Max：[haar_soft_band_minmax.yaml](../configs/deploy/haar_soft_band_minmax.yaml)
+- Haar C：12通道按层合并 + 双 ReLU：[haar_soft_level_relu.yaml](../configs/deploy/haar_soft_level_relu.yaml)
+- Haar D：12通道按层合并 + Min/Max：[haar_soft_level_minmax.yaml](../configs/deploy/haar_soft_level_minmax.yaml)
+
+所有图均使用相同 onnxsim 0.4.36 清理常量；图节点减少不直接等于 NPU kernel 数减少。输出为标准 ONNX 算子，没有自定义算子。
+
+### 7.2 SplitterNet：固定 shape 能清理什么，不能删除什么
+
+配置：[splitternet_static_clean.yaml](../configs/deploy/splitternet_static_clean.yaml)。沿用原 `experiments/sid_sony_splitternet/checkpoints/best.pth`，输入仍为 `[1,4,360,640]`，不通过改变输入尺寸来获取不公平的延迟优势。
+
+原导出 **2117节点 → clean 488节点**。固定 shape 使常量形状计算可折叠，但不会让边界数据依赖消失。
+
+| 操作 | 清理前 | 清理后 | 含义 |
+|---|---:|---:|---|
+| Constant | 880 | 0 | 常量转入 initializer 等形式；并非常量数据消失 |
+| ConstantOfShape | 79 | 0 | 已知形状的常量构造离线计算 |
+| Shape / Gather | 45 / 45 | 0 / 0 | 固定尺寸，无需在线查询 |
+| Reshape / Transpose / Cast | 158 / 79 / 79 | 0 / 0 / 0 | 此图中用于常量/形状构造的部分被折叠 |
+| Div | 15 | 0 | 原分支尺寸计算被折叠 |
+| Slice | 141 | 46 | 保留有效拆分和裁剪 |
+| Pad | 79 | 79 | 仍然影响图像边界的数值，保留 |
+| Conv / ConvTranspose | 96 / 15 | 96 / 15 | 原CNN结构不变 |
+
+剩余79个Pad中：**1个edge**把输入高度360补到368，**78个reflect**来自30个下采样卷积和16个瓶颈分支各3个ReflectConv。固定尺寸能预计算 padding 的大小，不能把边界像素的复制/反射值预计算成与输入无关的常量。
+
+剩余46个Slice中，30个用于15次通道二分，15个用于转置卷积后的有效裁剪，最后1个恢复360×640输出尺寸。转置卷积 k=3、stride=2、padding=0 的尺寸是 `2n+1`，所以这些裁剪仍有作用。将reflect改成zero、删去输入pad或删去有效crop，都会改变当前模型的函数。
+
+因此本轮 clean 是**固定形状常量折叠与冗余操作消除**，没有篡改边界行为。使用 [ONNX Simplifier](https://github.com/onnxsim/onnxsim) 完成图清理，再独立进行数值验证。QAIRT 原编译流程也会优化源图，因此不能从2117→488直接推断设备速度按同比例提升。
+
+### 7.3 导出正确性
+
+五份新图分别与原检查点的 PyTorch 输出对比，ORT 禁用图优化，测试 uniform、signed_raw、zeros、tiny、border_ramp、corner_impulses 六类输入。所有检查通过：Haar 四组最大全图绝对误差均不超过 **1.789×10⁻⁶**，SplitterNet clean 不超过 **8.345×10⁻⁷**，并通过 ONNX checker。
+
+这验证的是FP32等价导出，不是INT8去噪质量。Min/Max重写会改变中间量化边界，本轮仍按之前约定只比较W8A8速度，不报告PSNR。
+
+完整验证、算子清单、配置及权重/ONNX哈希见 [export_reports.json](qaihub_priority1_20261008/export_reports.json)。五份新ONNX位于 [experiments/npu_priority1_ablation/onnx](../experiments/npu_priority1_ablation/onnx)。
+
+### 7.4 本轮 NPU 实测
+
+与上一轮统一：Samsung Galaxy S24（SM8650 / Hexagon V75），QNN DLC，QAIRT 2.50，W8A8及量化I/O，NCHW `[1,4,360,640]`，随机校准仅用于速度测试。四组Haar、clean SplitterNet为新编译；MRLFN和原SplitterNet复用上轮编译产物，**重新提交三轮测速**，共7个条目、21个任务。此处比较同一型号NPU，不保证同一台物理手机。
+
+| 模型/组别 | 全部样本均值 / ms | P50 / ms | P95 / ms | 三轮各自均值 / ms |
+|---|---:|---:|---:|---|
+| Haar A：逐子带双ReLU | 1.2001 | 1.1810 | 1.2639 | 1.1991 / 1.2170 / 1.1842 |
+| Haar B：逐子带Min/Max | 1.4959 | 1.4760 | 1.5605 | 1.4808 / 1.5172 / 1.4897 |
+| Haar C：12通道双ReLU | 0.8123 | 0.7880 | 1.0040 | 0.8327 / 0.7948 / 0.8095 |
+| Haar D：12通道Min/Max | 0.7979 | 0.7800 | 0.8838 | 0.7858 / 0.8173 / 0.7906 |
+| MRLFN（本轮重测） | 0.7682 | 0.7460 | 0.9153 | 0.7700 / 0.7660 / 0.7687 |
+| SplitterNet 原导出（本轮重测） | 2.5911 | 2.5670 | 2.7273 | 2.5749 / 2.6025 / 2.5958 |
+| SplitterNet clean | 2.5952 | 2.5710 | 2.7505 | 2.5983 / 2.5656 / 2.6217 |
+
+四组因子对照（延迟下降为正值，负值表示变慢）：
+
+| 对照 | 隔离的改动 | 延迟下降 |
+|---|---|---:|
+| Haar A：逐子带双ReLU → Haar B：逐子带Min/Max | 只换Min/Max | -24.65% |
+| Haar A：逐子带双ReLU → Haar C：12通道双ReLU | 只合并12通道 | 32.31% |
+| Haar C：12通道双ReLU → Haar D：12通道Min/Max | 合并后再换Min/Max | 1.78% |
+| Haar B：逐子带Min/Max → Haar D：12通道Min/Max | Min/Max基础上合并12通道 | 46.66% |
+| Haar A：逐子带双ReLU → Haar D：12通道Min/Max | 两个改动组合 | 33.51% |
+
+本次四组中最快的是 **Haar D：12通道Min/Max：0.7979 ms**，相对A的延迟下降 **33.51%**。其耗时是本轮MRLFN的 **1.039 倍**，是SplitterNet clean的 **0.307 倍**。
+
+SplitterNet clean相对原导出的延迟变化：下降 **-0.16%**（负数表示变慢）。
+尽管源ONNX节点大幅减少，实际端侧延迟差异较小，本次短时三轮不足以证明稳定加速；这与QAIRT已对原图执行常量折叠/形状优化的解释相符。clean的确定收益是更简洁的源图与更明确的固定尺寸部署接口，而不是已证实的大幅NPU加速。
+原版和clean首轮的端侧profiler均为492个条目，其中446个同名；主要名称差异来自拆分/裁剪转换后的节点命名。这进一步说明源ONNX清理并没有同等减少最终NPU执行图，但不据此声称两个量化产物逐位相同。
+
+逐子带Min/Max（B）没有兑现“算子更少就更快”的预期：实测比A更慢。其首轮逐层记录中，一级Max/Min条目各约0.58–0.61百万周期，而A的对应ReLU命名条目约0.30百万周期；这些条目的融合边界不同，只能辅助定位，不能用算子数直接推算延迟。应按整网实测选择表达方式。
+
+最快两组的均值差不足5%；本次可报告均值排名，但少量短时轮次不足以证明在不同手机/温度下仍保持同样优劣。
+
+均值/P50/P95取三轮合计300个原始推理样本，保留首个较慢样本；平台 `estimated_inference_time` 另存于 JSON。本轮所有横向速度比都使用本轮重测的基线，不能把不同轮次的微小差别解读成确定收益。
+
+**7个条目的W8A8编译与21个测速任务均成功。** 编译日志实际含 `--weights_bitwidth 8 --act_bitwidth 8`；所有任务日志确认SM-S921U1 / SM8650及同一QAIRT版本，profiler条目均为NPU。实际量化接口见 [compiled_specs.json](qaihub_priority1_20261008/compiled_specs.json)，证据见 [execution_audit.json](qaihub_priority1_20261008/execution_audit.json)。
+
+逐层记录的交叉检查（Haar选择HF收缩命名条目，SplitterNet选择Pad命名条目）：
+
+| 条目 | 各轮profiler条目数 | 所选路径平均周期 | 逐层周期占比 |
+|---|---|---:|---:|
+| Haar A：逐子带双ReLU | 111 / 111 / 111 | 4,577,192 | 52.87% |
+| Haar B：逐子带Min/Max | 84 / 84 / 84 | 6,563,235 | 61.69% |
+| Haar C：12通道双ReLU | 69 / 69 / 69 | 1,575,848 | 32.97% |
+| Haar D：12通道Min/Max | 60 / 60 / 60 | 2,184,918 | 40.42% |
+| SplitterNet 原导出（本轮重测） | 492 / 492 / 492 | 7,250,584 | 45.07% |
+| SplitterNet clean | 492 / 492 / 492 | 7,330,203 | 45.35% |
+
+这些周期占比仍具有第1节所述插桩限制，不能替代上表整网毫秒结果。节点融合也可能改变周期归属。 本轮D的高频逐层周期高于C，但整网均值略低，也再次说明不能把逐层周期总和直接换算成正常推理时间；C/D的细小差距不作为稳定优劣结论。
+
+| 条目 | 编译任务 | 三轮测速任务 |
+|---|---|---|
+| Haar A：逐子带双ReLU | [jp3oeyqlp](https://workbench.aihub.qualcomm.com/jobs/jp3oeyqlp) | [j57oxq6vg](https://workbench.aihub.qualcomm.com/jobs/j57oxq6vg) / [jp4evz88g](https://workbench.aihub.qualcomm.com/jobs/jp4evz88g) / [jpx0ywm3p](https://workbench.aihub.qualcomm.com/jobs/jpx0ywm3p) |
+| Haar B：逐子带Min/Max | [jgod3jex5](https://workbench.aihub.qualcomm.com/jobs/jgod3jex5) | [jprxez90p](https://workbench.aihub.qualcomm.com/jobs/jprxez90p) / [jp2ol2jrg](https://workbench.aihub.qualcomm.com/jobs/jp2ol2jrg) / [jpy869n8g](https://workbench.aihub.qualcomm.com/jobs/jpy869n8g) |
+| Haar C：12通道双ReLU | [jpv2vjzjg](https://workbench.aihub.qualcomm.com/jobs/jpv2vjzjg) | [jp0olnk9p](https://workbench.aihub.qualcomm.com/jobs/jp0olnk9p) / [jp8jzl8k5](https://workbench.aihub.qualcomm.com/jobs/jp8jzl8k5) / [jgk63jdw5](https://workbench.aihub.qualcomm.com/jobs/jgk63jdw5) |
+| Haar D：12通道Min/Max | [jgj3ejkxp](https://workbench.aihub.qualcomm.com/jobs/jgj3ejkxp) | [j5q43jwng](https://workbench.aihub.qualcomm.com/jobs/j5q43jwng) / [jglw3j7jp](https://workbench.aihub.qualcomm.com/jobs/jglw3j7jp) / [jp3oey83p](https://workbench.aihub.qualcomm.com/jobs/jp3oey83p) |
+| MRLFN（本轮重测） | [jp0olv09p](https://workbench.aihub.qualcomm.com/jobs/jp0olv09p) | [j5wyqjx6g](https://workbench.aihub.qualcomm.com/jobs/j5wyqjx6g) / [jg9ow68lg](https://workbench.aihub.qualcomm.com/jobs/jg9ow68lg) / [jp1oer325](https://workbench.aihub.qualcomm.com/jobs/jp1oer325) |
+| SplitterNet 原导出（本轮重测） | [jgk639ew5](https://workbench.aihub.qualcomm.com/jobs/jgk639ew5) | [jgd6oj0ep](https://workbench.aihub.qualcomm.com/jobs/jgd6oj0ep) / [j5wyqjx3g](https://workbench.aihub.qualcomm.com/jobs/j5wyqjx3g) / [jg9ow68wg](https://workbench.aihub.qualcomm.com/jobs/jg9ow68wg) |
+| SplitterNet clean | [jgzzr1vkg](https://workbench.aihub.qualcomm.com/jobs/jgzzr1vkg) | [jpv2vjekg](https://workbench.aihub.qualcomm.com/jobs/jpv2vjekg) / [jgj3ejovp](https://workbench.aihub.qualcomm.com/jobs/jgj3ejovp) / [jpe6kj8og](https://workbench.aihub.qualcomm.com/jobs/jpe6kj8og) |
+
+### 7.5 复现
+
+项目导出环境需有 `onnxsim==0.4.36`；云端SDK继续使用单独环境的 `qai-hub==0.56.0`，避免影响训练环境依赖。
+
+```bash
+python tools/export_sid_npu_ablation.py \
+  configs/deploy/haar_soft_band_relu.yaml \
+  configs/deploy/haar_soft_band_minmax.yaml \
+  configs/deploy/haar_soft_level_relu.yaml \
+  configs/deploy/haar_soft_level_minmax.yaml \
+  configs/deploy/splitternet_static_clean.yaml
+
+# 在已安装 qai-hub 的环境中执行，token不写入配置
+read -r -s -p 'AI Hub API token: ' QAI_HUB_API_TOKEN
+export QAI_HUB_API_TOKEN
+python tools/benchmark_sid_qaihub.py --watch \
+  --sources-json ref-doc/qaihub_priority1_20261008/sources.json \
+  --output-dir ref-doc/qaihub_priority1_20261008
+unset QAI_HUB_API_TOKEN
+
+# 下载完成后，本地汇总，无需认证
+python tools/summarize_sid_qaihub.py \
+  --output-dir ref-doc/qaihub_priority1_20261008
+```
+
+已有任务目录会恢复状态和下载，不重复提交。如果要独立重测，换一个新的 `--output-dir`；如果重新导出导致ONNX哈希改变，需要同步更新sources清单中的哈希后再运行。脚本会检查该哈希，防止把旧产物当成新图测速。
+
+每个条目目录中保存 `model.dlc`、三份`profile_N.json`及compile/profile日志；任务和源文件映射见 [jobs.json](qaihub_priority1_20261008/jobs.json)、[sources.json](qaihub_priority1_20261008/sources.json)。

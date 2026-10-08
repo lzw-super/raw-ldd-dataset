@@ -22,12 +22,15 @@ PROFILE='--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 -
 
 
 def main():
- global ROOT
+ global ROOT, EXPERIMENTS
  p=argparse.ArgumentParser();p.add_argument('--token-file',type=Path);p.add_argument('--rounds',type=int,default=3);p.add_argument('--watch',action='store_true')
  p.add_argument('--output-dir',type=Path,default=ROOT,help='Use a new directory for an independent benchmark; existing jobs are resumed.')
+ p.add_argument('--sources-json',type=Path,help='Mapping label -> source/checkpoint; optional compile_job reuses an existing compiled artifact with fresh profiles.')
  a=p.parse_args()
  if a.rounds<1:p.error('--rounds must be positive')
  ROOT=a.output_dir
+ sources=json.loads(a.sources_json.read_text()) if a.sources_json else None
+ if sources is not None:EXPERIMENTS={label:None for label in sources}
  token=a.token_file.read_text().strip() if a.token_file else os.environ['QAI_HUB_API_TOKEN']
  client=hub.Client(hub.ClientConfig(api_token=token));device=hub.Device('Samsung Galaxy S24')
  ROOT.mkdir(parents=True,exist_ok=True);manifest=ROOT/'jobs.json'
@@ -38,11 +41,21 @@ def main():
   record=state['models'].setdefault(label,{})
   folder=ROOT/label;folder.mkdir(exist_ok=True)
   if 'compile_job' not in record:
-   candidates=list((Path('experiments')/exp/'onnx').glob('*best*1x4x360x640_qai_w8a8_source.onnx'))
-   if len(candidates)!=1:raise RuntimeError(f'{label}: expected one source ONNX')
-   source=candidates[0];record.update(source=str(source),source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),checkpoint=str(Path('experiments')/exp/'checkpoints/best.pth'))
-   job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_360x640',options=COMPILE)
-   record['compile_job']=job.job_id;save();print(label,'submitted compile',job.job_id,flush=True)
+   if sources is not None:
+    item=sources[label];source=Path(item['source']);checkpoint=item['checkpoint']
+   else:
+    candidates=list((Path('experiments')/exp/'onnx').glob('*best*1x4x360x640_qai_w8a8_source.onnx'))
+    if len(candidates)!=1:raise RuntimeError(f'{label}: expected one source ONNX')
+    source=candidates[0];checkpoint=str(Path('experiments')/exp/'checkpoints/best.pth');item={}
+   digest=hashlib.sha256(source.read_bytes()).hexdigest()
+   if item.get('source_sha256',digest)!=digest:raise RuntimeError(f'{label}: source hash changed')
+   record.update(source=str(source),source_sha256=digest,checkpoint=checkpoint)
+   if item.get('compile_job'):
+    record['compile_job']=item['compile_job'];record['reused_compile']=True
+   else:
+    job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_360x640',options=COMPILE)
+    record['compile_job']=job.job_id
+   save();print(label,'compile job',record['compile_job'],flush=True)
   job=client.get_job(record['compile_job']);status=job.get_status();record['compile_status']=str(status);record['compile_code']=status.code;save()
   print(label,'compile',status,flush=True)
   if status.failure and not record.get('failure_logs'):

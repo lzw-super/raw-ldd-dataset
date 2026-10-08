@@ -1,0 +1,408 @@
+{
+  "haar_soft_band_relu": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_relu/compile_logs/jp3oeyqlp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_relu/profile_logs_1/j57oxq6vg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_relu/profile_logs_2/jp4evz88g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_relu/profile_logs_3/jpx0ywm3p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      111,
+      111,
+      111
+    ],
+    "total_cycles_by_round": [
+      8683799,
+      8667408,
+      8620087
+    ],
+    "selected_path": "HF named entries",
+    "selected_cycles_by_round": [
+      4580901,
+      4583405,
+      4567271
+    ]
+  },
+  "haar_soft_band_minmax": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_minmax/compile_logs/jgod3jex5.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_minmax/profile_logs_1/jprxez90p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_minmax/profile_logs_2/jp2ol2jrg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_band_minmax/profile_logs_3/jpy869n8g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      84,
+      84,
+      84
+    ],
+    "total_cycles_by_round": [
+      10579756,
+      10680140,
+      10655319
+    ],
+    "selected_path": "HF named entries",
+    "selected_cycles_by_round": [
+      6559290,
+      6572841,
+      6557575
+    ]
+  },
+  "haar_soft_level_relu": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_relu/compile_logs/jpv2vjzjg.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_relu/profile_logs_1/jp0olnk9p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_relu/profile_logs_2/jp8jzl8k5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_relu/profile_logs_3/jgk63jdw5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      69,
+      69,
+      69
+    ],
+    "total_cycles_by_round": [
+      4792809,
+      4758777,
+      4785388
+    ],
+    "selected_path": "HF named entries",
+    "selected_cycles_by_round": [
+      1577669,
+      1577145,
+      1572730
+    ]
+  },
+  "haar_soft_level_minmax": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_minmax/compile_logs/jgj3ejkxp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_minmax/profile_logs_1/j5q43jwng_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_minmax/profile_logs_2/jglw3j7jp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/haar_soft_level_minmax/profile_logs_3/jp3oey83p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      60,
+      60,
+      60
+    ],
+    "total_cycles_by_round": [
+      5401865,
+      5431087,
+      5384100
+    ],
+    "selected_path": "HF named entries",
+    "selected_cycles_by_round": [
+      2183012,
+      2194557,
+      2177184
+    ]
+  },
+  "mrlfn_baseline": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/mrlfn_baseline/compile_logs/jp0olv09p.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/mrlfn_baseline/profile_logs_1/j5wyqjx6g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/mrlfn_baseline/profile_logs_2/jg9ow68lg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/mrlfn_baseline/profile_logs_3/jp1oer325_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      49,
+      49,
+      49
+    ],
+    "total_cycles_by_round": [
+      5443372,
+      5448966,
+      5490394
+    ],
+    "selected_path": "Pad named entries",
+    "selected_cycles_by_round": [
+      0,
+      0,
+      0
+    ]
+  },
+  "splitternet_baseline": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/splitternet_baseline/compile_logs/jgk639ew5.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_baseline/profile_logs_1/jgd6oj0ep_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_baseline/profile_logs_2/j5wyqjx3g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_baseline/profile_logs_3/jg9ow68wg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      492,
+      492,
+      492
+    ],
+    "total_cycles_by_round": [
+      16042157,
+      16170182,
+      16048804
+    ],
+    "selected_path": "Pad named entries",
+    "selected_cycles_by_round": [
+      7220520,
+      7327478,
+      7203754
+    ]
+  },
+  "splitternet_static_clean": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_priority1_20261008/splitternet_static_clean/compile_logs/jgzzr1vkg.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_static_clean/profile_logs_1/jpv2vjekg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_static_clean/profile_logs_2/jgj3ejovp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_priority1_20261008/splitternet_static_clean/profile_logs_3/jpe6kj8og_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "profile_entry_counts": [
+      492,
+      492,
+      492
+    ],
+    "total_cycles_by_round": [
+      16106688,
+      16037878,
+      16348780
+    ],
+    "selected_path": "Pad named entries",
+    "selected_cycles_by_round": [
+      7283836,
+      7272791,
+      7433983
+    ]
+  }
+}

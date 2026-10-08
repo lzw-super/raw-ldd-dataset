@@ -1,0 +1,714 @@
+{
+  "splitternet_static_clean": {
+    "config": "configs/deploy/splitternet_static_clean.yaml",
+    "settings": {
+      "name": "splitternet_static_clean",
+      "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+      "kind": "splitternet",
+      "height": 360,
+      "width": 640,
+      "simplify": true
+    },
+    "checkpoint_sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "metadata": {
+      "model": "splitternet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "source": "experiments/npu_priority1_ablation/onnx/splitternet_static_clean.onnx",
+    "source_sha256": "20c808e711eeae95dbd345eda3adc21c6cbe3d25b2cdd28740bf803ec8d6add3",
+    "operators_before": {
+      "Constant": 880,
+      "ConstantOfShape": 79,
+      "Concat": 110,
+      "Reshape": 158,
+      "Slice": 141,
+      "Transpose": 79,
+      "Cast": 79,
+      "Pad": 79,
+      "Conv": 96,
+      "Shape": 45,
+      "Gather": 45,
+      "Add": 63,
+      "Div": 15,
+      "Mul": 62,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "ReduceMax": 16,
+      "Sigmoid": 16,
+      "ConvTranspose": 15,
+      "Unsqueeze": 30
+    },
+    "operators_after": {
+      "Pad": 79,
+      "Conv": 96,
+      "Slice": 46,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "Mul": 32,
+      "Add": 48,
+      "ReduceMax": 16,
+      "Concat": 31,
+      "Sigmoid": 16,
+      "ConvTranspose": 15
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 6.854534149169922e-07,
+        "mean_abs": 8.762896896996608e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.086162567138672e-07,
+        "mean_abs": 2.5620709109830386e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.1292286217212677e-08,
+        "mean_abs": 2.2410477917844673e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.1292286217212677e-08,
+        "mean_abs": 2.2410477917844673e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 6.163780597034929e-08,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 1.1920928955078125e-07,
+        "mean_abs": 2.2676913680186317e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36"
+  },
+  "haar_soft_band_relu": {
+    "config": "configs/deploy/haar_soft_band_relu.yaml",
+    "settings": {
+      "name": "haar_soft_band_relu",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar",
+      "height": 360,
+      "width": 640,
+      "hf_layout": "band",
+      "hf_formula": "relu",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_band_relu.onnx",
+    "source_sha256": "d1d85d674c1f6780a0b9501f6030b015a98d6ccef13124baa652aeed37e8b657",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 4,
+      "Split": 3,
+      "Sub": 27,
+      "Relu": 19,
+      "Neg": 9,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Sub": 27,
+      "Relu": 19,
+      "Neg": 9,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.450580596923828e-07,
+        "mean_abs": 1.0446466092162154e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.777715265750885e-08,
+        "mean_abs": 1.0523557136821182e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.113638319338861e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 9.043430893029836e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36"
+  },
+  "haar_soft_level_minmax": {
+    "config": "configs/deploy/haar_soft_level_minmax.yaml",
+    "settings": {
+      "name": "haar_soft_level_minmax",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar",
+      "height": 360,
+      "width": 640,
+      "hf_layout": "level",
+      "hf_formula": "minmax",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_level_minmax.onnx",
+    "source_sha256": "6bfc0b2443762cb8059a5b435a2f0d440b7680b2f2f34e98f5db3f8452a054b0",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 2,
+      "Split": 3,
+      "Max": 3,
+      "Min": 3,
+      "Sub": 3,
+      "Relu": 1,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Max": 3,
+      "Min": 3,
+      "Sub": 3,
+      "Relu": 1,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 6.556510925292969e-07,
+        "mean_abs": 1.0432389530024011e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.568167686462402e-08,
+        "mean_abs": 1.0528902194550938e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.113638319338861e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 9.043430893029836e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36"
+  },
+  "haar_soft_level_relu": {
+    "config": "configs/deploy/haar_soft_level_relu.yaml",
+    "settings": {
+      "name": "haar_soft_level_relu",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar",
+      "height": 360,
+      "width": 640,
+      "hf_layout": "level",
+      "hf_formula": "relu",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_level_relu.onnx",
+    "source_sha256": "0f8b0a3e6b1718147c1f7413a91d5c8da4a8eb66821963e53ee7e1f7654f8900",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 2,
+      "Split": 3,
+      "Sub": 9,
+      "Relu": 7,
+      "Neg": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Sub": 9,
+      "Relu": 7,
+      "Neg": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 1.0417411999696924e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.19681042432785e-08,
+        "mean_abs": 1.0502866132355848e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.113638319338861e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 9.043430893029836e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36"
+  },
+  "haar_soft_band_minmax": {
+    "config": "configs/deploy/haar_soft_band_minmax.yaml",
+    "settings": {
+      "name": "haar_soft_band_minmax",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar",
+      "height": 360,
+      "width": 640,
+      "hf_layout": "band",
+      "hf_formula": "minmax",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_band_minmax.onnx",
+    "source_sha256": "7d4b0fd255de3092c92d799d45630d07ff06f9368cc71a9e76bfa4e4b6b13fb7",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 4,
+      "Split": 3,
+      "Max": 9,
+      "Min": 9,
+      "Sub": 9,
+      "Relu": 1,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Max": 9,
+      "Min": 9,
+      "Sub": 9,
+      "Relu": 1,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 1.0418049356530901e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.825453162193298e-08,
+        "mean_abs": 1.0513097947750794e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.113638319338861e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 9.043430893029836e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36"
+  }
+}

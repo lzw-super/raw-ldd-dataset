@@ -1,0 +1,7 @@
+# Preserve edge/reflect padding and non-identity output crops.
+name: splitternet_static_clean
+checkpoint: experiments/sid_sony_splitternet/checkpoints/best.pth
+kind: splitternet
+height: 360
+width: 640
+simplify: true
