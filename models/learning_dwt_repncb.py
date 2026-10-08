@@ -10,7 +10,7 @@ from learning_wt.learning_dwt import LearningDWT
 
 REFINER_DEFAULTS = dict(refine_s2d_factor=2, refine_width=16,
                         refine_num_blocks=4, refine_skip_source="noisy",
-                        refine_block_type="repncb", refine_input_fusion="none", refine_activation="prelu", refine_stem_activation="none")
+                        refine_block_type="repncb", refine_input_fusion="none", refine_activation="prelu", refine_stem_activation="none", refine_skip_projection=False)
 
 
 def refiner_kwargs(options):
@@ -97,7 +97,7 @@ class PackedRAWRefiner(nn.Module):
     """Configurable packed-RAW refinement with a concatenated input bypass."""
 
     def __init__(self, deploy=False, s2d_factor=2, width=16, num_blocks=4,
-                 skip_source="noisy", block_type="repncb", input_fusion="none", stem_activation="none"):
+                 skip_source="noisy", block_type="repncb", input_fusion="none", stem_activation="none", skip_projection=False):
         super().__init__()
         for name, value in (("s2d_factor", s2d_factor), ("width", width), ("num_blocks", num_blocks)):
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
@@ -128,6 +128,12 @@ class PackedRAWRefiner(nn.Module):
         self.head = nn.Conv2d(width, packed_channels, 3, padding=1)
         self.fusion = nn.Conv2d(2 * packed_channels, packed_channels, 1)
         self.d2s = nn.PixelShuffle(s2d_factor) if s2d_factor > 1 else nn.Identity()
+        # Optional channel mixing on the packed skip, before final concatenation.
+        self.skip_projection = nn.Conv2d(packed_channels, packed_channels, 1) if skip_projection else nn.Identity()
+        if skip_projection:
+            # Preserve the original bypass initially; all weights remain trainable.
+            nn.init.dirac_(self.skip_projection.weight)
+            nn.init.zeros_(self.skip_projection.bias)
 
     def forward(self, preliminary, noisy):
         if preliminary.shape != noisy.shape or noisy.ndim != 4 or noisy.shape[1] != 4:
@@ -148,6 +154,7 @@ class PackedRAWRefiner(nn.Module):
         else:
             skip = noisy if self.skip_source == "noisy" else preliminary
             packed_skip = self.s2d(skip)
+        packed_skip = self.skip_projection(packed_skip)
         fused = self.fusion(torch.cat((features, packed_skip), dim=1))
         result = self.d2s(fused)
         return result if not (padding[1] or padding[3]) else result[..., :h, :w]

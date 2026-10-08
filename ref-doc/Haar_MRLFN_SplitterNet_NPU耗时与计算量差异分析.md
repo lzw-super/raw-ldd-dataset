@@ -511,3 +511,16 @@ done
 这是完整随机初始化训练，不加载此前测速用的随机HF参数或旧checkpoint。结构仍保持8.1节的输出符号限制。新模型配置会随训练checkpoint保存，现有模型工厂可据此恢复训练权重或融合后的部署权重。配置中保留的 `dwt_width/dwt_depth/dwt_context` 及阈值设置不控制该模式下的小CNN，其结构由 `dwt_hf_cnn_variant` 决定。
 
 已通过五组反向传播（HF/LL/精修梯度）、独立层参数、非整除尺寸补边、训练态/部署态输出一致性和两种checkpoint格式重载检查；五组配置的训练与checkpoint重载测试通过。没有启动数据集训练。
+
+
+### 8.6 DW1残差组：原始输入旁路增加1×1卷积
+
+训练配置：[DW1残差 + S2D旁路1×1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_residual_ll_no_norm_skip1x1.yaml)。以8.5节的depth5 DW1残差组为基础，新增 `refine_skip_projection: true`，原始输入路径变为：
+
+```text
+I -> S2D(2) -> Conv1×1(16→16) ───────────────────────────┐
+I− -> S2D(2) -> stem -> 5×Rep-NCB -> head(32→16) -> Concat(32ch)
+                                                       -> Conv1×1(32→16) -> D2S(2)
+```
+
+新增卷积无激活、带bias，初始化为单位矩阵和零偏置，初始化时与原旁路等价；全部参数参与从头训练。它不处理主干stem输入，而是在拼接之前处理S2D(I)。增加16×16+16=272个参数。该开关默认关闭，旧配置和checkpoint保持兼容；通道数随S2D系数K自动取4K²（本组K=2）。输出目录独立，`resume`和`init_checkpoint`均为空。未启动训练或为本组进行NPU测速。
