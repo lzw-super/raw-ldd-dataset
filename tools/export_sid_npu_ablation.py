@@ -13,6 +13,7 @@ import onnxruntime as ort
 import torch
 import yaml
 from models.haar_soft_export import HaarSoftExport
+from models.haar_hf_cnn import HaarHFCNNExport
 from utils.model_factory import build_denoiser_from_checkpoint
 
 
@@ -37,11 +38,17 @@ def main():
         inputs = {'uniform': torch.rand(shape), 'signed_raw': torch.randn(shape)*0.1,
                   'zeros': torch.zeros(shape), 'tiny': torch.full(shape,1e-30),
                   'border_ramp': ramp, 'corner_impulses': impulse}
+        # CNN variants intentionally change the function. Compare ONNX to their
+        # own untrained PyTorch network, never claim parity with soft shrinkage.
+        reference_kind = 'original_checkpoint'
+        if config['kind'] == 'haar_hf_cnn':
+            model.wavelet = HaarHFCNNExport(model.wavelet, config['hf_cnn_variant'], config['seed'])
+            reference_kind = 'untrained_cnn_variant'
         with torch.no_grad():
             expected = {k:model(x).numpy() for k,x in inputs.items()}
         if config['kind'] == 'haar':
             model.wavelet = HaarSoftExport(model.wavelet, config['hf_layout'], config['hf_formula'])
-        elif config['kind'] != 'splitternet':
+        elif config['kind'] not in ('splitternet', 'haar_hf_cnn'):
             raise ValueError(config['kind'])
         path = args.output_dir / (config['name']+'.onnx')
         with torch.no_grad():
@@ -60,7 +67,7 @@ def main():
         onnx.checker.check_model(graph, full_check=True)
         onnx.save(graph, str(path))
         after = dict(Counter(n.op_type for n in graph.graph.node))
-        if config['kind']=='haar':
+        if config['kind'] in ('haar', 'haar_hf_cnn'):
             assert not any(after.get(k,0) for k in ['Div','Abs','Sign'])
             assert after.get('ConvTranspose')==4
         opts=ort.SessionOptions();opts.intra_op_num_threads=4;opts.inter_op_num_threads=1
@@ -78,7 +85,13 @@ def main():
                     metadata=metadata,source=str(path),source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
                     operators_before=before,operators_after=after,checks=checks,shape=list(shape),
                     torch_version=torch.__version__,onnx_version=onnx.__version__,ort_version=ort.__version__,
-                    onnxsim_version=simplifier_version)
+                    onnxsim_version=simplifier_version,reference_kind=reference_kind,
+                    deployed_parameter_count=sum(p.numel() for p in model.parameters()),
+                    hf_parameter_count=sum(p.numel() for p in model.wavelet.processors.parameters()) if config['kind']=='haar_hf_cnn' else 0)
+        if config['kind']=='haar_hf_cnn':
+            torch.save(dict(seed=config['seed'],variant=config['hf_cnn_variant'],
+                            state_dict=model.wavelet.processors.state_dict()),
+                       path.with_name(path.stem+'_hf_untrained.pth'))
         path.with_suffix('.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
         print(config['name'], 'nodes',sum(before.values()),'->',sum(after.values()),
               'max_abs',max(c['max_abs'] for c in checks),'ops',after,flush=True)

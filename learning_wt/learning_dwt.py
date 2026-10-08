@@ -234,7 +234,7 @@ class LearningDWT(nn.Module):
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
                  ll_fusion: str = "residual", trainable_haar: bool = False,
-                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn", ll_normalize: bool = True):
+                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn", ll_normalize: bool = True, hf_cnn_variant: str = "dw1"):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -264,8 +264,10 @@ class LearningDWT(nn.Module):
             raise ValueError("shrink_mode must be soft, smooth, firm or pwl")
         self.shrink_mode = shrink_mode
         self.ll_max_threshold = ll_max_threshold
-        if threshold_mode not in ("cnn", "band_channel"):
-            raise ValueError("threshold_mode must be cnn or band_channel")
+        if threshold_mode not in ("cnn", "band_channel", "hf_cnn"):
+            raise ValueError("threshold_mode must be cnn, band_channel or hf_cnn")
+        if threshold_mode == "hf_cnn" and (wavelet != "haar" or trainable_haar or ll_mode == "threshold"):
+            raise ValueError("hf_cnn requires fixed Haar and a separate LL restoration network")
         if threshold_mode == "band_channel" and ll_mode == "threshold":
             raise ValueError("band_channel requires a separate LL restoration network")
         self.threshold_mode = threshold_mode
@@ -284,6 +286,9 @@ class LearningDWT(nn.Module):
             bias[0] = math.log(init_ll_threshold / (ll_max_threshold - init_ll_threshold))
         if threshold_mode == "cnn":
             self.band_bias = nn.Parameter(bias)
+        elif threshold_mode == "hf_cnn":
+            from models.haar_hf_cnn import HighFrequencyCNN
+            self.processors = nn.ModuleList([HighFrequencyCNN(hf_cnn_variant) for _ in range(levels)])
         else:
             if shrink_mode in ("firm", "pwl"):
                 from .direct_shrinkage import DirectShrinkage
@@ -343,7 +348,7 @@ class LearningDWT(nn.Module):
             return self._forward(noisy, return_aux)
 
     def _static_subband_forward(self, x):
-        """Deploy path: process HF immediately, recurse only into original LL."""
+        """Recursive static shrinkage / trainable HF CNN path; recurse into original LL."""
         from .trainable_haar import TrainableHaar
         shrink = smooth_shrink if self.shrink_mode == "smooth" else soft_shrink
         if getattr(self, "export_simplify_static", False):
@@ -367,9 +372,13 @@ class LearningDWT(nn.Module):
                 ll, lh, hl, hh = self.transform.dwt2(current)
             # Stored order is deepest-first, while decomposition is shallow-first.
             offset = 3 * (self.levels - level)
-            details = tuple(self.direct_shrink(band,offset+i) if self.direct_shrink is not None
-                            else shrink(band, self.fixed_hf_thresholds[offset+i].view(1,4,1,1), self.leak)
-                            for i, band in enumerate((lh, hl, hh)))
+            if self.threshold_mode == "hf_cnn":
+                # Level 0 is finest. Process signed, unnormalized HF directly.
+                details = self.processors[level-1](torch.cat((lh, hl, hh), dim=1)).split(4, dim=1)
+            else:
+                details = tuple(self.direct_shrink(band,offset+i) if self.direct_shrink is not None
+                                else shrink(band, self.fixed_hf_thresholds[offset+i].view(1,4,1,1), self.leak)
+                                for i, band in enumerate((lh, hl, hh)))
             if level < self.levels:
                 restored_ll = visit(ll, level + 1)
             else:
@@ -395,6 +404,10 @@ class LearningDWT(nn.Module):
         if (pad_h or pad_w) and not self.pad_input:
             raise ValueError(f"H,W must be multiples of {factor}; or enable pad_input")
         x = F.pad(noisy, (0, pad_w, 0, pad_h), mode="replicate") if pad_h or pad_w else noisy
+        if self.threshold_mode == "hf_cnn":
+            result = self._static_subband_forward(x)
+            result = result if not (pad_h or pad_w) else result[..., :h, :w]
+            return (result, {"padding": (pad_h, pad_w)}) if return_aux else result
         if hasattr(self, "fixed_hf_thresholds") and not return_aux:
             result = self._static_subband_forward(x)
             return result if not (pad_h or pad_w) else result[..., :h, :w]
@@ -459,7 +472,7 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
                     dwt_ll_fusion="residual", dwt_trainable_haar=False,
-                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn", dwt_ll_normalize=True)
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn", dwt_ll_normalize=True, dwt_hf_cnn_variant="dw1")
 
 
 def learning_dwt_kwargs(options):

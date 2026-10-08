@@ -1,0 +1,588 @@
+{
+  "haar_hf_cnn_dw1": {
+    "config": "configs/deploy/haar_hf_cnn_dw1.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw1",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 360,
+      "width": 640,
+      "simplify": true,
+      "hf_cnn_variant": "dw1",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1.onnx",
+    "source_sha256": "87f0b2ad8d1f523d2101eb9e841a0a5c4520b39e1c1f84d2737ab458769821cd",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 1.0625569046851524e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.73232090473175e-08,
+        "mean_abs": 1.2094276691243522e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2059548026854827e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2059548026854827e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.197606707137311e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2065902055269362e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86480,
+    "hf_parameter_count": 72
+  },
+  "haar_hf_cnn_dw3": {
+    "config": "configs/deploy/haar_hf_cnn_dw3.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw3",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 360,
+      "width": 640,
+      "simplify": true,
+      "hf_cnn_variant": "dw3",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3.onnx",
+    "source_sha256": "0ac50753abc9fd4db9a6d0f8d771d492566adae1af2618adda28c669177ffb43",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 1.1949870781791105e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.348150342702866e-08,
+        "mean_abs": 1.058937648679148e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 9.070393325316672e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 9.070393325316672e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.1881937211910554e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 9.06927599686469e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86768,
+    "hf_parameter_count": 360
+  },
+  "haar_hf_cnn_dw3_pw1": {
+    "config": "configs/deploy/haar_hf_cnn_dw3_pw1.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw3_pw1",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 360,
+      "width": 640,
+      "simplify": true,
+      "hf_cnn_variant": "dw3_pw1",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3_pw1.onnx",
+    "source_sha256": "73534b3f46fb999af7d6288356cacd51908d02d2ececc6261ff7214da60722e4",
+    "operators_before": {
+      "Conv": 25,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 25,
+      "Split": 3,
+      "Relu": 4,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.450580596923828e-07,
+        "mean_abs": 1.1070221006548309e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.96515154838562e-08,
+        "mean_abs": 1.0611485024014655e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.102506399154663e-08,
+        "mean_abs": 1.0292584562421325e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.102506399154663e-08,
+        "mean_abs": 1.0292584562421325e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.5497207641601562e-06,
+        "mean_abs": 1.1283545120477356e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.102506399154663e-08,
+        "mean_abs": 1.0288352392251454e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 87236,
+    "hf_parameter_count": 828
+  },
+  "haar_hf_cnn_dw1_residual": {
+    "config": "configs/deploy/haar_hf_cnn_dw1_residual.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw1_residual",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 360,
+      "width": 640,
+      "simplify": true,
+      "hf_cnn_variant": "dw1_residual",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1_residual.onnx",
+    "source_sha256": "b892c68b2d8929a925b8e32fbea7ddfaa8b29fae09ada9b30ebd547fba4362c7",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 1.089464731762746e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.2665987014770508e-07,
+        "mean_abs": 1.2131963877948237e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2059548026854827e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2059548026854827e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.188329363799312e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2063943621853923e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      360,
+      640
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86480,
+    "hf_parameter_count": 72
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "haar_hf_cnn_dw1": {
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1.onnx",
+    "source_sha256": "87f0b2ad8d1f523d2101eb9e841a0a5c4520b39e1c1f84d2737ab458769821cd",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "export_report": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1.json",
+    "config": "configs/deploy/haar_hf_cnn_dw1.yaml"
+  },
+  "haar_hf_cnn_dw3": {
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3.onnx",
+    "source_sha256": "0ac50753abc9fd4db9a6d0f8d771d492566adae1af2618adda28c669177ffb43",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "export_report": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3.json",
+    "config": "configs/deploy/haar_hf_cnn_dw3.yaml"
+  },
+  "haar_hf_cnn_dw3_pw1": {
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3_pw1.onnx",
+    "source_sha256": "73534b3f46fb999af7d6288356cacd51908d02d2ececc6261ff7214da60722e4",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "export_report": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3_pw1.json",
+    "config": "configs/deploy/haar_hf_cnn_dw3_pw1.yaml"
+  },
+  "haar_hf_cnn_dw1_residual": {
+    "source": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1_residual.onnx",
+    "source_sha256": "b892c68b2d8929a925b8e32fbea7ddfaa8b29fae09ada9b30ebd547fba4362c7",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "export_report": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1_residual.json",
+    "config": "configs/deploy/haar_hf_cnn_dw1_residual.yaml"
+  },
+  "haar_original_soft": {
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_band_relu.onnx",
+    "source_sha256": "d1d85d674c1f6780a0b9501f6030b015a98d6ccef13124baa652aeed37e8b657",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "compile_job": "jp3oeyqlp"
+  },
+  "haar_optimized_soft": {
+    "source": "experiments/npu_priority1_ablation/onnx/haar_soft_level_minmax.onnx",
+    "source_sha256": "6bfc0b2443762cb8059a5b435a2f0d440b7680b2f2f34e98f5db3f8452a054b0",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "compile_job": "jgj3ejkxp"
+  }
+}

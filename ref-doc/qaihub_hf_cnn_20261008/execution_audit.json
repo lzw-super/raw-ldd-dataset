@@ -1,0 +1,362 @@
+{
+  "haar_original_soft": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_original_soft/compile_logs/jp3oeyqlp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_original_soft/profile_logs_1/j56onkmy5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_original_soft/profile_logs_2/jp3oey7np_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_original_soft/profile_logs_3/jgod3jwk5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      111,
+      111,
+      111
+    ],
+    "total_cycles": [
+      8639261,
+      8672658,
+      8621814
+    ],
+    "hf_named_cycles": [
+      4587686,
+      4580941,
+      4579541
+    ]
+  },
+  "haar_optimized_soft": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_optimized_soft/compile_logs/jgj3ejkxp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_optimized_soft/profile_logs_1/jpv2vjmrg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_optimized_soft/profile_logs_2/jgj3ejyep_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_optimized_soft/profile_logs_3/jpe6kjxvg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      60,
+      60,
+      60
+    ],
+    "total_cycles": [
+      5445535,
+      5414146,
+      5436637
+    ],
+    "hf_named_cycles": [
+      2190711,
+      2187202,
+      2186146
+    ]
+  },
+  "haar_hf_cnn_dw1": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1/compile_logs/jp0olnonp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1/profile_logs_1/jg9ow628g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1/profile_logs_2/jp1oer175_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1/profile_logs_3/jgd6oj4zp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      57,
+      57,
+      57
+    ],
+    "total_cycles": [
+      3301860,
+      3255089,
+      3263783
+    ],
+    "hf_named_cycles": [
+      98153,
+      96958,
+      97430
+    ]
+  },
+  "haar_hf_cnn_dw3": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3/compile_logs/jp8jzljo5.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3/profile_logs_1/j57oxqn9g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3/profile_logs_2/jp4evz41g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3/profile_logs_3/jpx0ywrlp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      57,
+      57,
+      57
+    ],
+    "total_cycles": [
+      3308325,
+      3287760,
+      3298019
+    ],
+    "hf_named_cycles": [
+      112394,
+      112047,
+      113041
+    ]
+  },
+  "haar_hf_cnn_dw3_pw1": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3_pw1/compile_logs/j5q43j4og.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3_pw1/profile_logs_1/j5m93jk9g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3_pw1/profile_logs_2/jgn13jqqp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw3_pw1/profile_logs_3/jprxezd7p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      60,
+      60,
+      60
+    ],
+    "total_cycles": [
+      3332498,
+      3348386,
+      3350965
+    ],
+    "hf_named_cycles": [
+      52237,
+      52558,
+      51764
+    ]
+  },
+  "haar_hf_cnn_dw1_residual": {
+    "w8a8_verified": true,
+    "compile_log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1_residual/compile_logs/jglw3j8mp.log",
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1_residual/profile_logs_1/jp2ol2dqg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1_residual/profile_logs_2/jpy8692lg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_hf_cnn_20261008/haar_hf_cnn_dw1_residual/profile_logs_3/jp0oln9np_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ],
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "profiler_counts": [
+      60,
+      60,
+      60
+    ],
+    "total_cycles": [
+      3430072,
+      3393346,
+      3384146
+    ],
+    "hf_named_cycles": [
+      181476,
+      181209,
+      181394
+    ]
+  }
+}

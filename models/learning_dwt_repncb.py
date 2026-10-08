@@ -184,7 +184,7 @@ class LearningDWTRepNCB(nn.Module):
     @torch.no_grad()
     def switch_to_deploy(self):
         self.wavelet.freeze_hf_thresholds()
-        if self.wavelet.threshold_mode == "band_channel" and self.wavelet.wavelet == "haar":
+        if self.wavelet.threshold_mode in ("band_channel", "hf_cnn") and self.wavelet.wavelet == "haar":
             from models.fixed_raw_ops import FixedHaarConv, FixedSpaceDepth
             reference = next(self.parameters())
             if self.wavelet.transform is None:

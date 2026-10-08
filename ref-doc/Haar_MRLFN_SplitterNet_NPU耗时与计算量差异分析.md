@@ -1,6 +1,6 @@
 # 计算量与 NPU 延迟差异：Haar / MRLFN / SplitterNet 热点分析
 
-日期：2026-10-08。分析已有的 Qualcomm AI Hub 三轮 W8A8 测速结果，不重新训练或改动模型。
+日期：2026-10-08。第1–6节分析已有测速；第7节测试等价部署优化，第8节测试新增高频 CNN。所有实验均未重新训练。
 
 ## 1. 结论与口径
 
@@ -362,3 +362,151 @@ python tools/summarize_sid_qaihub.py \
 已有任务目录会恢复状态和下载，不重复提交。如果要独立重测，换一个新的 `--output-dir`；如果重新导出导致ONNX哈希改变，需要同步更新sources清单中的哈希后再运行。脚本会检查该哈希，防止把旧产物当成新图测速。
 
 每个条目目录中保存 `model.dlc`、三份`profile_N.json`及compile/profile日志；任务和源文件映射见 [jobs.json](qaihub_priority1_20261008/jobs.json)、[sources.json](qaihub_priority1_20261008/sources.json)。
+
+
+## 8. 用逐级小 CNN 替换高频收缩：四组未训练速度实验
+
+### 8.1 实验范围与精确结构
+
+基于 `train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm.yaml` 对应的 `best.pth`，保留已训练的 LLRestorationCNN 和精修网络。Haar 为三级递归分解，每次继续分解原始 LL；只将同级 LH/HL/HH 的 12 个通道交给一个小 CNN，随后与恢复后的 LL 拼接并逆变换。三级各有一个独立 CNN，不共享参数，不进行十张子图的 atlas 拼接。
+
+实现见 [haar_hf_cnn.py](../models/haar_hf_cnn.py)。令该级高频输入为 `z`，四组结构严格如下：
+
+| 组别 | 公式 | 卷积细节 | 三级 HF 参数总数 |
+|---|---|---|---:|
+| 1：DW1 | `ReLU(DW1×1(z))` | 12→12，groups=12 | 72 |
+| 2：DW3 | `ReLU(DW3×3(z))` | 12→12，groups=12，零填充1 | 360 |
+| 3：DW3+PW1 | `PW1×1(ReLU(DW3×3(z)))` | DW 同组2；PW 为12→12、groups=1，末尾无激活 | 828 |
+| 4：DW1残差 | `z + ReLU(DW1×1(z))` | DW 同组1，相加后无激活 | 72 |
+
+所有卷积均有 bias、stride=1。三级输入分别为 `[1,12,180,320]`、`[1,12,90,160]`、`[1,12,45,80]`；输出形状不变。组1/2没有子带间或 RAW 通道间混合，组3的 PW 可以混合全部12个通道。第一级对应最高分辨率。
+
+新 CNN 使用 PyTorch Conv2d 默认随机初始化，seed=2026；每级参数独立。组1和组4的 DW 初始权重完全相同，只区别残差相加。已导出初始 HF 参数文件 `*_hf_untrained.pth` 便于复现，未更新原始 checkpoint，也没有训练或 PSNR 测试。
+
+**这四组是新的非等价网络，不是第7节的等价改写。** 组1/2的 HF 输出非负，无法直接表达原 Soft Threshold 的负系数；组4满足输出≥输入，对正系数不能直接执行向零收缩。组3的线性 PW 输出允许正负值，但当前也未学到收缩功能。速度优劣不能说明去噪效果；后续训练需要单独验证这些结构限制。这里按要求保留四种结构。
+
+### 8.2 参数与计算量
+
+统计对象为实际部署 ONNX，Rep-NCB 已融合。卷积按稠密运算计数，包括固定 Haar/S2D/D2S 核中的零权重；1 MAC=2 Op，另计 bias、激活和逐元素算术。Split/Concat/形状操作记0算术量，但它们可能产生实际访存和调度开销。固定变换核不计可学习参数。
+
+“部署学习系数”包括已冻结的36个学习阈值，因此原始 Soft 为86,408个 CNN 参数 + 36个阈值 = **86,444**。新 CNN 替换这36个阈值，不应将原阈值重复计入。该口径不同于保留全部重参数化分支的训练态参数量。
+
+| 组别 | 部署学习系数总数 | 其中HF参数 | 卷积 GMAC | 总 GOp |
+|---|---:|---:|---:|---:|
+| 原始逐子带 Soft | 86,444 | 36 | 3.4054272 | 6.8489280 |
+| 合并12通道 Min/Max（D） | 86,444 | 36 | 3.4054272 | 6.8462064 |
+| 1：DW1 + ReLU | 86,480 | 72 | 3.4063344 | 6.8471136 |
+| 2：DW3 + ReLU | 86,768 | 360 | 3.4135920 | 6.8616288 |
+| 3：DW3 + ReLU + PW1 | 87,236 | 828 | 3.4244784 | 6.8843088 |
+| 4：DW1 + ReLU + 残差 | 86,480 | 72 | 3.4063344 | 6.8480208 |
+
+四组 HF 的 MAC 分别为907,200、8,164,800、19,051,200、907,200。DW1每级参数为12个权重+12个偏置；DW3每级为108+12；PW额外144+12。组4相比组1多907,200次逐元素加法，没有增加参数。整网大部分卷积工作在 LL 和精修网络，故四组整网计算量差异很小。
+
+逐节点统计和计数口径见 [complexity.json](qaihub_hf_cnn_20261008/complexity.json)，统计脚本见 [profile_hf_cnn_onnx.py](../tools/profile_hf_cnn_onnx.py)。这些是算法操作数，不代表 NPU 编译后指令数。
+
+### 8.3 导出验证与同 NPU 测速
+
+输入固定 `[1,4,360,640]`，模型中的 Haar/逆 Haar 和 S2D/D2S 继续使用2×2卷积/转置卷积。四份 clean 图都没有 Div/Abs/Sign；组1/2有46个节点，组3/4有49个节点。FP32 ONNX 分别与**自身未训练 CNN 的 PyTorch 输出**核对，覆盖均匀随机、有符号输入、全零、极小值、边界斜坡和角点脉冲六类输入，全部通过；最大绝对误差不超过1.79e-6。该检查不表示与原 Soft 模型输出一致，也不是 INT8 精度验证。
+
+测速设备仍为 Samsung Galaxy S24 / SM-S921U1 / SM8650 / Hexagon V75，QAIRT 2.50.0.260828221209。W8A8，平台随机校准，只比较速度；实际量化 IO 为 uint8 并带 scale/zero_point。四组分别编译，另外复用第7节原始逐子带双ReLU和合并12通道Min/Max的编译产物，但本节两条基线的测速均重新执行。每项3轮、每轮100个样本，均值/P50/P95统计全部300个样本，不剔除首个较慢样本。同设备型号不保证同一台物理手机。
+
+| 组别 | 均值 / ms | P50 / ms | P95 / ms | 三轮各自均值 / ms | 相对原始延迟下降 | 相对D延迟下降 |
+|---|---:|---:|---:|---|---:|---:|
+| 原始逐子带 Soft | 1.2057 | 1.1860 | 1.3401 | 1.2047 / 1.2067 / 1.2056 | 0.00% | -50.99% |
+| 合并12通道 Min/Max（D） | 0.7985 | 0.7850 | 0.8340 | 0.8055 / 0.7883 / 0.8018 | 33.77% | 0.00% |
+| 1：DW1 + ReLU | 0.5945 | 0.5800 | 0.6894 | 0.5929 / 0.5959 / 0.5947 | 50.69% | 25.55% |
+| 2：DW3 + ReLU | 0.6190 | 0.5910 | 0.8023 | 0.6090 / 0.6293 / 0.6189 | 48.66% | 22.48% |
+| 3：DW3 + ReLU + PW1 | 0.6024 | 0.5800 | 0.6975 | 0.5891 / 0.6181 / 0.5999 | 50.04% | 24.56% |
+| 4：DW1 + ReLU + 残差 | 0.5982 | 0.5690 | 0.7580 | 0.6020 / 0.5971 / 0.5954 | 50.39% | 25.09% |
+
+四个 CNN 组中本次均值最低的是 **1：DW1 + ReLU：0.5945 ms**。相对本轮原始 Soft 延迟下降 **50.69%**；相对合并高频的D组延迟下降 **25.55%**（负数表示变慢）。
+
+四组算术量变化不足1%，速度差异应结合NPU执行方式判断，不能按参数量或MAC直接排序。这里测到的是这些初始权重、随机校准和当前编译器生成产物的速度；训练并重新量化后仍需复测。均值差距很小的组不能凭三轮短时测试断言稳定领先。
+
+**6项编译产物、18个测速任务均成功，全部逐层执行条目为NPU。** 实际编译日志确认权重/激活8bit，设备型号和QAIRT版本一致。证据见 [execution_audit.json](qaihub_hf_cnn_20261008/execution_audit.json)、[compiled_specs.json](qaihub_hf_cnn_20261008/compiled_specs.json)、[summary.json](qaihub_hf_cnn_20261008/summary.json)。
+
+| 组别 | 编译任务 | 三轮测速任务 |
+|---|---|---|
+| 原始逐子带 Soft | [jp3oeyqlp](https://workbench.aihub.qualcomm.com/jobs/jp3oeyqlp) | [j56onkmy5](https://workbench.aihub.qualcomm.com/jobs/j56onkmy5) / [jp3oey7np](https://workbench.aihub.qualcomm.com/jobs/jp3oey7np) / [jgod3jwk5](https://workbench.aihub.qualcomm.com/jobs/jgod3jwk5) |
+| 合并12通道 Min/Max（D） | [jgj3ejkxp](https://workbench.aihub.qualcomm.com/jobs/jgj3ejkxp) | [jpv2vjmrg](https://workbench.aihub.qualcomm.com/jobs/jpv2vjmrg) / [jgj3ejyep](https://workbench.aihub.qualcomm.com/jobs/jgj3ejyep) / [jpe6kjxvg](https://workbench.aihub.qualcomm.com/jobs/jpe6kjxvg) |
+| 1：DW1 + ReLU | [jp0olnonp](https://workbench.aihub.qualcomm.com/jobs/jp0olnonp) | [jg9ow628g](https://workbench.aihub.qualcomm.com/jobs/jg9ow628g) / [jp1oer175](https://workbench.aihub.qualcomm.com/jobs/jp1oer175) / [jgd6oj4zp](https://workbench.aihub.qualcomm.com/jobs/jgd6oj4zp) |
+| 2：DW3 + ReLU | [jp8jzljo5](https://workbench.aihub.qualcomm.com/jobs/jp8jzljo5) | [j57oxqn9g](https://workbench.aihub.qualcomm.com/jobs/j57oxqn9g) / [jp4evz41g](https://workbench.aihub.qualcomm.com/jobs/jp4evz41g) / [jpx0ywrlp](https://workbench.aihub.qualcomm.com/jobs/jpx0ywrlp) |
+| 3：DW3 + ReLU + PW1 | [j5q43j4og](https://workbench.aihub.qualcomm.com/jobs/j5q43j4og) | [j5m93jk9g](https://workbench.aihub.qualcomm.com/jobs/j5m93jk9g) / [jgn13jqqp](https://workbench.aihub.qualcomm.com/jobs/jgn13jqqp) / [jprxezd7p](https://workbench.aihub.qualcomm.com/jobs/jprxezd7p) |
+| 4：DW1 + ReLU + 残差 | [jglw3j8mp](https://workbench.aihub.qualcomm.com/jobs/jglw3j8mp) | [jp2ol2dqg](https://workbench.aihub.qualcomm.com/jobs/jp2ol2dqg) / [jpy8692lg](https://workbench.aihub.qualcomm.com/jobs/jpy8692lg) / [jp0oln9np](https://workbench.aihub.qualcomm.com/jobs/jp0oln9np) |
+
+高频命名路径的插桩周期参考：
+
+| 组别 | profiler条目数（各轮） | HF命名路径平均周期 | HF周期占比 |
+|---|---|---:|---:|
+| 原始逐子带 Soft | 111 / 111 / 111 | 4,582,723 | 53.01% |
+| 合并12通道 Min/Max（D） | 60 / 60 / 60 | 2,188,020 | 40.28% |
+| 1：DW1 + ReLU | 57 / 57 / 57 | 97,514 | 2.98% |
+| 2：DW3 + ReLU | 57 / 57 / 57 | 112,494 | 3.41% |
+| 3：DW3 + ReLU + PW1 | 60 / 60 / 60 | 52,186 | 1.56% |
+| 4：DW1 + ReLU + 残差 | 60 / 60 / 60 | 181,360 | 5.33% |
+
+CNN组选择 `/processors.` 路径，Soft组选择高频 Min/Max/ReLU/Sub/Neg 路径。卷积与激活融合可能使Conv记录0周期而时间计入激活条目；这些不是独立算子的实际毫秒耗时。插桩周期仅用于定位，不得乘整网正常延迟推算该部分时间。
+
+
+### 8.4 配置和复现
+
+四个配置为**部署测速配置**，由导出脚本读取，不是 `train_sid_sony.py` 的训练配置：
+
+- [haar_hf_cnn_dw1.yaml](../configs/deploy/haar_hf_cnn_dw1.yaml)
+- [haar_hf_cnn_dw3.yaml](../configs/deploy/haar_hf_cnn_dw3.yaml)
+- [haar_hf_cnn_dw3_pw1.yaml](../configs/deploy/haar_hf_cnn_dw3_pw1.yaml)
+- [haar_hf_cnn_dw1_residual.yaml](../configs/deploy/haar_hf_cnn_dw1_residual.yaml)
+
+```bash
+# 导出环境：torch / onnx / onnxruntime / onnxsim==0.4.36
+python tools/export_sid_npu_ablation.py \
+  configs/deploy/haar_hf_cnn_dw1.yaml \
+  configs/deploy/haar_hf_cnn_dw3.yaml \
+  configs/deploy/haar_hf_cnn_dw3_pw1.yaml \
+  configs/deploy/haar_hf_cnn_dw1_residual.yaml \
+  --output-dir experiments/npu_hf_cnn_ablation/onnx
+
+python tools/profile_hf_cnn_onnx.py
+
+# 单独的 qai-hub==0.56.0 环境；API token 不写入配置
+read -r -s -p 'AI Hub API token: ' QAI_HUB_API_TOKEN
+export QAI_HUB_API_TOKEN
+python tools/benchmark_sid_qaihub.py --watch \
+  --sources-json ref-doc/qaihub_hf_cnn_20261008/sources.json \
+  --output-dir ref-doc/qaihub_hf_cnn_20261008
+unset QAI_HUB_API_TOKEN
+
+python tools/summarize_sid_qaihub.py \
+  --output-dir ref-doc/qaihub_hf_cnn_20261008
+```
+
+已有任务目录可恢复下载；独立重测需更换输出目录。重新导出后需同步 `sources.json` 的源文件SHA256。导出报告见 [export_reports.json](qaihub_hf_cnn_20261008/export_reports.json)，全部映射、任务和原始日志见 [jobs.json](qaihub_hf_cnn_20261008/jobs.json)、[sources.json](qaihub_hf_cnn_20261008/sources.json)。ONNX及初始参数位于 `experiments/npu_hf_cnn_ablation/onnx/`；各组 W8A8 DLC 位于本节结果目录的对应子目录。
+
+
+### 8.5 四组从头训练配置（depth7 基线）
+
+新增训练入口 `dwt_threshold_mode: hf_cnn`，用 `dwt_hf_cnn_variant` 选择四种结构，与测速实验共用 `HighFrequencyCNN`。三级独立网络直接处理有符号、未归一化的 LH/HL/HH 拼接输入，不使用阈值 logits、幅值输入、band scale 或 atlas 预测。每次只对原始 LL 继续分解；LL CNN 和精修网络与 HF CNN 一起从头训练，固定 Haar 核不学习。
+
+本次训练配置参考用户指定的 `static_hf_depth7_soft_ll_no_norm.yaml`：LL 宽度32、深度7（五个内部Rep-NCB），精修宽度32、五个Rep-NCB、S2D=2，LL不归一化。数据、损失（0.6 raw + 0.4 chromatic）、1000 epochs、batch size32、学习率0.0002、seed2026及验证/保存策略均沿用该参考配置。此前8.3节测速使用depth5 checkpoint，**不能将其参数量和时间直接视为这些depth7训练配置的实测结果**。
+
+四份配置的 `resume`、`init_checkpoint` 均为 `null`，输出目录各自独立：
+
+| 高频结构 | 训练配置 |
+|---|---|
+| DW1×1 + ReLU | [dw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw1_ll_no_norm.yaml) |
+| DW3×3 + ReLU | [dw3](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw3_ll_no_norm.yaml) |
+| DW3×3 + ReLU + PW1×1 | [dw3_pw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw3_pw1_ll_no_norm.yaml) |
+| DW1×1 + ReLU + 输入残差 | [dw1_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw1_residual_ll_no_norm.yaml) |
+
+逐个选择配置手动启动，也可以在项目根目录依次运行四组：
+
+```bash
+for variant in dw1 dw3 dw3_pw1 dw1_residual; do
+  conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
+    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_${variant}_ll_no_norm.yaml" || break
+done
+```
+
+这是完整随机初始化训练，不加载此前测速用的随机HF参数或旧checkpoint。结构仍保持8.1节的输出符号限制。新模型配置会随训练checkpoint保存，现有模型工厂可据此恢复训练权重或融合后的部署权重。配置中保留的 `dwt_width/dwt_depth/dwt_context` 及阈值设置不控制该模式下的小CNN，其结构由 `dwt_hf_cnn_variant` 决定。
+
+已通过四组反向传播（HF/LL/精修梯度）、独立层参数、非整除尺寸补边、训练态/部署态输出一致性和两种checkpoint格式重载检查；相关回归测试共23项通过。没有启动数据集训练。

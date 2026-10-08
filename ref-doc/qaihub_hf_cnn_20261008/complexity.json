@@ -1,0 +1,4480 @@
+{
+  "shape": [
+    1,
+    4,
+    360,
+    640
+  ],
+  "base_cnn_parameters": 86408,
+  "mac_to_ops": 2,
+  "counts_include_bias_activation_and_fixed_dense_transform": true,
+  "results": {
+    "haar_hf_cnn_dw1": {
+      "onnx": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1.onnx",
+      "node_count": 46,
+      "arithmetic_ops": 6847113600,
+      "conv_macs": 3406334400,
+      "operator_ops": {
+        "Conv": 6758769600,
+        "Split": 0,
+        "Relu": 1022400,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 3628800,
+      "hf_cnn_macs": 907200,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 2073600,
+          "macs": 691200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.0/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 518400,
+          "macs": 172800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.1/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 129600,
+          "macs": 43200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.2/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 86480,
+      "hf_cnn_parameters": 72,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 86480
+    },
+    "haar_hf_cnn_dw3": {
+      "onnx": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3.onnx",
+      "node_count": 46,
+      "arithmetic_ops": 6861628800,
+      "conv_macs": 3413592000,
+      "operator_ops": {
+        "Conv": 6773284800,
+        "Split": 0,
+        "Relu": 1022400,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 18144000,
+      "hf_cnn_macs": 8164800,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 13132800,
+          "macs": 6220800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.0/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 3283200,
+          "macs": 1555200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.1/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 820800,
+          "macs": 388800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.2/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 86768,
+      "hf_cnn_parameters": 360,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 86768
+    },
+    "haar_hf_cnn_dw3_pw1": {
+      "onnx": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw3_pw1.onnx",
+      "node_count": 49,
+      "arithmetic_ops": 6884308800,
+      "conv_macs": 3424478400,
+      "operator_ops": {
+        "Conv": 6795964800,
+        "Split": 0,
+        "Relu": 1022400,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 40824000,
+      "hf_cnn_macs": 19051200,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 13132800,
+          "macs": 6220800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.0/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/pointwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 17280000,
+          "macs": 8294400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 3283200,
+          "macs": 1555200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.1/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/pointwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 4320000,
+          "macs": 2073600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 820800,
+          "macs": 388800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.2/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/pointwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 1080000,
+          "macs": 518400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 87236,
+      "hf_cnn_parameters": 828,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 87236
+    },
+    "haar_hf_cnn_dw1_residual": {
+      "onnx": "experiments/npu_hf_cnn_ablation/onnx/haar_hf_cnn_dw1_residual.onnx",
+      "node_count": 49,
+      "arithmetic_ops": 6848020800,
+      "conv_macs": 3406334400,
+      "operator_ops": {
+        "Conv": 6758769600,
+        "Split": 0,
+        "Relu": 1022400,
+        "Add": 907200,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 4536000,
+      "hf_cnn_macs": 907200,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 2073600,
+          "macs": 691200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.0/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 518400,
+          "macs": 172800,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.1/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/depthwise/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 129600,
+          "macs": 43200,
+          "group": 12
+        },
+        {
+          "name": "/wavelet/processors.2/relu/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 86480,
+      "hf_cnn_parameters": 72,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 86480
+    },
+    "haar_original_soft": {
+      "onnx": "experiments/npu_priority1_ablation/onnx/haar_soft_band_relu.onnx",
+      "node_count": 94,
+      "arithmetic_ops": 6848928000,
+      "conv_macs": 3405427200,
+      "operator_ops": {
+        "Conv": 6756048000,
+        "Split": 0,
+        "Sub": 2721600,
+        "Relu": 1929600,
+        "Neg": 907200,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 0,
+      "hf_cnn_macs": 0,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_1",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_1",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_2",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_3",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_2",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_1",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_4",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_3",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_5",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_6",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_4",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_2",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_7",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_5",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_8",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_9",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_6",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_3",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_10",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_7",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_11",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_12",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_8",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_4",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_13",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_9",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_14",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_15",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_10",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_5",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_16",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_11",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_17",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_18",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_12",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_6",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_19",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_13",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_20",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_21",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_14",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_7",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_22",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_15",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_23",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_24",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_16",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_8",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_25",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_17",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_26",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 14400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 86408,
+      "hf_cnn_parameters": 0,
+      "frozen_learned_thresholds": 36,
+      "deployed_learned_coefficients": 86444
+    },
+    "haar_optimized_soft": {
+      "onnx": "experiments/npu_priority1_ablation/onnx/haar_soft_level_minmax.onnx",
+      "node_count": 49,
+      "arithmetic_ops": 6846206400,
+      "conv_macs": 3405427200,
+      "operator_ops": {
+        "Conv": 6756048000,
+        "Split": 0,
+        "Max": 907200,
+        "Min": 907200,
+        "Sub": 907200,
+        "Relu": 115200,
+        "PRelu": 19123200,
+        "Concat": 0,
+        "ConvTranspose": 68198400
+      },
+      "hf_cnn_ops": 0,
+      "hf_cnn_macs": 0,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Max",
+          "operator": "Max",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Min",
+          "operator": "Min",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Max_1",
+          "operator": "Max",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Min_1",
+          "operator": "Min",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_1",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Max_2",
+          "operator": "Max",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Min_2",
+          "operator": "Min",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_2",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            12,
+            45,
+            80
+          ],
+          "ops": 43200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 8409600,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 115200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 66470400,
+          "macs": 33177600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            45,
+            80
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 8308800,
+          "macs": 4147200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/ll_restorer/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            8,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ll_restorer/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            4,
+            45,
+            80
+          ],
+          "ops": 244800,
+          "macs": 115200,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            45,
+            80
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 1843200,
+          "macs": 921600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 532684800,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 1063526400,
+          "macs": 530841600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 3686400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 531763200,
+          "macs": 265420800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 59904000,
+          "macs": 29491200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        }
+      ],
+      "deployed_nn_parameters": 86408,
+      "hf_cnn_parameters": 0,
+      "frozen_learned_thresholds": 36,
+      "deployed_learned_coefficients": 86444
+    }
+  }
+}
