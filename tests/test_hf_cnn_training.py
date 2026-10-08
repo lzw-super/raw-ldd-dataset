@@ -17,8 +17,8 @@ PREFIX = 'train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb
 def test_training_and_checkpoint_roundtrip(variant, hf_params, tmp_path):
     torch.set_num_threads(2)
     torch.manual_seed(2026)
-    config = yaml.safe_load((ROOT/'configs'/f'{PREFIX}hf_cnn_depth7_{variant}_ll_no_norm.yaml').read_text())
-    baseline = yaml.safe_load((ROOT/'configs'/f'{PREFIX}static_hf_depth7_soft_ll_no_norm.yaml').read_text())
+    config = yaml.safe_load((ROOT/'configs'/f'{PREFIX}hf_cnn_depth5_{variant}_ll_no_norm.yaml').read_text())
+    baseline = yaml.safe_load((ROOT/'configs'/f'{PREFIX}static_hf_depth5_soft_ll_no_norm.yaml').read_text())
     for key, value in baseline.items():
         # GPU assignment is an execution setting users may change independently.
         if key not in ('output_dir', 'dwt_threshold_mode', 'device'):

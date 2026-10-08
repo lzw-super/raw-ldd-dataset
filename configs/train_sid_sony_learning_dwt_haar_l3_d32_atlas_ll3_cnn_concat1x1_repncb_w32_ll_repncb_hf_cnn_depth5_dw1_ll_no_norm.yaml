@@ -1,4 +1,3 @@
-# HF processor: z + ReLU(DW3x3(z)); 12 channels, groups=12, padding=1.
 patch_dir: ../../Datasets/SID-sub/Sony_train_long_patches
 pair_list: ../../Datasets/SID-sub/Sony_train_list.txt
 sid_long_dir: ../../Datasets/SID-sub/Sony/long
@@ -17,7 +16,7 @@ raw_loss_weight: 0.6
 chromatic_loss_weight: 0.4
 chromatic_channel_order: [0, 1, 3, 2]
 
-output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw3_residual_ll_no_norm
+output_dir: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_ll_no_norm
 
 # Training settings copied from the MRLFN d32 reference for comparison.
 # Train HF processors, LL restoration and refinement jointly from scratch.
@@ -72,10 +71,10 @@ dwt_condition_bands: false
 dwt_ll_max_threshold: 0.01
 dwt_shrink_mode: soft
 
-# LL depth 7: input convolution, five internal Rep-NCB blocks, output convolution.
+# LL depth 5: input convolution, three internal Rep-NCB blocks, output convolution.
 dwt_ll_mode: ll_only
 dwt_ll_width: 32
-dwt_ll_depth: 7
+dwt_ll_depth: 5
 
 # Concatenate [CNN output (4ch), original LL (4ch)], then learned 1x1 Conv 8->4.
 dwt_ll_fusion: concat_1x1
@@ -94,7 +93,7 @@ dwt_ll_block_type: repncb
 
 # Each level concatenates [LH, HL, HH]; no threshold parameters or atlas predictor.
 dwt_threshold_mode: hf_cnn
-dwt_hf_cnn_variant: dw3_residual
+dwt_hf_cnn_variant: dw1
 
 # Threshold-only settings above are inactive for hf_cnn; no HF normalization/shrinkage.
 

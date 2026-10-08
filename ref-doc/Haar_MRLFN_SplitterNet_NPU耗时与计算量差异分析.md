@@ -483,30 +483,31 @@ python tools/summarize_sid_qaihub.py \
 已有任务目录可恢复下载；独立重测需更换输出目录。重新导出后需同步 `sources.json` 的源文件SHA256。导出报告见 [export_reports.json](qaihub_hf_cnn_20261008/export_reports.json)，全部映射、任务和原始日志见 [jobs.json](qaihub_hf_cnn_20261008/jobs.json)、[sources.json](qaihub_hf_cnn_20261008/sources.json)。ONNX及初始参数位于 `experiments/npu_hf_cnn_ablation/onnx/`；各组 W8A8 DLC 位于本节结果目录的对应子目录。
 
 
-### 8.5 四组从头训练配置（depth7 基线）
+### 8.5 五组从头训练配置（depth5 基线）
 
-新增训练入口 `dwt_threshold_mode: hf_cnn`，用 `dwt_hf_cnn_variant` 选择四种结构，与测速实验共用 `HighFrequencyCNN`。三级独立网络直接处理有符号、未归一化的 LH/HL/HH 拼接输入，不使用阈值 logits、幅值输入、band scale 或 atlas 预测。每次只对原始 LL 继续分解；LL CNN 和精修网络与 HF CNN 一起从头训练，固定 Haar 核不学习。
+新增训练入口 `dwt_threshold_mode: hf_cnn`，用 `dwt_hf_cnn_variant` 选择五种结构，与测速实验共用 `HighFrequencyCNN`。三级独立网络直接处理有符号、未归一化的 LH/HL/HH 拼接输入，不使用阈值 logits、幅值输入、band scale 或 atlas 预测。每次只对原始 LL 继续分解；LL CNN 和精修网络与 HF CNN 一起从头训练，固定 Haar 核不学习。
 
-本次训练配置参考用户指定的 `static_hf_depth7_soft_ll_no_norm.yaml`：LL 宽度32、深度7（五个内部Rep-NCB），精修宽度32、五个Rep-NCB、S2D=2，LL不归一化。数据、损失（0.6 raw + 0.4 chromatic）、1000 epochs、batch size32、学习率0.0002、seed2026及验证/保存策略均沿用该参考配置。此前8.3节测速使用depth5 checkpoint，**不能将其参数量和时间直接视为这些depth7训练配置的实测结果**。
+本次训练配置参考用户指定的 `static_hf_depth5_soft_ll_no_norm.yaml`：LL 宽度32、深度5（三个内部Rep-NCB），精修宽度32、五个Rep-NCB、S2D=2，LL不归一化。数据、损失（0.6 raw + 0.4 chromatic）、1000 epochs、batch size32、学习率0.0002、seed2026及验证/保存策略均沿用该参考配置。此前8.3节的四组测速同样使用depth5结构；新增DW3残差组尚未测速，训练后重新导出的权重也需另行验证速度。
 
-四份配置的 `resume`、`init_checkpoint` 均为 `null`，输出目录各自独立：
+五份配置的 `resume`、`init_checkpoint` 均为 `null`，输出目录各自独立：
 
 | 高频结构 | 训练配置 |
 |---|---|
-| DW1×1 + ReLU | [dw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw1_ll_no_norm.yaml) |
-| DW3×3 + ReLU | [dw3](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw3_ll_no_norm.yaml) |
-| DW3×3 + ReLU + PW1×1 | [dw3_pw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw3_pw1_ll_no_norm.yaml) |
-| DW1×1 + ReLU + 输入残差 | [dw1_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_dw1_residual_ll_no_norm.yaml) |
+| DW1×1 + ReLU | [dw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_ll_no_norm.yaml) |
+| DW3×3 + ReLU | [dw3](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_ll_no_norm.yaml) |
+| DW3×3 + ReLU + PW1×1 | [dw3_pw1](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_pw1_ll_no_norm.yaml) |
+| DW1×1 + ReLU + 输入残差 | [dw1_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_residual_ll_no_norm.yaml) |
+| DW3×3 + ReLU + 输入残差 | [dw3_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_residual_ll_no_norm.yaml) |
 
-逐个选择配置手动启动，也可以在项目根目录依次运行四组：
+逐个选择配置手动启动，也可以在项目根目录依次运行五组：
 
 ```bash
-for variant in dw1 dw3 dw3_pw1 dw1_residual; do
+for variant in dw1 dw3 dw3_pw1 dw1_residual dw3_residual; do
   conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
-    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth7_${variant}_ll_no_norm.yaml" || break
+    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_${variant}_ll_no_norm.yaml" || break
 done
 ```
 
 这是完整随机初始化训练，不加载此前测速用的随机HF参数或旧checkpoint。结构仍保持8.1节的输出符号限制。新模型配置会随训练checkpoint保存，现有模型工厂可据此恢复训练权重或融合后的部署权重。配置中保留的 `dwt_width/dwt_depth/dwt_context` 及阈值设置不控制该模式下的小CNN，其结构由 `dwt_hf_cnn_variant` 决定。
 
-已通过四组反向传播（HF/LL/精修梯度）、独立层参数、非整除尺寸补边、训练态/部署态输出一致性和两种checkpoint格式重载检查；相关回归测试共23项通过。没有启动数据集训练。
+已通过五组反向传播（HF/LL/精修梯度）、独立层参数、非整除尺寸补边、训练态/部署态输出一致性和两种checkpoint格式重载检查；五组配置的训练与checkpoint重载测试通过。没有启动数据集训练。
