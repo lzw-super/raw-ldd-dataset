@@ -1,0 +1,326 @@
+[
+  {
+    "config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm.yaml",
+    "config_sha256": "da61b381065f7188f64a62873a3e070727d7371fe5d7f2749ac5ff960875a52c",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "onnx": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/onnx/learning_dwt_repncb_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+    "onnx_sha256": "1290f68edcb1addd8e8859ad2d6775f4a7a6025e4640ca66a3650f9268e76606",
+    "model": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "export_checks": [
+      {
+        "input": "uniform",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 1.0418049356530901e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.825453162193298e-08,
+        "mean_abs": 1.0513097947750794e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 9.047216309454598e-09,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "config": "configs/train_sid_sony_mrlfn_paper_s2d_k4_n4_d32.yaml",
+    "config_sha256": "902afefc0b5700ab6aa42762939b892fb5e2d7f0f58100d079193b1e21406678",
+    "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+    "checkpoint_sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85",
+    "onnx": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/onnx/mrlfn_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+    "onnx_sha256": "30d8a89cec5d1dad2a8af8d179d29d0fa097c3a61ab508569266a5a4ff1df862",
+    "model": {
+      "model": "mrlfn",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 4,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy"
+    },
+    "export_checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.0489812751757199e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.055940270423889e-08,
+        "mean_abs": 1.0760738966553163e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.4517389956836269e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.4517389956836269e-08,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "config": "configs/train_sid_sony_nafnet.yaml",
+    "config_sha256": "acf2996530018acd811baf09e17916716d9d6560c3bb2fcc44151f8941a699e9",
+    "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/best.pth",
+    "checkpoint_sha256": "34694b1f7dd9324182c104c2e4c1d2bdc1b42f09d1c20fd955121e8d150300dc",
+    "onnx": "experiments/sid_sony_nafnet_new/onnx/nafnet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+    "onnx_sha256": "f01be9e1a07960cf52ca609ca2a07efb0c31319d166717a8539968cb59cddb48",
+    "model": {
+      "model": "nafnet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "export_checks": [
+      {
+        "input": "uniform",
+        "max_abs": 1.3113021850585938e-06,
+        "mean_abs": 1.584033100243687e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 3.8743019104003906e-07,
+        "mean_abs": 4.210631487922001e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 3.470107913017273e-06,
+        "mean_abs": 1.236462935594318e-06,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 3.470107913017273e-06,
+        "mean_abs": 1.236462935594318e-06,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "config": "configs/train_sid_sony.yaml",
+    "config_sha256": "c89c05cbe707675e72de0b538972adf4cf29c90f9057615e46f296234e4612dd",
+    "checkpoint": "experiments/sid_sony_paper_new/checkpoints/best.pth",
+    "checkpoint_sha256": "e3bedb967084dbfe5506c2ea9a71b6b61bdece4734ca477bdae45402d8682fbf",
+    "onnx": "experiments/sid_sony_paper_new/onnx/unet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+    "onnx_sha256": "d0f007c9a9e3b07ed2afc59ff72e47de47de61b28ab5c1bff85e303cb1bb06f5",
+    "model": {
+      "model": "unet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "export_checks": [
+      {
+        "input": "uniform",
+        "max_abs": 4.470348358154297e-07,
+        "mean_abs": 6.40392272543977e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.0954757928848267e-08,
+        "mean_abs": 2.7849904604693165e-09,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.83936208486557e-08,
+        "mean_abs": 2.6443540690479495e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.83936208486557e-08,
+        "mean_abs": 2.6443540690479495e-09,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "config": "configs/train_sid_sony_splitternet.yaml",
+    "config_sha256": "f6262d3dafa10c6e46cf3e58e69dd7e46de2cc373ce3cd78030c66878df0aaf9",
+    "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+    "checkpoint_sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "onnx": "experiments/sid_sony_splitternet/onnx/splitternet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+    "onnx_sha256": "9f9e211409c719cc11cc82c558c7f1fdf3ab03d63161b4210e74539d8302e0da",
+    "model": {
+      "model": "splitternet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "export_checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 8.760802927554323e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.682209014892578e-07,
+        "mean_abs": 2.5602295394833163e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.1292286217212677e-08,
+        "mean_abs": 2.2410477917844673e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.1292286217212677e-08,
+        "mean_abs": 2.2410477917844673e-09,
+        "passed": true
+      }
+    ]
+  }
+]

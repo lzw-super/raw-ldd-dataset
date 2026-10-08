@@ -1,0 +1,197 @@
+{
+  "haar_ll_no_norm": {
+    "input_spec": {
+      "null": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.003921567462384701,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "null": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.0028173886239528656,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_3vt6w8a2"
+    }
+  },
+  "mrlfn": {
+    "input_spec": {
+      "null": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.003921567462384701,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "null": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.0030140895396471024,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_4xpjijoz"
+    }
+  },
+  "nafnet": {
+    "input_spec": {
+      "null": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.00392156234011054,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "null": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.0034922852646559477,
+          "zero_point": 13.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_1k3_dzj6"
+    }
+  },
+  "unet": {
+    "input_spec": {
+      "null": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.0039215655997395515,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "null": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.002751067979261279,
+          "zero_point": 7.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_mmikr5w5"
+    }
+  },
+  "splitternet": {
+    "input_spec": {
+      "null": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.003921566531062126,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "null": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "scale": 0.0036386330612003803,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_9a8c08pz"
+    }
+  }
+}

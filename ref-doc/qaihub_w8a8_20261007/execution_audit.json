@@ -1,0 +1,257 @@
+{
+  "mrlfn": {
+    "compile_log": "ref-doc/qaihub_w8a8_20261007/mrlfn/compile_logs/jp0olv09p.log",
+    "w8a8_command_confirmed": true,
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/mrlfn/profile_logs_1/j5wyq1w3g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/mrlfn/profile_logs_2/jp1oev285_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/mrlfn/profile_logs_3/jgd6oznrp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "haar_ll_no_norm": {
+    "compile_log": "ref-doc/qaihub_w8a8_20261007/haar_ll_no_norm/compile_logs/jp1oevz85.log",
+    "w8a8_command_confirmed": true,
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/haar_ll_no_norm/profile_logs_1/j5q43m6ng_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/haar_ll_no_norm/profile_logs_2/jglw31vjp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/haar_ll_no_norm/profile_logs_3/j56ondy65_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "splitternet": {
+    "compile_log": "ref-doc/qaihub_w8a8_20261007/splitternet/compile_logs/jgk639ew5.log",
+    "w8a8_command_confirmed": true,
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/splitternet/profile_logs_1/jgd6ozqzp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/splitternet/profile_logs_2/j57ox7l9g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/splitternet/profile_logs_3/jp4ev9d1g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "unet": {
+    "compile_log": "ref-doc/qaihub_w8a8_20261007/unet/compile_logs/jp8jz4qk5.log",
+    "w8a8_command_confirmed": true,
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/unet/profile_logs_1/jpx0ydn3p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/unet/profile_logs_2/jgn137lkp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/unet/profile_logs_3/jprxen80p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "nafnet": {
+    "compile_log": "ref-doc/qaihub_w8a8_20261007/nafnet/compile_logs/jp4ev9l8g.log",
+    "w8a8_command_confirmed": true,
+    "profile_logs": [
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/nafnet/profile_logs_1/jpy867jlg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/nafnet/profile_logs_2/jgk639qn5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "log": "ref-doc/qaihub_w8a8_20261007/nafnet/profile_logs_3/j56ondny5_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "android": [
+          "14"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,112 @@
+name,group,round1_cycles,round2_cycles,round3_cycles,mean_cycles,cycle_share_percent
+noisy_raw_0231,Boundary layout entries,494170,485911,480969,487016.6666666667,5.64490068482936
+/wavelet/Sub_2,HF soft L1,421304,417734,419853,419630.3333333333,4.863840845984407
+/wavelet/Sub_5,HF soft L1,415972,415811,410668,414150.3333333333,4.800323398081464
+/wavelet/Sub_8,HF soft L1,413251,411429,411477,412052.3333333333,4.776005951785776
+/refiner/d2s/ConvTranspose,Refiner D2S convolution,394987,395215,394891,395031,4.578715504114494
+/wavelet/ConvTranspose_2,IDWT fixed transposed convolution,393200,393642,393140,393327.3333333333,4.5589686868254455
+output_0_0231,Boundary layout entries,321829,319457,316803,319363,3.701664728946632
+/wavelet/Relu,HF soft L1,299756,299926,299988,299890,3.4759575641630542
+/wavelet/Conv,DWT fixed convolution,300656,299129,295510,298431.6666666667,3.4590543503810975
+/wavelet/Relu_4,HF soft L1,297417,297575,297547,297513,3.4484062915963944
+/wavelet/Relu_2,HF soft L1,296783,296882,297237,296967.3333333333,3.4420815919481513
+/wavelet/Relu_3,HF soft L1,296175,296017,295119,295770.3333333333,3.428207434075921
+/wavelet/Relu_5,HF soft L1,295759,295407,295000,295388.6666666667,3.4237836215547004
+/wavelet/Relu_1,HF soft L1,296008,294927,294853,295262.6666666667,3.422323183883939
+/wavelet/ConvTranspose_1,IDWT fixed transposed convolution,228504,239446,234800,234250,2.715139082347512
+/wavelet/Concat_2,IDWT band concat,229599,228116,229210,228975,2.6539977433533477
+/refiner/s2d/Conv,Refiner two S2D convolutions,196831,195396,198963,197063.33333333334,2.28411678988691
+/refiner/s2d_1/Conv,Refiner two S2D convolutions,167567,170962,163969,167499.33333333334,1.941447112915632
+/wavelet/Split_to_slice_3,DWT band split/slice,149058,149044,149681,149261,1.730050691868824
+/wavelet/Split_to_slice_1,DWT band split/slice,148658,149090,148887,148878.33333333334,1.7256152885724387
+/wavelet/Split_to_slice_2,DWT band split/slice,147382,147778,147741,147633.66666666666,1.7111886370840206
+/wavelet/Neg_2,HF soft L1,126299,126739,126121,126386.33333333333,1.4649155735664183
+/wavelet/Neg,HF soft L1,126213,126308,126231,126250.66666666667,1.463343091735731
+/wavelet/Neg_1,HF soft L1,126169,126148,126316,126211,1.4628833243208619
+/wavelet/Sub_11,HF soft L2,125767,125218,125393,125459.33333333333,1.4541709249886758
+/wavelet/Sub_14,HF soft L2,119268,119396,119176,119280,1.3825476616538368
+/wavelet/Sub_17,HF soft L2,113347,113211,112868,113142,1.3114034836924748
+/refiner/Concat,Refiner concat,88407,89289,88098,88598,1.0269194980483454
+/wavelet/ConvTranspose,IDWT fixed transposed convolution,80216,79851,79935,80000.66666666667,0.9272697403650909
+/wavelet/Relu_6,HF soft L2,78442,77553,77734,77909.66666666667,0.9030334294955558
+/wavelet/Relu_8,HF soft L2,76277,77001,76889,76722.33333333333,0.8892713157832512
+/wavelet/Relu_7,HF soft L2,75664,75511,75425,75533.33333333333,0.8754898841123391
+/wavelet/Relu_10,HF soft L2,75580,75394,75555,75509.66666666667,0.8752155691001063
+/wavelet/Relu_11,HF soft L2,74916,74962,75002,74960,0.8688445063512039
+/wavelet/Relu_9,HF soft L2,74799,74843,74883,74841.66666666667,0.8674729312900396
+/refiner/blocks/blocks.2/activation/PRelu,Refiner CNN (including activations/fusion),56099,56105,56249,56151,0.6508336162770338
+/refiner/blocks/blocks.0/activation/PRelu,Refiner CNN (including activations/fusion),55649,55891,55730,55756.666666666664,0.6462629872703926
+/refiner/blocks/blocks.1/activation/PRelu,Refiner CNN (including activations/fusion),55721,55925,55560,55735.333333333336,0.6460157174002108
+/refiner/blocks/blocks.3/activation/PRelu,Refiner CNN (including activations/fusion),55611,55657,55466,55578,0.6441921021076202
+/refiner/blocks/blocks.4/activation/PRelu,Refiner CNN (including activations/fusion),54959,55134,55074,55055.666666666664,0.6381378538798884
+/wavelet/Conv_1,DWT fixed convolution,52085,52284,52929,52432.666666666664,0.6077352506226952
+/wavelet/Split_1_to_slice_1,DWT band split/slice,51049,49382,49820,50083.666666666664,0.580508519760649
+/wavelet/Neg_3,HF soft L2,40286,39000,39274,39520,0.458067434511734
+/wavelet/Split_1_to_slice_3,DWT band split/slice,39117,38960,39110,39062.333333333336,0.45276272307799065
+/wavelet/Split_1_to_slice_2,DWT band split/slice,38645,38817,38715,38725.666666666664,0.44886049543918455
+Output,Input/Output entries,42201,34457,34069,36909,0.42780392055651795
+/refiner/head/Conv,Refiner CNN (including activations/fusion),35031,35027,35119,35059,0.4063609865016924
+/wavelet/Neg_5,HF soft L2,34116,33863,33933,33970.666666666664,0.3937463595307003
+/wavelet/Neg_4,HF soft L2,34029,33809,33983,33940.333333333336,0.3933947726840357
+/wavelet/Sub_26,HF soft L3,31217,30901,31278,31132,0.3608440124296382
+/wavelet/Sub_23,HF soft L3,30793,29719,30365,30292.333333333332,0.3511116248829525
+/wavelet/Sub_20,HF soft L3,29954,29421,29525,29633.333333333332,0.34347330404936866
+/refiner/stem/Conv,Refiner CNN (including activations/fusion),28667,28891,28768,28775.333333333332,0.3335284189579955
+Input,Input/Output entries,30805,29715,22841,27787,0.3220728695034806
+/wavelet/Relu_12,HF soft L3,22983,22941,22747,22890.333333333332,0.26531670711332056
+/wavelet/Relu_14,HF soft L3,22825,22406,22319,22516.666666666668,0.26098562079341797
+/wavelet/Relu_16,HF soft L3,22498,22340,22119,22319,0.25869451090251494
+/wavelet/ll_restorer/layers/layers.2/activation/PRelu,LL restoration CNN (including fusion),23812,19350,22453,21871.666666666668,0.2535095708121409
+/wavelet/Relu_15,HF soft L3,20975,20814,20766,20851.666666666668,0.24168698014407491
+/wavelet/Relu_17,HF soft L3,20817,20816,20643,20758.666666666668,0.24060903805375125
+/wavelet/Relu_13,HF soft L3,20191,20485,20159,20278.333333333332,0.23504160238293972
+/wavelet/ll_restorer/Concat,LL restoration CNN (including fusion),16444,15552,16687,16227.666666666666,0.18809123578217565
+/wavelet/Conv_2,DWT fixed convolution,14038,14075,14267,14126.666666666666,0.16373901716099262
+/refiner/fusion/Conv,Refiner CNN (including activations/fusion),11540,11358,11514,11470.666666666666,0.13295391832336192
+/wavelet/Split_2_to_slice_1,DWT band split/slice,11047,11084,11009,11046.666666666666,0.12803942965349918
+/wavelet/Split_2_to_slice_3,DWT band split/slice,10790,10880,10841,10837,0.12560923046061895
+/wavelet/Split_2_to_slice_2,DWT band split/slice,10768,10796,10744,10769.333333333334,0.12482492134113617
+/wavelet/ll_restorer/fusion/Conv,LL restoration CNN (including fusion),9714,9831,9885,9810,0.11370550436639955
+/wavelet/Neg_8,HF soft L3,9521,9541,9557,9539.666666666666,0.1105721314801899
+/wavelet/Neg_7,HF soft L3,9398,9490,9573,9487,0.10996168398817865
+/wavelet/Neg_6,HF soft L3,9356,9476,9481,9437.666666666666,0.1093898724133833
+/wavelet/ll_restorer/layers/layers.1/Relu,LL restoration CNN (including fusion),9206,8413,7802,8473.666666666666,0.09821636515454445
+/wavelet/ll_restorer/layers/layers.4/activation/PRelu,LL restoration CNN (including fusion),4794,4783,4753,4776.666666666667,0.055365269370387556
+/wavelet/ll_restorer/layers/layers.3/activation/PRelu,LL restoration CNN (including fusion),4279,4525,4894,4566,0.052923479402342544
+/wavelet/ll_restorer/layers/layers.5/Conv,LL restoration CNN (including fusion),4585,4167,4217,4323,0.05010692103730329
+/wavelet/Split_2_to_slice_0,DWT band split/slice,1530,1362,1346,1412.6666666666667,0.016373901716099263
+/wavelet/Constant_output_0_2310,Constants,0,0,0,0,0.0
+/wavelet/Split_to_slice_0,DWT band split/slice,0,0,0,0,0.0
+/wavelet/Sub,HF soft L1,0,0,0,0,0.0
+/wavelet/Sub_1,HF soft L1,0,0,0,0,0.0
+/wavelet/Sub_3,HF soft L1,0,0,0,0,0.0
+/wavelet/Sub_4,HF soft L1,0,0,0,0,0.0
+/wavelet/Sub_6,HF soft L1,0,0,0,0,0.0
+/wavelet/Sub_7,HF soft L1,0,0,0,0,0.0
+/wavelet/Split_1_to_slice_0,DWT band split/slice,0,0,0,0,0.0
+/wavelet/Sub_9,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_10,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_12,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_13,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_15,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_16,HF soft L2,0,0,0,0,0.0
+/wavelet/Sub_18,HF soft L3,0,0,0,0,0.0
+/wavelet/Sub_19,HF soft L3,0,0,0,0,0.0
+/wavelet/Sub_21,HF soft L3,0,0,0,0,0.0
+/wavelet/Sub_22,HF soft L3,0,0,0,0,0.0
+/wavelet/Sub_24,HF soft L3,0,0,0,0,0.0
+/wavelet/Sub_25,HF soft L3,0,0,0,0,0.0
+/wavelet/ll_restorer/layers/layers.0/Conv,LL restoration CNN (including fusion),0,0,0,0,0.0
+/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv,LL restoration CNN (including fusion),0,0,0,0,0.0
+/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv,LL restoration CNN (including fusion),0,0,0,0,0.0
+/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv,LL restoration CNN (including fusion),0,0,0,0,0.0
+/wavelet/Concat,IDWT band concat,0,0,0,0,0.0
+/wavelet/Constant_output_0_2301,Constants,0,0,0,0,0.0
+/wavelet/Concat_1,IDWT band concat,0,0,0,0,0.0
+/refiner/s2d/Constant_output_0_2310,Constants,0,0,0,0,0.0
+/refiner/blocks/blocks.0/reparam_conv/Conv,Refiner CNN (including activations/fusion),0,0,0,0,0.0
+/refiner/blocks/blocks.1/reparam_conv/Conv,Refiner CNN (including activations/fusion),0,0,0,0,0.0
+/refiner/blocks/blocks.2/reparam_conv/Conv,Refiner CNN (including activations/fusion),0,0,0,0,0.0
+/refiner/blocks/blocks.3/reparam_conv/Conv,Refiner CNN (including activations/fusion),0,0,0,0,0.0
+/refiner/blocks/blocks.4/reparam_conv/Conv,Refiner CNN (including activations/fusion),0,0,0,0,0.0
+/refiner/s2d/Constant_output_0_2301,Constants,0,0,0,0,0.0

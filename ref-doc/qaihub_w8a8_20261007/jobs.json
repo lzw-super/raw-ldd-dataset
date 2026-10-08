@@ -1,0 +1,160 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    360,
+    640
+  ],
+  "sdk": "0.56.0",
+  "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+  "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+  "calibration": "Platform-generated random calibration; performance only",
+  "models": {
+    "haar_ll_no_norm": {
+      "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/onnx/learning_dwt_repncb_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+      "source_sha256": "1290f68edcb1addd8e8859ad2d6775f4a7a6025e4640ca66a3650f9268e76606",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "compile_job": "jp1oevz85",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "target_model": "mnzxrp2xm",
+      "profile_jobs": [
+        {
+          "id": "j5q43m6ng",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jglw31vjp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "j56ondy65",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ],
+      "compile_code": "SUCCESS"
+    },
+    "mrlfn": {
+      "source": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/onnx/mrlfn_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+      "source_sha256": "30d8a89cec5d1dad2a8af8d179d29d0fa097c3a61ab508569266a5a4ff1df862",
+      "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+      "compile_job": "jp0olv09p",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "target_model": "mnzxrpdxm",
+      "profile_jobs": [
+        {
+          "id": "j5wyq1w3g",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp1oev285",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgd6oznrp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ],
+      "compile_code": "SUCCESS"
+    },
+    "nafnet": {
+      "source": "experiments/sid_sony_nafnet_new/onnx/nafnet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+      "source_sha256": "f01be9e1a07960cf52ca609ca2a07efb0c31319d166717a8539968cb59cddb48",
+      "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/best.pth",
+      "compile_job": "jp4ev9l8g",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mnzxrpjxm",
+      "profile_jobs": [
+        {
+          "id": "jpy867jlg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgk639qn5",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "j56ondny5",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "unet": {
+      "source": "experiments/sid_sony_paper_new/onnx/unet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+      "source_sha256": "d0f007c9a9e3b07ed2afc59ff72e47de47de61b28ab5c1bff85e303cb1bb06f5",
+      "checkpoint": "experiments/sid_sony_paper_new/checkpoints/best.pth",
+      "compile_job": "jp8jz4qk5",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "target_model": "mq9ezj80m",
+      "profile_jobs": [
+        {
+          "id": "jpx0ydn3p",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgn137lkp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jprxen80p",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ],
+      "compile_code": "SUCCESS"
+    },
+    "splitternet": {
+      "source": "experiments/sid_sony_splitternet/onnx/splitternet_best_deploy_1x4x360x640_qai_w8a8_source.onnx",
+      "source_sha256": "9f9e211409c719cc11cc82c558c7f1fdf3ab03d63161b4210e74539d8302e0da",
+      "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+      "compile_job": "jgk639ew5",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mqp6v1plm",
+      "profile_jobs": [
+        {
+          "id": "jgd6ozqzp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "j57ox7l9g",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp4ev9d1g",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    }
+  }
+}
