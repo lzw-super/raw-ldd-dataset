@@ -1,0 +1,157 @@
+{
+  "analysis_date": "2026-10-09",
+  "logical_area_ratio": 36,
+  "models": {
+    "Haar 残差 CNN": {
+      "large_summary": "qaihub_hf_cnn_20261008/summary.json",
+      "large_key": "haar_hf_cnn_dw1_residual",
+      "small_key": "haar_hf_cnn_dw1_residual_80",
+      "large_ms": 0.5981566666666667,
+      "small_ms": 0.10794333333333334,
+      "speedup": 5.541395176481487,
+      "linear_area_prediction_ms": 0.016615462962962964,
+      "large_profile_entries": 60,
+      "small_profile_entries": 60
+    },
+    "MRLFN": {
+      "large_summary": "qaihub_priority1_20261008/summary.json",
+      "large_key": "mrlfn_baseline",
+      "small_key": "mrlfn_80",
+      "large_ms": 0.7682233333333334,
+      "small_ms": 0.10642333333333334,
+      "speedup": 7.218561092492248,
+      "linear_area_prediction_ms": 0.02133953703703704,
+      "large_profile_entries": 49,
+      "small_profile_entries": 49
+    },
+    "SplitterNet clean": {
+      "large_summary": "qaihub_priority1_20261008/summary.json",
+      "large_key": "splitternet_static_clean",
+      "small_key": "splitternet_80",
+      "large_ms": 2.59521,
+      "small_ms": 0.17296,
+      "speedup": 15.00468316373728,
+      "linear_area_prediction_ms": 0.07208916666666666,
+      "large_profile_entries": 492,
+      "small_profile_entries": 491
+    },
+    "U-Net": {
+      "large_summary": "qaihub_w8a8_20261007/summary.json",
+      "large_key": "unet",
+      "small_key": "unet_80",
+      "large_ms": 2.8483133333333335,
+      "small_ms": 0.24774,
+      "speedup": 11.497187912058342,
+      "linear_area_prediction_ms": 0.07911981481481482,
+      "large_profile_entries": 54,
+      "small_profile_entries": 54
+    }
+  },
+  "pairs": [
+    {
+      "numerator": "MRLFN",
+      "denominator": "Haar 残差 CNN",
+      "large_ratio": 1.2843179323142766,
+      "small_ratio": 0.9859185375042461
+    },
+    {
+      "numerator": "SplitterNet clean",
+      "denominator": "Haar 残差 CNN",
+      "large_ratio": 4.338679387228541,
+      "small_ratio": 1.602322206095791
+    },
+    {
+      "numerator": "U-Net",
+      "denominator": "Haar 残差 CNN",
+      "large_ratio": 4.76181825274315,
+      "small_ratio": 2.295093104406633
+    },
+    {
+      "numerator": "SplitterNet clean",
+      "denominator": "MRLFN",
+      "large_ratio": 3.3781973124134903,
+      "small_ratio": 1.6252075046199141
+    },
+    {
+      "numerator": "U-Net",
+      "denominator": "MRLFN",
+      "large_ratio": 3.707663136153983,
+      "small_ratio": 2.327872960190434
+    },
+    {
+      "numerator": "U-Net",
+      "denominator": "SplitterNet clean",
+      "large_ratio": 1.0975271108439524,
+      "small_ratio": 1.432354301572618
+    }
+  ],
+  "internal_spatial_shapes": {
+    "haar": [
+      [
+        360,
+        640
+      ],
+      [
+        80,
+        80
+      ]
+    ],
+    "mrlfn_packed_raw": [
+      [
+        360,
+        640
+      ],
+      [
+        80,
+        80
+      ]
+    ],
+    "splitternet": [
+      [
+        368,
+        640
+      ],
+      [
+        80,
+        80
+      ]
+    ],
+    "unet": [
+      [
+        368,
+        656
+      ],
+      [
+        96,
+        96
+      ]
+    ]
+  },
+  "unet_padding_evidence": {
+    "code": "models/ELD_models.py:UNetSeeInDark.check_img_size",
+    "small_first_conv_pads": [
+      1,
+      1,
+      17,
+      17
+    ],
+    "small_first_conv_output": [
+      1,
+      32,
+      96,
+      96
+    ],
+    "small_bottleneck_spatial": [
+      6,
+      6
+    ],
+    "large_first_conv_output_ort_observed": [
+      1,
+      32,
+      368,
+      656
+    ],
+    "large_to_small_internal_area_ratio": 26.194444444444443,
+    "small_extra_spatial_fraction": 0.43999999999999995
+  }
+}

@@ -26,7 +26,9 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--token-file',type=Path);p.add_argument('--rounds',type=int,default=3);p.add_argument('--watch',action='store_true')
  p.add_argument('--output-dir',type=Path,default=ROOT,help='Use a new directory for an independent benchmark; existing jobs are resumed.')
  p.add_argument('--sources-json',type=Path,help='Mapping label -> source/checkpoint; optional compile_job reuses an existing compiled artifact with fresh profiles.')
+ p.add_argument('--height',type=int,default=360);p.add_argument('--width',type=int,default=640)
  a=p.parse_args()
+ if min(a.height,a.width)<1:p.error('Dimensions must be positive')
  if a.rounds<1:p.error('--rounds must be positive')
  ROOT=a.output_dir
  sources=json.loads(a.sources_json.read_text()) if a.sources_json else None
@@ -34,7 +36,8 @@ def main():
  token=a.token_file.read_text().strip() if a.token_file else os.environ['QAI_HUB_API_TOKEN']
  client=hub.Client(hub.ClientConfig(api_token=token));device=hub.Device('Samsung Galaxy S24')
  ROOT.mkdir(parents=True,exist_ok=True);manifest=ROOT/'jobs.json'
- state=json.loads(manifest.read_text()) if manifest.exists() else dict(device=device.name,shape=[1,4,360,640],sdk=str(hub.__version__),compile_options=COMPILE,profile_options=PROFILE,calibration='Platform-generated random calibration; performance only',models={})
+ state=json.loads(manifest.read_text()) if manifest.exists() else dict(device=device.name,shape=[1,4,a.height,a.width],sdk=str(hub.__version__),compile_options=COMPILE,profile_options=PROFILE,calibration='Platform-generated random calibration; performance only',models={})
+ if state['shape'] != [1,4,a.height,a.width]:raise ValueError('Existing benchmark shape differs; use a new output directory')
  def save():
   temp=manifest.with_suffix('.tmp');temp.write_text(json.dumps(state,indent=2)+'\n');temp.replace(manifest)
  for label,exp in EXPERIMENTS.items():
@@ -44,16 +47,20 @@ def main():
    if sources is not None:
     item=sources[label];source=Path(item['source']);checkpoint=item['checkpoint']
    else:
-    candidates=list((Path('experiments')/exp/'onnx').glob('*best*1x4x360x640_qai_w8a8_source.onnx'))
+    candidates=list((Path('experiments')/exp/'onnx').glob(f'*best*1x4x{a.height}x{a.width}_qai_w8a8_source.onnx'))
     if len(candidates)!=1:raise RuntimeError(f'{label}: expected one source ONNX')
     source=candidates[0];checkpoint=str(Path('experiments')/exp/'checkpoints/best.pth');item={}
+   import onnx
+   graph=onnx.load(str(source),load_external_data=False)
+   actual_shape=[d.dim_value for d in graph.graph.input[0].type.tensor_type.shape.dim]
+   if actual_shape!=state['shape']:raise ValueError(f'{label}: ONNX shape {actual_shape} differs from requested shape')
    digest=hashlib.sha256(source.read_bytes()).hexdigest()
    if item.get('source_sha256',digest)!=digest:raise RuntimeError(f'{label}: source hash changed')
    record.update(source=str(source),source_sha256=digest,checkpoint=checkpoint)
    if item.get('compile_job'):
     record['compile_job']=item['compile_job'];record['reused_compile']=True
    else:
-    job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_360x640',options=COMPILE)
+    job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_{a.height}x{a.width}',options=COMPILE)
     record['compile_job']=job.job_id
    save();print(label,'compile job',record['compile_job'],flush=True)
   job=client.get_job(record['compile_job']);status=job.get_status();record['compile_status']=str(status);record['compile_code']=status.code;save()
@@ -63,6 +70,9 @@ def main():
   if not status.success:continue
   if not (folder/'compile_logs').exists():job.download_job_logs(str(folder/'compile_logs'))
   target=job.get_target_model();record['target_model']=target.model_id
+  for tensors in target.input_spec.values():
+   if len(tensors)!=1 or list(tensors[0].shape)!=state['shape']:
+    raise ValueError(f'{label}: compiled model input differs from requested shape')
   if not (folder/'model.dlc').exists():target.download(str(folder/'model.dlc'))
   profiles=record.setdefault('profile_jobs',[])
   for round_index in range(a.rounds):

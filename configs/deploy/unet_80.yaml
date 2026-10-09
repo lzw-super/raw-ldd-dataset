@@ -1,0 +1,6 @@
+kind: unet
+checkpoint: experiments/sid_sony_paper_new/checkpoints/best.pth
+simplify: true
+name: unet_80
+height: 80
+width: 80

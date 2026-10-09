@@ -1,0 +1,131 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    80,
+    80
+  ],
+  "sdk": "0.56.0",
+  "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+  "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+  "calibration": "Platform-generated random calibration; performance only",
+  "models": {
+    "haar_hf_cnn_dw1_residual_80": {
+      "source": "experiments/npu_80x80/onnx/haar_hf_cnn_dw1_residual_80.onnx",
+      "source_sha256": "38bd5923dcbdf816291cd78dacb6b7d028a54e97e98ea5779b524698093c695b",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "compile_job": "jp8j78dx5",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mqv9vowjm",
+      "profile_jobs": [
+        {
+          "id": "jpv2w4yjg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgj3l16xp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jpe6v201g",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "mrlfn_80": {
+      "source": "experiments/npu_80x80/onnx/mrlfn_80.onnx",
+      "source_sha256": "d1e6b61a7119d9e854866a57f6e2999a9e47644cf7268bce561b39e6ac27c5e2",
+      "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+      "compile_job": "jgk6ydw25",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mqe3zy4yn",
+      "profile_jobs": [
+        {
+          "id": "jgzz7wqkg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jg9o48rlg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp1o83925",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "splitternet_80": {
+      "source": "experiments/npu_80x80/onnx/splitternet_80.onnx",
+      "source_sha256": "445fb8800783f0044369cf17b7e57322470228cb49b12b8f1fe8dfba7a269894",
+      "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+      "compile_job": "j5q42wx4g",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mm5xzvr4q",
+      "profile_jobs": [
+        {
+          "id": "jgd6v0kep",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "j57od6mlg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp4ew87vg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "unet_80": {
+      "source": "experiments/npu_80x80/onnx/unet_80.onnx",
+      "source_sha256": "97f8a5ef2680f02abeb6be2940d08186537e5cfbadee152ea983d6cff985e428",
+      "checkpoint": "experiments/sid_sony_paper_new/checkpoints/best.pth",
+      "compile_job": "jglwk798p",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mq2pe6y0m",
+      "profile_jobs": [
+        {
+          "id": "j5m9z47wg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgn1ex4rp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jprxy9r9p",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    }
+  }
+}

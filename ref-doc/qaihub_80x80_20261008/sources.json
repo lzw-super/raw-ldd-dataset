@@ -1,0 +1,22 @@
+{
+  "haar_hf_cnn_dw1_residual_80": {
+    "source": "experiments/npu_80x80/onnx/haar_hf_cnn_dw1_residual_80.onnx",
+    "source_sha256": "38bd5923dcbdf816291cd78dacb6b7d028a54e97e98ea5779b524698093c695b",
+    "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth"
+  },
+  "mrlfn_80": {
+    "source": "experiments/npu_80x80/onnx/mrlfn_80.onnx",
+    "source_sha256": "d1e6b61a7119d9e854866a57f6e2999a9e47644cf7268bce561b39e6ac27c5e2",
+    "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth"
+  },
+  "splitternet_80": {
+    "source": "experiments/npu_80x80/onnx/splitternet_80.onnx",
+    "source_sha256": "445fb8800783f0044369cf17b7e57322470228cb49b12b8f1fe8dfba7a269894",
+    "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth"
+  },
+  "unet_80": {
+    "source": "experiments/npu_80x80/onnx/unet_80.onnx",
+    "source_sha256": "97f8a5ef2680f02abeb6be2940d08186537e5cfbadee152ea983d6cff985e428",
+    "checkpoint": "experiments/sid_sony_paper_new/checkpoints/best.pth"
+  }
+}

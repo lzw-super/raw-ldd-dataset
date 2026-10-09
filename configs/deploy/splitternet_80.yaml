@@ -1,0 +1,6 @@
+kind: splitternet
+checkpoint: experiments/sid_sony_splitternet/checkpoints/best.pth
+simplify: true
+name: splitternet_80
+height: 80
+width: 80
