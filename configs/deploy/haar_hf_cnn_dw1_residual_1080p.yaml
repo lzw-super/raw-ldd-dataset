@@ -1,0 +1,8 @@
+name: haar_hf_cnn_dw1_residual_1080p
+checkpoint: experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth
+kind: haar_hf_cnn
+height: 544
+width: 960
+simplify: true
+hf_cnn_variant: dw1_residual
+seed: 2026

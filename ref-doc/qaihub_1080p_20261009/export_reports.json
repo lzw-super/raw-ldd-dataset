@@ -1,0 +1,683 @@
+{
+  "haar_hf_cnn_dw1_residual_1080p": {
+    "config": "configs/deploy/haar_hf_cnn_dw1_residual_1080p.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw1_residual_1080p",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 544,
+      "width": 960,
+      "simplify": true,
+      "hf_cnn_variant": "dw1_residual",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1"
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_1080p/onnx/haar_hf_cnn_dw1_residual_1080p.onnx",
+    "source_sha256": "c526405878a83bc27ff381de22e7772a23759cdfad8e8e6c9c0711cc9fcd3ebe",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 1.089527899011955e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.1920928955078125e-07,
+        "mean_abs": 1.2160930040749918e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2139388161358511e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2139388161358511e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.9073486328125e-06,
+        "mean_abs": 1.1835437163654206e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.42846930027008e-08,
+        "mean_abs": 1.2141329719383975e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86480,
+    "hf_parameter_count": 72
+  },
+  "haar_hf_cnn_dw3_residual_1080p": {
+    "config": "configs/deploy/haar_hf_cnn_dw3_residual_1080p.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw3_residual_1080p",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 544,
+      "width": 960,
+      "simplify": true,
+      "hf_cnn_variant": "dw3_residual",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1"
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_1080p/onnx/haar_hf_cnn_dw3_residual_1080p.onnx",
+    "source_sha256": "c0d1d1f3ce707a78abdbb54297e340706132cd96d26e12de289b5dadd77daf09",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 9.5367431640625e-07,
+        "mean_abs": 1.0752475532171957e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.685754776000977e-08,
+        "mean_abs": 1.0666154182104037e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 8.999707645784838e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 8.999707645784838e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.1529796495324263e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.940696716308594e-08,
+        "mean_abs": 8.999236023043977e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86768,
+    "hf_parameter_count": 360
+  },
+  "haar_hf_cnn_dw3_prelu_residual_1080p": {
+    "config": "configs/deploy/haar_hf_cnn_dw3_prelu_residual_1080p.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw3_prelu_residual_1080p",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "kind": "haar_hf_cnn",
+      "height": 544,
+      "width": 960,
+      "simplify": true,
+      "hf_cnn_variant": "dw3_prelu_residual",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1"
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_1080p/onnx/haar_hf_cnn_dw3_prelu_residual_1080p.onnx",
+    "source_sha256": "0fad9b61e22e42de4961c17d4aa0b27cedb959bb0a442c69b2a2b55adbf650a0",
+    "operators_before": {
+      "Identity": 2,
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.0604386346813044e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.043081283569336e-07,
+        "mean_abs": 1.070320010398973e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 7.916241884231567e-08,
+        "mean_abs": 9.36761868075564e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 7.916241884231567e-08,
+        "mean_abs": 9.36761868075564e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.5497207641601562e-06,
+        "mean_abs": 1.0955322693462222e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 7.171183824539185e-08,
+        "mean_abs": 9.36800415018979e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86804,
+    "hf_parameter_count": 396
+  },
+  "mrlfn_1080p": {
+    "config": "configs/deploy/mrlfn_1080p.yaml",
+    "settings": {
+      "kind": "mrlfn",
+      "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+      "simplify": true,
+      "name": "mrlfn_1080p",
+      "height": 544,
+      "width": 960
+    },
+    "checkpoint_sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85",
+    "metadata": {
+      "model": "mrlfn",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 4,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy"
+    },
+    "source": "experiments/npu_1080p/onnx/mrlfn_1080p.onnx",
+    "source_sha256": "e7bbc072740ceef873fbd8f08859ff7a17121fc019723735344cabc4facfe76a",
+    "operators_before": {
+      "DepthToSpace": 2,
+      "Constant": 4,
+      "Reshape": 4,
+      "Transpose": 2,
+      "Conv": 20,
+      "Relu": 12,
+      "Add": 8,
+      "Concat": 1
+    },
+    "operators_after": {
+      "DepthToSpace": 2,
+      "Reshape": 4,
+      "Transpose": 2,
+      "Conv": 20,
+      "Relu": 12,
+      "Add": 8,
+      "Concat": 1
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 9.5367431640625e-07,
+        "mean_abs": 1.0466786903862157e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.940696716308594e-08,
+        "mean_abs": 1.0758832047486067e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.4879477205909097e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.4879477205909097e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.0612001233312185e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 7.450580596923828e-08,
+        "mean_abs": 1.4879656617949877e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 130672,
+    "hf_parameter_count": 0
+  },
+  "splitternet_1080p": {
+    "config": "configs/deploy/splitternet_1080p.yaml",
+    "settings": {
+      "kind": "splitternet",
+      "checkpoint": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+      "simplify": true,
+      "name": "splitternet_1080p",
+      "height": 544,
+      "width": 960
+    },
+    "checkpoint_sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "metadata": {
+      "model": "splitternet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "source": "experiments/npu_1080p/onnx/splitternet_1080p.onnx",
+    "source_sha256": "b52e5832abe6cae289a4ac613c18d46ce63710bef20d4ded05d4a85b896710da",
+    "operators_before": {
+      "Conv": 96,
+      "Shape": 43,
+      "Constant": 870,
+      "Gather": 43,
+      "Add": 63,
+      "Div": 15,
+      "Mul": 62,
+      "Slice": 140,
+      "ConstantOfShape": 78,
+      "Concat": 109,
+      "Reshape": 156,
+      "Transpose": 78,
+      "Cast": 78,
+      "Pad": 78,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "ReduceMax": 16,
+      "Sigmoid": 16,
+      "ConvTranspose": 15,
+      "Unsqueeze": 28
+    },
+    "operators_after": {
+      "Conv": 96,
+      "Slice": 46,
+      "Pad": 78,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "Mul": 32,
+      "Add": 48,
+      "ReduceMax": 16,
+      "Concat": 31,
+      "Sigmoid": 16,
+      "ConvTranspose": 15
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.450580596923828e-07,
+        "mean_abs": 8.748818913772993e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.5331974029541016e-07,
+        "mean_abs": 2.5637650225007746e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.2980308383703232e-08,
+        "mean_abs": 2.1366128866162626e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.2980308383703232e-08,
+        "mean_abs": 2.1366128866162626e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 6.181267053761985e-08,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 1.1362135410308838e-07,
+        "mean_abs": 2.1409085615431422e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 731636,
+    "hf_parameter_count": 0
+  }
+}

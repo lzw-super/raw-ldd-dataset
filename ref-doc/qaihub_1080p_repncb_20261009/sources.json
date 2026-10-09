@@ -1,0 +1,7 @@
+{
+  "haar_hf_repncb_prelu_residual_1080p": {
+    "source": "experiments/npu_1080p_repncb/onnx/haar_hf_repncb_prelu_residual_1080p.onnx",
+    "source_sha256": "f73cf5401fbb54762a0f0068a391ace6cb10f3e432cf04fbd7a2b83adf7c722f",
+    "checkpoint": "experiments/npu_1080p_repncb/inputs/best_snapshot.pth"
+  }
+}

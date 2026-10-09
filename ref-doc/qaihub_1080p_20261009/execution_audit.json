@@ -1,0 +1,227 @@
+{
+  "haar_hf_cnn_dw1_residual_1080p": {
+    "w8a8_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "compile_log": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw1_residual_1080p/compile_logs/j57odq0rg.log",
+    "profile_logs": [
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw1_residual_1080p/profile_logs_1/jpv2wj0mg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw1_residual_1080p/profile_logs_2/jpe6vje0g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw1_residual_1080p/profile_logs_3/jg9o46jvg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "haar_hf_cnn_dw3_residual_1080p": {
+    "w8a8_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "compile_log": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/compile_logs/j5m9zjqqg.log",
+    "profile_logs": [
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_logs_1/jgd6vjelp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_logs_2/jg9o46ylg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_logs_3/jp1o8rw25_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "haar_hf_cnn_dw3_prelu_residual_1080p": {
+    "w8a8_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "compile_log": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_prelu_residual_1080p/compile_logs/jp2om20mg.log",
+    "profile_logs": [
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_prelu_residual_1080p/profile_logs_1/jgd6vjqep_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_prelu_residual_1080p/profile_logs_2/j57odqllg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_prelu_residual_1080p/profile_logs_3/jp4ewzdvg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "mrlfn_1080p": {
+    "w8a8_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "compile_log": "ref-doc/qaihub_1080p_20261009/mrlfn_1080p/compile_logs/jp0orn3ep.log",
+    "profile_logs": [
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/mrlfn_1080p/profile_logs_1/jpx01w61p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/mrlfn_1080p/profile_logs_2/j5m9zj6wg_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/mrlfn_1080p/profile_logs_3/jgn1ejmrp_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  },
+  "splitternet_1080p": {
+    "w8a8_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "source_sha256_verified": true,
+    "compile_log": "ref-doc/qaihub_1080p_20261009/splitternet_1080p/compile_logs/jp8j7l085.log",
+    "profile_logs": [
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/splitternet_1080p/profile_logs_1/jprxyz29p_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/splitternet_1080p/profile_logs_2/jp2om294g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      },
+      {
+        "path": "ref-doc/qaihub_1080p_20261009/splitternet_1080p/profile_logs_3/jpy8d9j7g_runtime.log",
+        "device": [
+          "SM-S921U1"
+        ],
+        "soc": [
+          "SM8650"
+        ],
+        "runtime": [
+          "v2.50.0.260828221209"
+        ]
+      }
+    ]
+  }
+}

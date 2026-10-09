@@ -1,0 +1,6 @@
+kind: mrlfn
+checkpoint: experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth
+simplify: true
+name: mrlfn_1080p
+height: 544
+width: 960

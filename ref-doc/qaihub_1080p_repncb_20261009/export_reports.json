@@ -1,0 +1,151 @@
+{
+  "haar_hf_repncb_prelu_residual_1080p": {
+    "config": "configs/deploy/haar_hf_repncb_prelu_residual_1080p.yaml",
+    "settings": {
+      "name": "haar_hf_repncb_prelu_residual_1080p",
+      "kind": "learning_dwt_repncb",
+      "checkpoint": "experiments/npu_1080p_repncb/inputs/best_snapshot.pth",
+      "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm.yaml",
+      "height": 544,
+      "width": 960,
+      "simplify": true
+    },
+    "checkpoint_sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "hf_cnn",
+        "ll_normalize": false,
+        "hf_cnn_variant": "repncb_prelu_residual"
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_1080p_repncb/onnx/haar_hf_repncb_prelu_residual_1080p.onnx",
+    "source_sha256": "f73cf5401fbb54762a0f0068a391ace6cb10f3e432cf04fbd7a2b83adf7c722f",
+    "operators_before": {
+      "Constant": 8,
+      "Conv": 22,
+      "Split": 6,
+      "Concat": 8,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 6,
+      "Concat": 8,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 1.0291212504398572e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.3550743460655212e-07,
+        "mean_abs": 1.562300511182002e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.917413651943207e-08,
+        "mean_abs": 1.558755613473295e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.917413651943207e-08,
+        "mean_abs": 1.558755613473295e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.1726824311608652e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 9.156065061688423e-08,
+        "mean_abs": 1.558838391702011e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 90368,
+    "hf_parameter_count": 3960
+  }
+}
