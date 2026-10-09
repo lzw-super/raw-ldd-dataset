@@ -524,3 +524,28 @@ I− -> S2D(2) -> stem -> 5×Rep-NCB -> head(32→16) -> Concat(32ch)
 ```
 
 新增卷积无激活、带bias，初始化为单位矩阵和零偏置，初始化时与原旁路等价；全部参数参与从头训练。它不处理主干stem输入，而是在拼接之前处理S2D(I)。增加16×16+16=272个参数。该开关默认关闭，旧配置和checkpoint保持兼容；通道数随S2D系数K自动取4K²（本组K=2）。输出目录独立，`resume`和`init_checkpoint`均为空。未启动训练或为本组进行NPU测速。
+
+
+### 8.7 DW3残差基线：PReLU、可学习高频残差和Rep-NCB对照
+
+以不含精修 `skip1x1` 的depth5 DW3残差训练配置为基准，保留三级独立12通道HF处理器、LL深度5和原始I的精修旁路。令z为同级LH/HL/HH拼接输入：
+
+| 组别 | 高频输出 | 配置 |
+|---|---|---|
+| 1 | z + PReLU(DW3×3(z)) | [dw3_prelu_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_prelu_residual_ll_no_norm.yaml) |
+| 2 | DW1×1(z) + ReLU(DW3×3(z)) | [dw3_skipdw1_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_skipdw1_residual_ll_no_norm.yaml) |
+| 3 | DW1×1(z) + PReLU(DW3×3(z)) | [dw3_prelu_skipdw1_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_prelu_skipdw1_residual_ll_no_norm.yaml) |
+| 4 | z + RepNCB(z)（块内含PReLU） | [repncb_prelu_residual](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm.yaml) |
+
+DW1×1残差是HF网络内部的逐通道卷积（12→12，groups=12），不是S2D(I)后的16通道精修旁路卷积。残差卷积带bias、无激活，权重初始为1，bias为0。PReLU有12个独立参数，初始化0.25；残差相加后不追加激活。第4组复用现有稠密Rep-NCB（12→12），不是depthwise版本；块内已有一次PReLU，不重复添加，部署时融合为标准3×3卷积加PReLU。
+
+四组均从头训练，独立输出目录，继承基线的 `cuda:1`。运行命令：
+
+```bash
+for variant in dw3_prelu_residual dw3_skipdw1_residual dw3_prelu_skipdw1_residual repncb_prelu_residual; do
+  conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
+    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_${variant}_ll_no_norm.yaml" || break
+done
+```
+
+相关回归测试27项通过，涵盖反向传播、部署一致性和checkpoint重载；未启动数据集训练或NPU测速。

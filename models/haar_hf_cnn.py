@@ -8,19 +8,33 @@ from models.haar_soft_export import HaarSoftExport
 class HighFrequencyCNN(nn.Module):
     def __init__(self, variant):
         super().__init__()
-        if variant not in ('dw1', 'dw3', 'dw3_pw1', 'dw1_residual', 'dw3_residual'):
+        variants = ('dw1', 'dw3', 'dw3_pw1', 'dw1_residual', 'dw3_residual',
+                    'dw3_prelu_residual', 'dw3_skipdw1_residual',
+                    'dw3_prelu_skipdw1_residual', 'repncb_prelu_residual')
+        if variant not in variants:
             raise ValueError(variant)
-        kernel = 3 if variant in ('dw3', 'dw3_pw1', 'dw3_residual') else 1
-        self.depthwise = nn.Conv2d(12, 12, kernel, padding=kernel//2, groups=12, bias=True)
-        self.relu = nn.ReLU()
+        self.residual = variant.endswith('_residual')
+        if variant == 'repncb_prelu_residual':
+            from models.learning_dwt_repncb import RepNCB
+            # Dense 12->12 Rep-NCB already contains one channel-wise PReLU.
+            self.block = RepNCB(12)
+        else:
+            kernel = 3 if variant.startswith('dw3') else 1
+            self.depthwise = nn.Conv2d(12, 12, kernel, padding=kernel//2, groups=12, bias=True)
+            self.relu = nn.PReLU(12, init=0.25) if 'prelu' in variant else nn.ReLU()
         self.pointwise = nn.Conv2d(12, 12, 1, bias=True) if variant == 'dw3_pw1' else None
-        self.residual = variant in ('dw1_residual', 'dw3_residual')
+        self.skip_projection = nn.Identity()
+        if 'skipdw1' in variant:
+            self.skip_projection = nn.Conv2d(12, 12, 1, groups=12, bias=True)
+            # Start as the original identity bypass, without any activation.
+            nn.init.ones_(self.skip_projection.weight)
+            nn.init.zeros_(self.skip_projection.bias)
 
     def forward(self, x):
-        y = self.relu(self.depthwise(x))
+        y = self.block(x) if hasattr(self, 'block') else self.relu(self.depthwise(x))
         if self.pointwise is not None:
             y = self.pointwise(y)
-        return x + y if self.residual else y
+        return self.skip_projection(x) + y if self.residual else y
 
 
 class HaarHFCNNExport(HaarSoftExport):
