@@ -1,0 +1,3629 @@
+{
+  "convention": "Deployment parameters exclude fixed transform buffers; learned frozen thresholds are listed separately. Dense Conv/ConvTranspose includes fixed kernels and zero entries; 1 MAC=2 ops; bias=1/output; PReLU/LeakyReLU=2/output; Sigmoid=4/output; Pow/Sqrt=1/output; mean=input elements; max reduction=input-output elements; data movement=0 arithmetic ops. Cast/GatherElements have zero arithmetic cost in this convention. If TopK is present with --allow-selection, arithmetic_ops is null and known_arithmetic_ops explicitly excludes its comparison/selection cost. Algorithmic estimate, not hardware instruction count or DLC storage size.",
+  "results": {
+    "haar_ll_bypass_2k": {
+      "onnx": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_2k.onnx",
+      "node_count": 44,
+      "arithmetic_ops": 27303552000,
+      "known_arithmetic_ops": 27303552000,
+      "unpriced_selection": [],
+      "conv_macs": 13581849600,
+      "operator_ops": {
+        "Conv": 26946144000,
+        "Split": 0,
+        "Concat": 0,
+        "PRelu": 80985600,
+        "Add": 3628800,
+        "ConvTranspose": 272793600
+      },
+      "hf_cnn_ops": 798336000,
+      "hf_cnn_macs": 391910400,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/block/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "ops": 599961600,
+          "macs": 298598400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/processors.0/block/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "ops": 5529600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.0/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "ops": 2764800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/block/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 149990400,
+          "macs": 74649600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/processors.1/block/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 1382400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.1/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "ops": 691200,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Split_3",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_4",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/block/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 37497600,
+          "macs": 18662400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/processors.2/block/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 345600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/processors.2/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "ops": 172800,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Split_5",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Concat_3",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_4",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_5",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 2130739200,
+          "macs": 1061683200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 2127052800,
+          "macs": 1061683200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 239616000,
+          "macs": 117964800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        }
+      ],
+      "shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "config": "configs/deploy/haar_ll_bypass_2k.yaml",
+      "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_best_snapshot.pth",
+      "checkpoint_sha256": "bb8f953f849aecaef64a7894ccfc9a50689bf95129390955f8441fba788b8269",
+      "onnx_sha256": "893065421527a21ec3e1c0ecbef747ae7ab8b1ab326d10d823846f4e3bd3c696",
+      "metadata": {
+        "model": "learning_dwt_repncb",
+        "model_width": 32,
+        "encoder_blocks": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "middle_blocks": 2,
+        "decoder_blocks": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "feature_channels": 32,
+        "num_blocks": 5,
+        "model_bias": true,
+        "space_to_depth_factor": 2,
+        "graph_state": "deploy",
+        "weight_source": "model_deploy",
+        "learning_dwt": {
+          "width": 16,
+          "depth": 3,
+          "context": "atlas",
+          "shrink_ll": false,
+          "leak": 0.0,
+          "normalize_bands": true,
+          "pad_input": true,
+          "init_threshold": 0.01,
+          "init_ll_threshold": 0.001,
+          "wavelet": "haar",
+          "levels": 3,
+          "magnitude_input": true,
+          "condition_bands": false,
+          "ll_max_threshold": 0.01,
+          "shrink_mode": "soft",
+          "ll_mode": "bypass",
+          "ll_width": 32,
+          "ll_depth": 5,
+          "ll_fusion": "concat_1x1",
+          "trainable_haar": false,
+          "haar_share_channels": true,
+          "haar_share_levels": true,
+          "ll_block_type": "repncb",
+          "threshold_mode": "hf_cnn",
+          "ll_normalize": false,
+          "hf_cnn_variant": "repncb_prelu_residual",
+          "hf_cnn_init_bias": 0.0
+        },
+        "refinement": {
+          "s2d_factor": 2,
+          "width": 32,
+          "num_blocks": 5,
+          "skip_source": "noisy",
+          "block_type": "repncb",
+          "input_fusion": "none",
+          "activation": "prelu",
+          "stem_activation": "none",
+          "skip_projection": false,
+          "expand_ratio": 2,
+          "s2d_domain": "packed_raw"
+        }
+      },
+      "deployed_nn_parameters": 60152,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 60152,
+      "convolution_flops_2_per_mac": 27163699200
+    },
+    "haar_ll_bypass_bayes_soft_2k": {
+      "onnx": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_bayes_soft_2k.onnx",
+      "node_count": 218,
+      "arithmetic_ops": null,
+      "known_arithmetic_ops": 26547897812,
+      "unpriced_selection": [
+        {
+          "name": "/wavelet/TopK",
+          "input_shape": [
+            1,
+            4,
+            230400
+          ],
+          "output_shape": [
+            1,
+            4,
+            115201
+          ],
+          "reason": "TopK comparison count is backend dependent"
+        }
+      ],
+      "conv_macs": 13189939200,
+      "operator_ops": {
+        "Conv": 26158694400,
+        "Split": 0,
+        "Cast": 0,
+        "Abs": 3628800,
+        "Reshape": 0,
+        "TopK": 0,
+        "Equal": 921604,
+        "Not": 921600,
+        "ReduceSum": 921596,
+        "Clip": 40,
+        "Sub": 10886440,
+        "Div": 48,
+        "GatherElements": 0,
+        "Add": 4,
+        "Mul": 3628804,
+        "Pow": 4,
+        "Unsqueeze": 0,
+        "ReduceMean": 3628800,
+        "Sqrt": 36,
+        "Greater": 36,
+        "ReduceMax": 3628764,
+        "Where": 3628836,
+        "Relu": 7257600,
+        "Neg": 3628800,
+        "Concat": 0,
+        "ConvTranspose": 272793600,
+        "PRelu": 73728000
+      },
+      "hf_cnn_ops": 0,
+      "hf_cnn_macs": 0,
+      "events": [
+        {
+          "name": "/wavelet/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Reshape",
+          "operator": "Reshape",
+          "output_shape": [
+            1,
+            4,
+            230400
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/TopK",
+          "operator": "TopK",
+          "output_shape": [
+            1,
+            4,
+            115201
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Equal",
+          "operator": "Equal",
+          "output_shape": [
+            1,
+            4,
+            230400
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Not",
+          "operator": "Not",
+          "output_shape": [
+            1,
+            4,
+            230400
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_1",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            230400
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceSum",
+          "operator": "ReduceSum",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 921596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_1",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/GatherElements",
+          "operator": "GatherElements",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/GatherElements_1",
+          "operator": "GatherElements",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Add",
+          "operator": "Add",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_2",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Pow",
+          "operator": "Pow",
+          "output_shape": [
+            1,
+            4,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Unsqueeze",
+          "operator": "Unsqueeze",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_6",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_1",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_1",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_1",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_3",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_1",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_7",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_2",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_3",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_1",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_4",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Equal_1",
+          "operator": "Equal",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_1",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_8",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_2",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_1",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_5",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_2",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_1",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_4",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_1",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_2",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_1",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_2",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_9",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_6",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_2",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_1",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_7",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_3",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_8",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_3",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_3",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_2",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_9",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_3",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_2",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_5",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_2",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_2",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 921596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_4",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_10",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_10",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_4",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_2",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_11",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_5",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_12",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_5",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 921600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_1",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_1",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_11",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_4",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_3",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_13",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_4",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_3",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_6",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_3",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_3",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_3",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230396,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_6",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_12",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_14",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_6",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_3",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_15",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_7",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_16",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_7",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_13",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_5",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_4",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_17",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_5",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_4",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_7",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_4",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_4",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_4",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230396,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_8",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_14",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_18",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_8",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_4",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_19",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_9",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_20",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_9",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_15",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_6",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_5",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_21",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_6",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_5",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_8",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_5",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_5",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_5",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 230396,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_10",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_16",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_22",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_10",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_5",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_23",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_11",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_24",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_11",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 230400,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Conv_2",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Split_2",
+          "operator": "Split",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_17",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_7",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_6",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_25",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_7",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_6",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_9",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_6",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_6",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_6",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_12",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_18",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_26",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_12",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_6",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_27",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_13",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_28",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_13",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_19",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_8",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_7",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_29",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_8",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_7",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_10",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_7",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_7",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_7",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_14",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_20",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_30",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_14",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_7",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_31",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_15",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_32",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_15",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_21",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Mul_9",
+          "operator": "Mul",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMean_8",
+          "operator": "ReduceMean",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_33",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Clip_9",
+          "operator": "Clip",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sqrt_8",
+          "operator": "Sqrt",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Div_11",
+          "operator": "Div",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Greater_8",
+          "operator": "Greater",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Abs_8",
+          "operator": "Abs",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ReduceMax_8",
+          "operator": "ReduceMax",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 57596,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_16",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 4,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Cast_22",
+          "operator": "Cast",
+          "output_shape": [
+            1,
+            4,
+            1,
+            1
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_34",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_16",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Neg_8",
+          "operator": "Neg",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_35",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Relu_17",
+          "operator": "Relu",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Sub_36",
+          "operator": "Sub",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Where_17",
+          "operator": "Where",
+          "output_shape": [
+            1,
+            4,
+            90,
+            160
+          ],
+          "ops": 57600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/Concat_1",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            90,
+            160
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            180,
+            320
+          ],
+          "ops": 7372800,
+          "macs": 3686400,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_2",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            180,
+            320
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_1",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            360,
+            640
+          ],
+          "ops": 29491200,
+          "macs": 14745600,
+          "group": 1
+        },
+        {
+          "name": "/wavelet/Concat_3",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/wavelet/ConvTranspose_2",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/stem/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 2130739200,
+          "macs": 1061683200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.0/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.1/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.2/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.3/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 4254105600,
+          "macs": 2123366400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/blocks/blocks.4/activation/PRelu",
+          "operator": "PRelu",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 14745600,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/head/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 2127052800,
+          "macs": 1061683200,
+          "group": 1
+        },
+        {
+          "name": "/refiner/s2d_1/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        },
+        {
+          "name": "/refiner/Concat",
+          "operator": "Concat",
+          "output_shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "ops": 0,
+          "macs": 0,
+          "group": null
+        },
+        {
+          "name": "/refiner/fusion/Conv",
+          "operator": "Conv",
+          "output_shape": [
+            1,
+            16,
+            360,
+            640
+          ],
+          "ops": 239616000,
+          "macs": 117964800,
+          "group": 1
+        },
+        {
+          "name": "/refiner/d2s/ConvTranspose",
+          "operator": "ConvTranspose",
+          "output_shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "ops": 117964800,
+          "macs": 58982400,
+          "group": 1
+        }
+      ],
+      "shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "config": "configs/deploy/haar_ll_bypass_bayes_soft_2k.yaml",
+      "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_bayes_soft_best_snapshot.pth",
+      "checkpoint_sha256": "d6056c94c971b8d6a778cb99fe6e881910741e3136379f2dd7c6f93c4b3665f0",
+      "onnx_sha256": "835de22cff0f875769840705ebae30b7a68925b2e01ff7f86c10ce2157f72512",
+      "metadata": {
+        "model": "learning_dwt_repncb",
+        "model_width": 32,
+        "encoder_blocks": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "middle_blocks": 2,
+        "decoder_blocks": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "feature_channels": 32,
+        "num_blocks": 5,
+        "model_bias": true,
+        "space_to_depth_factor": 2,
+        "graph_state": "deploy",
+        "weight_source": "model_deploy",
+        "learning_dwt": {
+          "width": 16,
+          "depth": 3,
+          "context": "atlas",
+          "shrink_ll": false,
+          "leak": 0.0,
+          "normalize_bands": false,
+          "pad_input": true,
+          "init_threshold": 0.01,
+          "init_ll_threshold": 0.001,
+          "wavelet": "haar",
+          "levels": 3,
+          "magnitude_input": true,
+          "condition_bands": false,
+          "ll_max_threshold": 0.01,
+          "shrink_mode": "soft",
+          "ll_mode": "bypass",
+          "ll_width": 32,
+          "ll_depth": 5,
+          "ll_fusion": "concat_1x1",
+          "trainable_haar": false,
+          "haar_share_channels": true,
+          "haar_share_levels": true,
+          "ll_block_type": "repncb",
+          "threshold_mode": "bayes_shrink",
+          "ll_normalize": false,
+          "hf_cnn_variant": "dw1",
+          "hf_cnn_init_bias": 0.0
+        },
+        "refinement": {
+          "s2d_factor": 2,
+          "width": 32,
+          "num_blocks": 5,
+          "skip_source": "noisy",
+          "block_type": "repncb",
+          "input_fusion": "none",
+          "activation": "prelu",
+          "stem_activation": "none",
+          "skip_projection": false,
+          "expand_ratio": 2,
+          "s2d_domain": "packed_raw"
+        }
+      },
+      "deployed_nn_parameters": 56192,
+      "frozen_learned_thresholds": 0,
+      "deployed_learned_coefficients": 56192,
+      "convolution_flops_2_per_mac": 26379878400
+    }
+  }
+}

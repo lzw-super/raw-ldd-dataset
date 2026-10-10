@@ -1,0 +1,7 @@
+{
+  "haar_ll_bypass_2k": {
+    "source": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_2k.onnx",
+    "source_sha256": "893065421527a21ec3e1c0ecbef747ae7ab8b1ab326d10d823846f4e3bd3c696",
+    "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_best_snapshot.pth"
+  }
+}

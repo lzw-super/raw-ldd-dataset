@@ -17,6 +17,8 @@ def main():
     parser.add_argument('--export-reports', type=Path, nargs='+', required=True)
     parser.add_argument('--models', nargs='+', required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--allow-selection', action='store_true',
+                        help='Report TopK separately and leave full arithmetic_ops null.')
     args = parser.parse_args()
     torch.set_num_threads(4)
     reports = {}
@@ -45,7 +47,7 @@ def main():
         parameters = sum(p.numel() for p in model.parameters())
         if parameters != report['deployed_parameter_count']:
             raise ValueError(f'{name}: deployment parameter count changed')
-        row = count(source)
+        row = count(source, allow_selection=args.allow_selection)
         row.update(shape=report['shape'], config=report['config'],
                    checkpoint=str(checkpoint), checkpoint_sha256=report['checkpoint_sha256'],
                    onnx_sha256=report['source_sha256'], metadata=metadata,
@@ -54,7 +56,8 @@ def main():
                    convolution_flops_2_per_mac=2 * row['conv_macs'])
         results[name] = row
         print(name, parameters, '+', frozen_thresholds, 'coefficients;',
-              row['conv_macs'] / 1e9, 'GMAC;', row['arithmetic_ops'] / 1e9, 'GOp')
+              row['conv_macs'] / 1e9, 'GMAC;',
+              None if row['arithmetic_ops'] is None else row['arithmetic_ops'] / 1e9, 'full GOp')
         del model
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(dict(
@@ -63,6 +66,9 @@ def main():
                    'entries; 1 MAC=2 ops; bias=1/output; PReLU/LeakyReLU=2/output; '
                    'Sigmoid=4/output; Pow/Sqrt=1/output; mean=input elements; '
                    'max reduction=input-output elements; data movement=0 arithmetic ops. '
+                   'Cast/GatherElements have zero arithmetic cost in this convention. '
+                   'If TopK is present with --allow-selection, arithmetic_ops is null and '
+                   'known_arithmetic_ops explicitly excludes its comparison/selection cost. '
                    'Algorithmic estimate, not hardware instruction count or DLC storage size.',
         results=results), indent=2, ensure_ascii=False) + '\n')
 

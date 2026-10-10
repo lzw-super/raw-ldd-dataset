@@ -8,12 +8,12 @@ import onnx
 from onnx import helper
 
 
-def count(path):
+def count(path, *, allow_selection=False):
     model=onnx.shape_inference.infer_shapes(onnx.load(str(path)), strict_mode=True, data_prop=True)
     shapes={v.name:[d.dim_value for d in v.type.tensor_type.shape.dim]
             for v in list(model.graph.input)+list(model.graph.output)+list(model.graph.value_info)}
     shapes.update({v.name:list(v.dims) for v in model.graph.initializer})
-    events=[];ops=Counter();macs=0
+    events=[];ops=Counter();macs=0;selection=[]
     for node in model.graph.node:
         op=node.op_type
         attributes={a.name:helper.get_attribute_value(a) for a in node.attribute}
@@ -27,21 +27,28 @@ def count(path):
             else:mac=math.prod(shapes[node.input[0]])*weight[1]*math.prod(weight[2:])
             cost=2*mac+(elements if len(node.input)>2 and node.input[2] else 0)
         elif op in ('PRelu','LeakyRelu'):cost=2*elements
-        elif op in ('Relu','Sub','Add','Neg','Min','Max','Mul','Div','Abs','Pow','Sqrt'):cost=elements
+        elif op in ('Relu','Sub','Add','Neg','Min','Max','Mul','Div','Abs','Pow','Sqrt',
+                    'Equal','Not','Greater','Where','Clip'):cost=elements
         elif op=='Sigmoid':cost=4*elements  # negate, exp, add, reciprocal
         elif op in ('ReduceMean','GlobalAveragePool'):
             # Each reduced group: N-1 additions and one division.
             cost=math.prod(shapes[node.input[0]])
-        elif op=='ReduceMax':cost=math.prod(shapes[node.input[0]])-elements
+        elif op in ('ReduceMax','ReduceSum'):cost=math.prod(shapes[node.input[0]])-elements
         elif op=='MaxPool':cost=elements*(math.prod(attributes['kernel_shape'])-1)
+        elif op=='TopK' and allow_selection:
+            # Algorithm/backend dependent comparison count; never silently
+            # present the subtotal as the complete model operation count.
+            selection.append(dict(name=node.name,input_shape=shapes[node.input[0]],
+                                  output_shape=output_shape,reason='TopK comparison count is backend dependent'))
         elif op not in ('Split','Concat','Slice','Reshape','Transpose','Identity','Constant',
-                        'Pad','DepthToSpace','SpaceToDepth'):
+                        'Pad','DepthToSpace','SpaceToDepth','Cast','GatherElements','Unsqueeze'):
             raise ValueError(f'Unclassified operator: {op}')
         ops[op]+=cost;macs+=mac
         events.append(dict(name=node.name,operator=op,output_shape=output_shape,ops=cost,macs=mac,
                            group=attributes.get('group',1) if op in ('Conv','ConvTranspose') else None))
     hf=[e for e in events if '/processors.' in e['name']]
-    return dict(onnx=str(path),node_count=len(events),arithmetic_ops=sum(ops.values()),conv_macs=macs,
+    return dict(onnx=str(path),node_count=len(events),arithmetic_ops=None if selection else sum(ops.values()),
+                known_arithmetic_ops=sum(ops.values()),unpriced_selection=selection,conv_macs=macs,
                 operator_ops=dict(ops),hf_cnn_ops=sum(e['ops'] for e in hf),hf_cnn_macs=sum(e['macs'] for e in hf),events=events)
 
 

@@ -12,7 +12,7 @@ class HighFrequencyCNN(nn.Module):
         variants = ('dw1', 'dw3', 'dw3_pw1', 'dw1_residual', 'dw3_residual',
                     'dw3_prelu_residual', 'dw3_skipdw1_residual',
                     'dw3_prelu_skipdw1_residual', 'repncb_prelu_residual',
-                    'dw1_dual_relu', 'dw3_dual_relu', 'dw1_dual_prelu')
+                    'dw1_dual_relu', 'dw3_dual_relu', 'dw1_dual_prelu', 'conv3_prelu_residual')
         if variant not in variants:
             raise ValueError(variant)
         self.residual = variant.endswith('_residual')
@@ -36,6 +36,8 @@ class HighFrequencyCNN(nn.Module):
             from models.learning_dwt_repncb import RepNCB
             # Dense 12->12 Rep-NCB already contains one channel-wise PReLU.
             self.block = RepNCB(12)
+        elif variant == 'conv3_prelu_residual':
+            self.block = nn.Sequential(nn.Conv2d(12, 12, 3, padding=1), nn.PReLU(12))
         else:
             kernel = 3 if variant.startswith('dw3') else 1
             self.depthwise = nn.Conv2d(12, 12, kernel, padding=kernel//2, groups=12, bias=True)

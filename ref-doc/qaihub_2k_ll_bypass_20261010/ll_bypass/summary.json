@@ -1,0 +1,63 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    720,
+    1280
+  ],
+  "time_unit": "milliseconds",
+  "models": {
+    "haar_ll_bypass_2k": {
+      "rounds": [
+        {
+          "job": "jpx0mw61p",
+          "reported_ms": 4.151,
+          "sample_count": 100,
+          "mean_ms": 4.34676,
+          "min_ms": 4.151,
+          "max_ms": 5.485,
+          "p50_ms": 4.2065,
+          "p95_ms": 5.2182,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jgn1xjmrp",
+          "reported_ms": 4.154,
+          "sample_count": 100,
+          "mean_ms": 4.2916,
+          "min_ms": 4.154,
+          "max_ms": 5.35,
+          "p50_ms": 4.191000000000001,
+          "p95_ms": 4.8922,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jp2oj294g",
+          "reported_ms": 4.153,
+          "sample_count": 100,
+          "mean_ms": 4.28412,
+          "min_ms": 4.153,
+          "max_ms": 4.828,
+          "p50_ms": 4.198499999999999,
+          "p95_ms": 4.68285,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        }
+      ],
+      "reported_mean_ms": 4.152666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 4.307493333333333,
+      "sample_p50_ms": 4.2,
+      "sample_p95_ms": 4.831000000000001,
+      "reciprocal_sample_mean_hz": 232.15358042728639,
+      "dlc_bytes": 142696,
+      "dlc_sha256": "776817227583c035c2725baf6ff78188a0697eec36ba081b1c9747f02c1ecabb"
+    }
+  }
+}

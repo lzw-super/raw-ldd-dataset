@@ -1,0 +1,7 @@
+{
+  "haar_ll_bypass_bayes_soft_2k": {
+    "source": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_bayes_soft_2k.onnx",
+    "source_sha256": "835de22cff0f875769840705ebae30b7a68925b2e01ff7f86c10ce2157f72512",
+    "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_bayes_soft_best_snapshot.pth"
+  }
+}

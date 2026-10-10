@@ -573,3 +573,51 @@ for variant in dw1_dual_relu dw3_dual_relu dw1_dual_prelu; do
     --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_${variant}_ll_no_norm.yaml" || break
 done
 ```
+
+
+### 8.9 Rep-NCB高频基线的四组结构消融
+
+基线为depth5 `repncb_prelu_residual`，不包含精修skip1x1。保留数据、损失、优化器、epoch及GPU设置，每组独立输出目录、从头训练。基线HF激活实际为PReLU，以下消融不会额外改成ReLU。
+
+| 组别 | 高频 | 最终LL | 精修主干 | 配置 |
+|---|---|---|---|---|
+| 1：all_conv | 标准3×3 + PReLU + 输入残差 | 保留CNN；内部标准3×3 + PReLU | 标准3×3 + PReLU | [YAML](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_all_conv.yaml) |
+| 2：ll_bypass_soft | 36个可学习阈值 + Soft收缩 | 直接旁路 | Rep-NCB | [YAML](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_soft.yaml) |
+| 3：ll_bypass | 原Rep-NCB + PReLU + 输入残差 | 直接旁路 | Rep-NCB | [YAML](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass.yaml) |
+| 4：hf_soft | 36个可学习阈值 + Soft收缩 | 原LL恢复网络 | Rep-NCB | [YAML](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_hf_soft.yaml) |
+
+第1组是真正以普通稠密3×3卷积从头训练，并非先构建Rep-NCB再融合。HF的12通道卷积不是depthwise；LL的输入ReLU、内部PReLU、输出与融合方式均保留。训练模型中Rep-NCB模块数量为0。
+
+第2、3组使用新选项 `dwt_ll_mode: bypass`，不创建LLRestorationCNN或LL融合卷积，无LL归一化或增益，最终原始LL直接参加逐级逆小波变换。保留的LL宽度/深度等配置在该模式下不起作用。这里移除的是小波域LL网络，逆变换后的整图精修网络仍保留。
+
+第2、4组的HF设置来自指定的 `static_hf_depth5_soft_ll_no_norm.yaml`：`band_channel`、`soft`、`init_threshold=0.01`、`normalize_bands=true`、`leak=0`。36个logits经softplus得到阈值，再乘各层2^level；初始实际系数阈值按第1/2/3层分别为0.02/0.04/0.08。部署时仍离线冻结阈值，训练时保留梯度；不保留HF CNN参数。
+
+45项相关测试通过，覆盖模块数量、LL系数保持、阈值及梯度、补边、部署一致性与checkpoint重载。未启动数据集训练或NPU测速。
+
+```bash
+for ablation in all_conv ll_bypass_soft ll_bypass hf_soft; do
+  conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
+    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_${ablation}.yaml" || break
+done
+```
+
+
+### 8.10 传统BayesShrink高频收缩 + 原精修网络
+
+配置：[LL旁路 + 传统BayesShrink](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft.yaml)。基于8.9节的 `ll_bypass_soft`，将 `dwt_threshold_mode` 改为 `bayes_shrink`，不创建HF logits、HF CNN或LL恢复网络。固定三级Haar，小波阶段参数量为0，仅原有精修网络参与训练；独立输出目录，不加载旧权重。
+
+规则与仓库 `models/wavelet_denoiser.py` 一致，以Torch实现供训练使用：
+
+1. 每张图、每个RAW通道分别取最细一级HH中非零系数，`sigma = median(abs(HH1_nonzero)) / 0.6744897501960817`；全部为0时sigma=0。偶数个系数取中间两个的均值，与NumPy median一致。
+2. 每级每个高频子带独立计算 `v = mean(z²)`。噪声方差为sigma²，所有层使用该通道同一噪声估计。
+3. sigma=0时保留高频；v≤sigma²时输出0；否则 `T = sigma² / sqrt(v−sigma²)`，输出 `ReLU(z−T) − ReLU(−z−T)`。
+4. 最终LL原样参加逆变换，无归一化、缩放或CNN；逆变换结果和原始I继续送入未改结构的精修网络。
+
+阈值计算不参与反向传播，没有阈值训练参数；每次从当前输入重新计算，因此不能像36个静态学习阈值一样永久离线冻结。`dwt_normalize_bands: false`，保留在配置里的初始阈值与LL网络宽度/深度不起作用。训练patch与完整图像各自计算统计量，可能得到不同阈值。非8倍数尺寸沿用原模型replicate补边，逆变换后裁回原尺寸。
+
+已与仓库传统PyWavelets Haar/periodization实现进行数值比对，并检查全零/常量输入、逐图噪声估计、纯噪声子带、LL保持、精修梯度、部署融合和checkpoint重载；20项相关测试通过。本次仅提供训练对照，不进行训练或NPU测速。此模式含输入相关的中位数/方差统计，不能直接套用此前纯卷积clean图的NPU延迟结论。
+
+```bash
+conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
+  --config configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft.yaml
+```

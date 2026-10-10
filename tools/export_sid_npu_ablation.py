@@ -50,6 +50,9 @@ def main():
             model.wavelet = HaarSoftExport(model.wavelet, config['hf_layout'], config['hf_formula'])
         elif config['kind'] not in ('splitternet', 'mrlfn', 'unet', 'nafnet', 'haar_hf_cnn', 'learning_dwt_repncb'):
             raise ValueError(config['kind'])
+        if config.get('bayes_fixed_shape_export', False):
+            from models.haar_bayes_export import HaarBayesExport
+            model.wavelet = HaarBayesExport(model.wavelet)
         path = args.output_dir / (config['name']+'.onnx')
         with torch.no_grad():
             torch.onnx.export(model, inputs['uniform'], str(path), opset_version=17,
@@ -68,7 +71,8 @@ def main():
         onnx.save(graph, str(path))
         after = dict(Counter(n.op_type for n in graph.graph.node))
         if config['kind'] in ('haar', 'haar_hf_cnn', 'learning_dwt_repncb'):
-            assert not any(after.get(k,0) for k in ['Div','Abs','Sign'])
+            if not config.get('bayes_fixed_shape_export', False):
+                assert not any(after.get(k,0) for k in ['Div','Abs','Sign'])
             assert after.get('ConvTranspose')==4
         opts=ort.SessionOptions();opts.intra_op_num_threads=4;opts.inter_op_num_threads=1
         opts.graph_optimization_level=ort.GraphOptimizationLevel.ORT_DISABLE_ALL

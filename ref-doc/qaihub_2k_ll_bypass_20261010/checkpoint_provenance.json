@@ -1,0 +1,16 @@
+{
+  "haar_ll_bypass_2k": {
+    "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass/checkpoints/best.pth",
+    "snapshot": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_best_snapshot.pth",
+    "sha256": "bb8f953f849aecaef64a7894ccfc9a50689bf95129390955f8441fba788b8269",
+    "epoch": 600,
+    "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass.yaml"
+  },
+  "haar_ll_bypass_bayes_soft_2k": {
+    "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft/checkpoints/best.pth",
+    "snapshot": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_bayes_soft_best_snapshot.pth",
+    "sha256": "d6056c94c971b8d6a778cb99fe6e881910741e3136379f2dd7c6f93c4b3665f0",
+    "epoch": 500,
+    "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft.yaml"
+  }
+}

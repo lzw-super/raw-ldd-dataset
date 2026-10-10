@@ -218,3 +218,105 @@ python tools/summarize_sid_qaihub.py \
 原始证据：[summary.json](qaihub_2k_five_extra_20261010/summary.json)、[jobs.json](qaihub_2k_five_extra_20261010/jobs.json)、[sources.json](qaihub_2k_five_extra_20261010/sources.json)、[export_reports.json](qaihub_2k_five_extra_20261010/export_reports.json)、[checkpoint_provenance.json](qaihub_2k_five_extra_20261010/checkpoint_provenance.json)、[compiled_specs.json](qaihub_2k_five_extra_20261010/compiled_specs.json)、[execution_audit.json](qaihub_2k_five_extra_20261010/execution_audit.json)。各模型子目录包含DLC、profile JSON及编译/设备运行日志。
 
 关联报告：[三模型720p/1080p/2K补测](三模型720p_1080p_2K_W8A8_NPU补测.md)。
+
+## 7. LL bypass两组消融：2K部署参数、计算量与NPU实测
+
+日期：2026-10-10。本节只补充速度和部署复杂度，**不新增效果指标**。输入为 `[1,4,720,1280]`，batch=1；仍为Galaxy S24 / SM-S921U1 / SM8650 / Hexagon V75，QAIRT 2.50.0.260828221209、W8A8目标量化、量化IO。平台随机校准，每组3轮×100次；均值/P50/P95使用全部300个样本，不含外部预处理、上传和排队时间。所有profile执行条目均为NPU。
+
+### 7.1 权重与结构
+
+| 实验 | 训练配置 | 本次best权重epoch |
+|---|---|---:|
+| LL bypass＋Rep-NCB高频CNN | [train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass.yaml](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass.yaml) | 600 |
+| LL bypass＋BayesShrink Soft | [train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft.yaml](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_ablation_ll_bypass_bayes_soft.yaml) | 500 |
+
+两组均复制独立best权重快照，避免后续训练覆盖测速来源；哈希见[checkpoint_provenance.json](qaihub_2k_ll_bypass_20261010/checkpoint_provenance.json)。
+
+- **LL bypass**：三级Haar的最终LL直接通过，删除LL恢复CNN及concat1×1融合；三级高频仍为各自独立的12→12 Rep-NCB＋PReLU＋输入残差，精修仍为32通道、5块。
+- **LL bypass＋BayesShrink Soft**：LL同样直接通过，高频改为无学习参数的BayesShrink；噪声方差由每图每RAW通道的HH1非零绝对值中位数估计，各子带依据自身二阶矩计算阈值并作Soft收缩。只有后续精修CNN含学习参数。阈值依赖输入，不能像静态band_channel阈值一样预先存表。
+
+### 7.2 部署态复杂度
+
+| 模型 | 部署参数量 | 卷积GMAC | 卷积GFLOPs（2/MAC） | 总算术GOp说明 |
+|---|---:|---:|---:|---|
+| LL bypass＋Rep-NCB高频CNN | **60,152** | **13.5818** | 27.1637 | 27.3036 |
+| LL bypass＋BayesShrink Soft | **56,192** | **13.1899** | 26.3799 | 可计数部分26.5479；另含TopK选择成本，完整总量未定价 |
+
+本节参数全部为融合后的部署参数，不计训练多分支。固定Haar/S2D/D2S核不计为学习参数，但仍按导出的稠密卷积形状计入MAC，包含零核系数。BayesShrink没有可学习阈值参数，其方差、阈值、中位数都是输入相关计算。
+
+相对第4.1节完整LL模型的90,368参数、14.0136 GMAC，LL bypass删除30,216个LL参数和0.4317696 GMAC；BayesShrink再删除3,960个高频CNN参数和0.3919104 GMAC，但新增统计与中位数选择，不能据此直接推断其更快。
+
+BayesShrink的TopK输入为 `[1,4,230400]`，每通道取最大的115201个值，以支持任意非零数量的两个中位数秩。TopK的比较/选择成本依赖后端算法，因此JSON将完整 `arithmetic_ops` 记为null，单列 `known_arithmetic_ops` 和 `unpriced_selection`，没有把这部分误计为0。可计数GOp包含卷积、bias、逐元素运算、均值/最大值/求和归约、比较与Where等；Cast和Gather只记录数据操作，不估算硬件转换或搬运成本。
+
+逐算子及参数记录：[deployment_complexity.json](qaihub_2k_ll_bypass_20261010/deployment_complexity.json)。
+
+### 7.3 NPU实测结果
+
+| 模型 | 均值 / ms | P50 / ms | P95 / ms | 第1轮均值 | 第2轮均值 | 第3轮均值 |
+|---|---:|---:|---:|---:|---:|---:|
+| LL bypass＋Rep-NCB高频CNN | **4.3075** | 4.2000 | 4.8310 | 4.3468 | 4.2916 | 4.2841 |
+| LL bypass＋BayesShrink Soft | **158.8691** | 158.7795 | 160.6080 | 158.9218 | 158.7670 | 158.9185 |
+
+此前完整LL模型的同尺寸均值为 **3.4471 ms**，是前次测量且使用不同实验权重，并未在本次重测。下面百分比以该值为基准，正值为更慢：
+
+- LL bypass＋Rep-NCB高频CNN：+24.96%。
+- LL bypass＋BayesShrink Soft：+4508.74%。
+
+BayesShrink的直接瓶颈证据：三轮TopK占各自已记录算子周期之和的比例为 75.80% / 75.46% / 75.51%。这是profile算子周期占比，不是端到端墙钟时间占比；该结果对应保留非零中位数语义的TopK导出实现，不应推广为所有BayesShrink实现的速度。所有执行条目均标为NPU，没有观察到CPU/GPU回退。
+
+参数和MAC减少不一定带来NPU提速。此处比较的是实际编译产物，图融合、布局及分块选择都可能随结构改变；未单独测量这些因素，不能把耗时差全部归因于某一个被删除的模块。
+
+### 7.4 BayesShrink导出适配与核对
+
+原生 `torch.quantile` 无法导出到ONNX opset17，错误记录见 [bayes_native_export_failure.log](qaihub_2k_ll_bypass_20261010/bayes_native_export_failure.log)。新增仅用于固定shape导出的 [HaarBayesExport](../models/haar_bayes_export.py)：将非零中位数写为TopK＋非零计数＋两个秩的Gather均值，保留零噪声旁路及每子带Bayes阈值计算；没有冻结阈值、没有替换成方差近似，也没有改变训练实现。
+
+设非零数为m：在按绝对值降序排列的序列中取 `floor((m-1)/2)` 与 `floor(m/2)` 两个位置求平均；m=0时取零。两秩均不超过N/2，故只需前N/2+1个值。这个表达与原非零中位数数学等价。ONNX统计表达保留原FP64运算；QNN转换日志说明Cast在转换时解释，因此不声称NPU保持FP64执行，也不声称统计/索引算子全部以8bit执行。W8A8是编译的权重/激活量化目标，不是所有标量指令的位宽。
+
+新增7项测试核对全零、单元素、奇偶非零数量、正负数，以及ONNX在不同零掩码输入下重新计算中位数。两个完整模型各自六类输入的PyTorch/ORT核对均通过：
+
+- LL bypass＋Rep-NCB高频CNN：节点数52→44，最大绝对误差2.26e-06。
+- LL bypass＋BayesShrink Soft：节点数263→218，最大绝对误差1.67e-06。
+
+这些只验证导出表达的一致性，不是W8A8效果评估。本次按要求未新增PSNR/SSIM记录。
+
+### 7.5 复现与证据
+
+```bash
+PYTHONPATH=/tmp/sid-onnxsim python tools/export_sid_npu_ablation.py \
+  configs/deploy/haar_ll_bypass_2k.yaml \
+  configs/deploy/haar_ll_bypass_bayes_soft_2k.yaml \
+  --output-dir experiments/npu_2k_ll_bypass/onnx
+
+python tools/profile_sid_deploy_onnx.py \
+  --export-reports \
+    ref-doc/qaihub_2k_ll_bypass_20261010/ll_bypass/export_reports.json \
+    ref-doc/qaihub_2k_ll_bypass_20261010/bayes_soft/export_reports.json \
+  --models haar_ll_bypass_2k haar_ll_bypass_bayes_soft_2k \
+  --allow-selection \
+  --output ref-doc/qaihub_2k_ll_bypass_20261010/deployment_complexity.json
+
+PYTHONPATH=. python -m pytest -q tests/test_haar_bayes_export.py
+
+read -r -s -p "AI Hub API token: " QAI_HUB_API_TOKEN
+export QAI_HUB_API_TOKEN
+for variant in ll_bypass bayes_soft; do
+  PYTHONPATH=/tmp/sid-qai-hub python tools/benchmark_sid_qaihub.py \
+    --watch --height 720 --width 1280 \
+    --sources-json "ref-doc/qaihub_2k_ll_bypass_20261010/$variant/sources.json" \
+    --output-dir "ref-doc/qaihub_2k_ll_bypass_20261010/$variant"
+done
+unset QAI_HUB_API_TOKEN
+```
+
+`/tmp`依赖目录及已有任务恢复规则同第6节；重导出后须更新sources.json的SHA256，新独立测速使用新结果目录。
+
+| 模型 | 编译任务 | 三轮测速任务 |
+|---|---|---|
+| LL bypass＋Rep-NCB高频CNN | [jpe62jo1g](https://workbench.aihub.qualcomm.com/jobs/jpe62jo1g) | [jpx0mw61p](https://workbench.aihub.qualcomm.com/jobs/jpx0mw61p) / [jgn1xjmrp](https://workbench.aihub.qualcomm.com/jobs/jgn1xjmrp) / [jp2oj294g](https://workbench.aihub.qualcomm.com/jobs/jp2oj294g) |
+| LL bypass＋BayesShrink Soft | [j5m94j6wg](https://workbench.aihub.qualcomm.com/jobs/j5m94j6wg) | [jpv24jwkg](https://workbench.aihub.qualcomm.com/jobs/jpv24jwkg) / [jpe62jvog](https://workbench.aihub.qualcomm.com/jobs/jpe62jvog) / [jgzzw17og](https://workbench.aihub.qualcomm.com/jobs/jgzzw17og) |
+
+ll_bypass：[summary.json](qaihub_2k_ll_bypass_20261010/ll_bypass/summary.json)、[jobs.json](qaihub_2k_ll_bypass_20261010/ll_bypass/jobs.json)、[sources.json](qaihub_2k_ll_bypass_20261010/ll_bypass/sources.json)、[export_reports.json](qaihub_2k_ll_bypass_20261010/ll_bypass/export_reports.json)、[compiled_specs.json](qaihub_2k_ll_bypass_20261010/ll_bypass/compiled_specs.json)。
+
+bayes_soft：[summary.json](qaihub_2k_ll_bypass_20261010/bayes_soft/summary.json)、[jobs.json](qaihub_2k_ll_bypass_20261010/bayes_soft/jobs.json)、[sources.json](qaihub_2k_ll_bypass_20261010/bayes_soft/sources.json)、[export_reports.json](qaihub_2k_ll_bypass_20261010/bayes_soft/export_reports.json)、[compiled_specs.json](qaihub_2k_ll_bypass_20261010/bayes_soft/compiled_specs.json)。
+
+[执行核对记录](qaihub_2k_ll_bypass_20261010/execution_audit.json)。各模型目录保存DLC、profile和编译/运行日志。ONNX位于 `experiments/npu_2k_ll_bypass/onnx/`。

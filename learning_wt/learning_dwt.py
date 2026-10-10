@@ -174,8 +174,8 @@ class LLRestorationCNN(nn.Module):
         super().__init__()
         if width < 1 or depth < 2:
             raise ValueError("LL CNN requires width >= 1 and depth >= 2")
-        if block_type not in ("conv3x3", "repmbconv", "repncb"):
-            raise ValueError("LL block_type must be conv3x3, repmbconv or repncb")
+        if block_type not in ("conv3x3", "conv3x3_prelu", "repmbconv", "repncb"):
+            raise ValueError("LL block_type must be conv3x3, conv3x3_prelu, repmbconv or repncb")
         from models.rep_mbconv import RepMBConv
         layers = [nn.Conv2d(in_channels, width, 3, padding=1), nn.ReLU()]
         for _ in range(depth - 2):
@@ -185,7 +185,7 @@ class LLRestorationCNN(nn.Module):
                 layers.append(RepNCB(width))
             else:
                 block = RepMBConv(width) if block_type == "repmbconv" else nn.Conv2d(width, width, 3, padding=1)
-                layers.extend([block, nn.ReLU()])
+                layers.extend([block, nn.PReLU(width) if block_type == "conv3x3_prelu" else nn.ReLU()])
         layers.append(nn.Conv2d(width, 4, 3, padding=1))
         self.layers = nn.Sequential(*layers)
         nn.init.normal_(self.layers[-1].weight, std=1e-3)
@@ -264,12 +264,15 @@ class LearningDWT(nn.Module):
             raise ValueError("shrink_mode must be soft, smooth, firm or pwl")
         self.shrink_mode = shrink_mode
         self.ll_max_threshold = ll_max_threshold
-        if threshold_mode not in ("cnn", "band_channel", "hf_cnn"):
-            raise ValueError("threshold_mode must be cnn, band_channel or hf_cnn")
+        if threshold_mode not in ("cnn", "band_channel", "hf_cnn", "bayes_shrink"):
+            raise ValueError("threshold_mode must be cnn, band_channel, hf_cnn or bayes_shrink")
         if threshold_mode == "hf_cnn" and (wavelet != "haar" or trainable_haar or ll_mode == "threshold"):
-            raise ValueError("hf_cnn requires fixed Haar and a separate LL restoration network")
+            raise ValueError("hf_cnn requires fixed Haar and LL restoration or bypass")
         if threshold_mode == "band_channel" and ll_mode == "threshold":
-            raise ValueError("band_channel requires a separate LL restoration network")
+            raise ValueError("band_channel requires LL restoration or bypass")
+        if threshold_mode == "bayes_shrink" and (
+                wavelet != "haar" or trainable_haar or ll_mode != "bypass" or shrink_mode != "soft" or leak != 0):
+            raise ValueError("bayes_shrink requires fixed Haar, LL bypass, soft shrinkage and leak=0")
         self.threshold_mode = threshold_mode
         self.predictor = (ThresholdCNN(width, depth, magnitude_input, 1 + 3*levels if condition_bands else 0)
                           if threshold_mode == "cnn" else None)
@@ -289,20 +292,22 @@ class LearningDWT(nn.Module):
         elif threshold_mode == "hf_cnn":
             from models.haar_hf_cnn import HighFrequencyCNN
             self.processors = nn.ModuleList([HighFrequencyCNN(hf_cnn_variant, init_bias=hf_cnn_init_bias) for _ in range(levels)])
-        else:
+        elif threshold_mode == "band_channel":
             if shrink_mode in ("firm", "pwl"):
                 from .direct_shrinkage import DirectShrinkage
                 self.direct_shrink = DirectShrinkage(shrink_mode, levels, normalize_bands)
             else:
                 self.hf_logits = nn.Parameter(bias[1:].clone())
-        if ll_mode not in ("threshold", "ll_only", "level_bands"):
-            raise ValueError("ll_mode must be threshold, ll_only or level_bands")
+        if ll_mode not in ("threshold", "ll_only", "level_bands", "bypass"):
+            raise ValueError("ll_mode must be threshold, ll_only, level_bands or bypass")
         self.ll_mode = ll_mode
         self.ll_normalize = ll_normalize
         self.ll_restorer = (LLRestorationCNN(4 if ll_mode == "ll_only" else 16, ll_width, ll_depth, ll_fusion, ll_block_type)
-                            if ll_mode != "threshold" else None)
+                            if ll_mode not in ("threshold", "bypass") else None)
 
     def restore_ll(self, ll_input):
+        if self.ll_mode == "bypass":
+            return ll_input
         if not self.ll_normalize:
             return self.ll_restorer(ll_input)
         scale = float(2 ** self.levels)
@@ -363,7 +368,10 @@ class LearningDWT(nn.Module):
                     result = F.relu(z-threshold) - F.relu(-z-threshold)
                 return result if leak == 0 else leak*z + (1-leak)*result
 
+        noise_variance = None
+
         def visit(current, level):
+            nonlocal noise_variance
             if self.transform is None:
                 ll, lh, hl, hh = haar_dwt2(current)
             elif isinstance(self.transform, TrainableHaar):
@@ -372,7 +380,12 @@ class LearningDWT(nn.Module):
                 ll, lh, hl, hh = self.transform.dwt2(current)
             # Stored order is deepest-first, while decomposition is shallow-first.
             offset = 3 * (self.levels - level)
-            if self.threshold_mode == "hf_cnn":
+            if self.threshold_mode == "bayes_shrink":
+                from .bayes_shrink import estimate_noise_variance, bayes_soft_shrink
+                if level == 1:
+                    noise_variance = estimate_noise_variance(hh)
+                details = tuple(bayes_soft_shrink(band, noise_variance) for band in (lh, hl, hh))
+            elif self.threshold_mode == "hf_cnn":
                 # Level 0 is finest. Process signed, unnormalized HF directly.
                 details = self.processors[level-1](torch.cat((lh, hl, hh), dim=1)).split(4, dim=1)
             else:
@@ -383,7 +396,7 @@ class LearningDWT(nn.Module):
                 restored_ll = visit(ll, level + 1)
             else:
                 # Four-band LL restoration requires ORIGINAL (unshrunk) details.
-                ll_input = ll if self.ll_mode == "ll_only" else torch.cat((ll,lh,hl,hh),1)
+                ll_input = ll if self.ll_mode in ("ll_only", "bypass") else torch.cat((ll,lh,hl,hh),1)
                 restored_ll = self.restore_ll(ll_input)
             if self.transform is None:
                 return haar_iwt2(restored_ll, *details)
@@ -404,7 +417,7 @@ class LearningDWT(nn.Module):
         if (pad_h or pad_w) and not self.pad_input:
             raise ValueError(f"H,W must be multiples of {factor}; or enable pad_input")
         x = F.pad(noisy, (0, pad_w, 0, pad_h), mode="replicate") if pad_h or pad_w else noisy
-        if self.threshold_mode == "hf_cnn":
+        if self.threshold_mode in ("hf_cnn", "bayes_shrink"):
             result = self._static_subband_forward(x)
             result = result if not (pad_h or pad_w) else result[..., :h, :w]
             return (result, {"padding": (pad_h, pad_w)}) if return_aux else result
@@ -446,9 +459,9 @@ class LearningDWT(nn.Module):
             filtered = smooth_shrink(atlas, threshold, self.leak)
         else:
             filtered = soft_shrink(atlas, threshold, self.leak)
-        if self.ll_restorer is not None:
+        if self.ll_restorer is not None or self.ll_mode == "bypass":
             # Read ORIGINAL deepest-level bands; no thresholded inputs or GT.
-            selected = bands[:1] if self.ll_mode == "ll_only" else bands[:4]
+            selected = bands[:1] if self.ll_mode in ("ll_only", "bypass") else bands[:4]
             ll_input = torch.cat([atlas[..., b.rows, b.cols] for b in selected], dim=1)
             recovered_ll = self.restore_ll(ll_input)
             ll = bands[0]
