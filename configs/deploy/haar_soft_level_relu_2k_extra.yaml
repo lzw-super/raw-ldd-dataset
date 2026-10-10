@@ -1,0 +1,8 @@
+name: haar_soft_level_relu_2k_extra
+checkpoint: experiments/npu_2k_five_extra/inputs/haar_soft_level_relu_snapshot.pth
+kind: haar
+height: 720
+width: 1280
+hf_layout: level
+hf_formula: relu
+simplify: true

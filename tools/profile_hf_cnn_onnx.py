@@ -26,9 +26,16 @@ def count(path):
             if op=='Conv':mac=elements*weight[1]*math.prod(weight[2:])
             else:mac=math.prod(shapes[node.input[0]])*weight[1]*math.prod(weight[2:])
             cost=2*mac+(elements if len(node.input)>2 and node.input[2] else 0)
-        elif op=='PRelu':cost=2*elements
-        elif op in ('Relu','Sub','Add','Neg','Min','Max','Mul','Div','Abs'):cost=elements
-        elif op not in ('Split','Concat','Slice','Reshape','Transpose','Identity','Constant'):
+        elif op in ('PRelu','LeakyRelu'):cost=2*elements
+        elif op in ('Relu','Sub','Add','Neg','Min','Max','Mul','Div','Abs','Pow','Sqrt'):cost=elements
+        elif op=='Sigmoid':cost=4*elements  # negate, exp, add, reciprocal
+        elif op in ('ReduceMean','GlobalAveragePool'):
+            # Each reduced group: N-1 additions and one division.
+            cost=math.prod(shapes[node.input[0]])
+        elif op=='ReduceMax':cost=math.prod(shapes[node.input[0]])-elements
+        elif op=='MaxPool':cost=elements*(math.prod(attributes['kernel_shape'])-1)
+        elif op not in ('Split','Concat','Slice','Reshape','Transpose','Identity','Constant',
+                        'Pad','DepthToSpace','SpaceToDepth'):
             raise ValueError(f'Unclassified operator: {op}')
         ops[op]+=cost;macs+=mac
         events.append(dict(name=node.name,operator=op,output_shape=output_shape,ops=cost,macs=mac,

@@ -1,0 +1,27 @@
+{
+  "haar_soft_band_relu_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/haar_soft_band_relu_2k_extra.onnx",
+    "source_sha256": "c0464b674e7be659791e08cab814e93e4cf8dd43abfad70b9f22732f7c9d83e9",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/haar_soft_band_relu_snapshot.pth"
+  },
+  "haar_soft_level_relu_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/haar_soft_level_relu_2k_extra.onnx",
+    "source_sha256": "f08bb51f52b9f933a07ae14e2fcbae9bd8eea00b7bfae8551925e88d6e164edc",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/haar_soft_level_relu_snapshot.pth"
+  },
+  "splitternet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/splitternet_2k_extra.onnx",
+    "source_sha256": "e8c888b63b6e96b67312d3e5b9d6718aa75d7476c3d08572da53f02369a241ae",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/splitternet_snapshot.pth"
+  },
+  "unet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/unet_2k_extra.onnx",
+    "source_sha256": "a8a315bf6677cb3b5dfe7b9c7465c207436395e43cb4457a4f4067bdfd055e3d",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/unet_snapshot.pth"
+  },
+  "nafnet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/nafnet_2k_extra.onnx",
+    "source_sha256": "303e1259650fecfb321006de72d173b31718a54374e39db5007433b9c42d0ac3",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/nafnet_snapshot.pth"
+  }
+}

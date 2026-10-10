@@ -1,0 +1,6 @@
+kind: splitternet
+simplify: true
+name: splitternet_2k_extra
+checkpoint: experiments/npu_2k_five_extra/inputs/splitternet_snapshot.pth
+height: 720
+width: 1280

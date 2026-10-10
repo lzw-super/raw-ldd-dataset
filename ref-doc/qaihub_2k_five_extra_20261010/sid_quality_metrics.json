@@ -1,0 +1,993 @@
+{
+  "testset_type": "sid",
+  "ratios": [
+    100,
+    250,
+    300
+  ],
+  "averaging": "Unweighted arithmetic mean of the three ratio-level JSON psnr/ssim metrics, not pooled per-image metrics. Rounded only for display.",
+  "not_w8a8_accuracy": true,
+  "models": {
+    "repncb": {
+      "label": "Rep-NCB3×3＋PReLU＋输入残差",
+      "experiment_dir": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/checkpoints/best.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/b_sid_x100.json",
+          "source_sha256": "0232baf4d392cf9c9b697686c47596deaea86ea765f7f33f0bd71acf5684383b",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "hf_cnn",
+                "ll_normalize": false,
+                "hf_cnn_variant": "repncb_prelu_residual",
+                "hf_cnn_init_bias": 0.0
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "skip_projection": false,
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 42.360291037572196,
+            "ssim": 0.9550609812140465
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/b_sid_x250.json",
+          "source_sha256": "10bec74c8148020c8d0287595554214248005f55ec4cf43922367bcc86e1313e",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "hf_cnn",
+                "ll_normalize": false,
+                "hf_cnn_variant": "repncb_prelu_residual",
+                "hf_cnn_init_bias": 0.0
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "skip_projection": false,
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 40.285601993020066,
+            "ssim": 0.9386625230312348
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/b_sid_x300.json",
+          "source_sha256": "702e3026363eaff311aa95fa57b2949987a8275f43a286003fea967bb322ab70",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm_each5/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "hf_cnn",
+                "ll_normalize": false,
+                "hf_cnn_variant": "repncb_prelu_residual",
+                "hf_cnn_init_bias": 0.0
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "skip_projection": false,
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 36.817265339918634,
+            "ssim": 0.9187896154364761
+          }
+        }
+      ],
+      "mean_psnr": 39.8210527901703,
+      "mean_ssim": 0.9375043732272524
+    },
+    "haar_ac": {
+      "label": "Haar A / Haar C（同一原始模型）",
+      "experiment_dir": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm",
+      "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/b_sid_x100.json",
+          "source_sha256": "fda9ad0baa0df685fe8b289b536f30e5981f7f277437a2a7964151f9f3024eee",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "band_channel",
+                "ll_normalize": false
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 42.203255909868744,
+            "ssim": 0.9546068996191025
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/b_sid_x250.json",
+          "source_sha256": "bdf650351be798f3adba761028f5f337c6c9477af3bcfe93985da37cce0c5191",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "band_channel",
+                "ll_normalize": false
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 40.1789653784124,
+            "ssim": 0.9381809502840042
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/b_sid_x300.json",
+          "source_sha256": "3c5c7a42c0dcea5491f4b28157ef7aae86ada881a1df08b4e83d5e16dbe55662",
+          "record": {
+            "checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+            "model": "learning_dwt_repncb",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "learning_dwt_repncb",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 5,
+              "model_bias": true,
+              "space_to_depth_factor": 2,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy",
+              "learning_dwt": {
+                "width": 16,
+                "depth": 3,
+                "context": "atlas",
+                "shrink_ll": false,
+                "leak": 0.0,
+                "normalize_bands": true,
+                "pad_input": true,
+                "init_threshold": 0.01,
+                "init_ll_threshold": 0.001,
+                "wavelet": "haar",
+                "levels": 3,
+                "magnitude_input": true,
+                "condition_bands": false,
+                "ll_max_threshold": 0.01,
+                "shrink_mode": "soft",
+                "ll_mode": "ll_only",
+                "ll_width": 32,
+                "ll_depth": 5,
+                "ll_fusion": "concat_1x1",
+                "trainable_haar": false,
+                "haar_share_channels": true,
+                "haar_share_levels": true,
+                "ll_block_type": "repncb",
+                "threshold_mode": "band_channel",
+                "ll_normalize": false
+              },
+              "refinement": {
+                "s2d_factor": 2,
+                "width": 32,
+                "num_blocks": 5,
+                "skip_source": "noisy",
+                "block_type": "repncb",
+                "input_fusion": "none",
+                "activation": "prelu",
+                "stem_activation": "none",
+                "expand_ratio": 2,
+                "s2d_domain": "packed_raw"
+              }
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 36.698467801475644,
+            "ssim": 0.9174347191440816
+          }
+        }
+      ],
+      "mean_psnr": 39.69356302991893,
+      "mean_ssim": 0.9367408563490628
+    },
+    "mrlfn": {
+      "label": "MRLFN",
+      "experiment_dir": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32",
+      "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/sid_x100.json",
+          "source_sha256": "6fac8905bd19f0c7dacc62a8f0da42b04ca954e0ca7074cdd545aac905456992",
+          "record": {
+            "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+            "model": "mrlfn",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "mrlfn",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 4,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 42.07222788686454,
+            "ssim": 0.9529859885573387
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/sid_x250.json",
+          "source_sha256": "0082f7ceb7c6df0c57cbc5a26866d06659a8173242c56473f603e9f322993b40",
+          "record": {
+            "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+            "model": "mrlfn",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "mrlfn",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 4,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 39.84320130424891,
+            "ssim": 0.9282553911209106
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/sid_x300.json",
+          "source_sha256": "8e3b1bb911064b99a14f99e7b5eadd6e1931ad0512c3d7d1b0bb1e0802470f84",
+          "record": {
+            "checkpoint": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+            "model": "mrlfn",
+            "graph_state": "deploy",
+            "model_config": {
+              "model": "mrlfn",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 32,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 4,
+              "graph_state": "deploy",
+              "weight_source": "model_deploy"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 36.31705117912498,
+            "ssim": 0.9044913406274757
+          }
+        }
+      ],
+      "mean_psnr": 39.410826790079476,
+      "mean_ssim": 0.9285775734352417
+    },
+    "splitternet": {
+      "label": "SplitterNet",
+      "experiment_dir": "experiments/sid_sony_splitternet",
+      "checkpoint": "experiments/sid_sony_splitternet/checkpoints/latest.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_splitternet/latest_sid_x100.json",
+          "source_sha256": "1b910ff1f62b93092746ead2ad8a9d408eebf0ba9824829b769ee1e14b23aa1f",
+          "record": {
+            "checkpoint": "experiments/sid_sony_splitternet/checkpoints/latest.pth",
+            "model": "splitternet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "splitternet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 42.15947291665069,
+            "ssim": 0.9540740787982941
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_splitternet/latest_sid_x250.json",
+          "source_sha256": "878dd07ade4f546d4bfc6a9514566e6b56e43e14f3c96dec8f395cdeccc7d6f9",
+          "record": {
+            "checkpoint": "experiments/sid_sony_splitternet/checkpoints/latest.pth",
+            "model": "splitternet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "splitternet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 39.9655959725393,
+            "ssim": 0.9290996313095092
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_splitternet/latest_sid_x300.json",
+          "source_sha256": "69b60292a56f8b63e46410cd12aa1b425237a0b0d322e3e282e6fc6700f14933",
+          "record": {
+            "checkpoint": "experiments/sid_sony_splitternet/checkpoints/latest.pth",
+            "model": "splitternet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "splitternet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 36.439489516586306,
+            "ssim": 0.9043535590171814
+          }
+        }
+      ],
+      "mean_psnr": 39.521519468592096,
+      "mean_ssim": 0.9291757563749949
+    },
+    "unet": {
+      "label": "U-Net",
+      "experiment_dir": "experiments/sid_sony_paper_new",
+      "checkpoint": "experiments/sid_sony_paper_new/checkpoints/latest.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_paper_new/latest_sid_x100.json",
+          "source_sha256": "80b5d7bf556d7a86325bd7bc3c3746f58cc546afe5794370d24c7e0c8b2abadb",
+          "record": {
+            "checkpoint": "experiments/sid_sony_paper_new/checkpoints/latest.pth",
+            "model": "unet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "unet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 43.51729369153715,
+            "ssim": 0.9600720420479775
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_paper_new/latest_sid_x250.json",
+          "source_sha256": "086f43396d8f1166cc81b06758b244fe879b1163110c1be98e0a20d61f9a40bb",
+          "record": {
+            "checkpoint": "experiments/sid_sony_paper_new/checkpoints/latest.pth",
+            "model": "unet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "unet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 41.20842997417515,
+            "ssim": 0.9436168968677521
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_paper_new/latest_sid_x300.json",
+          "source_sha256": "790c3e296a0d96cf6d4e315fb7e0b5524f79f0e9411885a7a2d414d48ecd3904",
+          "record": {
+            "checkpoint": "experiments/sid_sony_paper_new/checkpoints/latest.pth",
+            "model": "unet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "unet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 37.73993760724494,
+            "ssim": 0.9256543687411717
+          }
+        }
+      ],
+      "mean_psnr": 40.82188709098575,
+      "mean_ssim": 0.9431144358856337
+    },
+    "nafnet": {
+      "label": "NAFNet",
+      "experiment_dir": "experiments/sid_sony_nafnet_new",
+      "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/latest.pth",
+      "ratios": [
+        {
+          "ratio": 100,
+          "source": "experiments/sid_sony_nafnet_new/latest_sid_x100.json",
+          "source_sha256": "80eb9598a0e0aa84b3b51366c794c92b5ec402089248faedceccd31a0b3420f0",
+          "record": {
+            "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/latest.pth",
+            "model": "nafnet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "nafnet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 100,
+            "max_samples": null,
+            "psnr": 43.862966189878115,
+            "ssim": 0.9602883964776993
+          }
+        },
+        {
+          "ratio": 250,
+          "source": "experiments/sid_sony_nafnet_new/latest_sid_x250.json",
+          "source_sha256": "9505472e23860e5f251b6f98668c0ad08303e107c0ca1665dd9a6f989803ea7c",
+          "record": {
+            "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/latest.pth",
+            "model": "nafnet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "nafnet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 250,
+            "max_samples": null,
+            "psnr": 41.45574744713509,
+            "ssim": 0.9449455380439759
+          }
+        },
+        {
+          "ratio": 300,
+          "source": "experiments/sid_sony_nafnet_new/latest_sid_x300.json",
+          "source_sha256": "962a43fb85be98ecdad3aceca8aedf1051888afc542822046a856e3339185e81",
+          "record": {
+            "checkpoint": "experiments/sid_sony_nafnet_new/checkpoints/latest.pth",
+            "model": "nafnet",
+            "graph_state": "native",
+            "model_config": {
+              "model": "nafnet",
+              "model_width": 32,
+              "encoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "middle_blocks": 2,
+              "decoder_blocks": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "feature_channels": 16,
+              "num_blocks": 4,
+              "model_bias": true,
+              "space_to_depth_factor": 1,
+              "graph_state": "native",
+              "weight_source": "model"
+            },
+            "testset_type": "sid",
+            "eval_ratio": 300,
+            "max_samples": null,
+            "psnr": 37.86308211518747,
+            "ssim": 0.9242566373883462
+          }
+        }
+      ],
+      "mean_psnr": 41.06059858406689,
+      "mean_ssim": 0.9431635239700071
+    }
+  }
+}

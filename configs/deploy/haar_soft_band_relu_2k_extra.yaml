@@ -1,0 +1,8 @@
+name: haar_soft_band_relu_2k_extra
+checkpoint: experiments/npu_2k_five_extra/inputs/haar_soft_band_relu_snapshot.pth
+kind: haar
+height: 720
+width: 1280
+hf_layout: band
+hf_formula: relu
+simplify: true

@@ -1,0 +1,6 @@
+kind: nafnet
+simplify: true
+name: nafnet_2k_extra
+checkpoint: experiments/npu_2k_five_extra/inputs/nafnet_snapshot.pth
+height: 720
+width: 1280

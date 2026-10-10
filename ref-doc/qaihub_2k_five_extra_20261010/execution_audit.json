@@ -1,0 +1,87 @@
+{
+  "haar_soft_band_relu_2k_extra": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_and_checkpoint_hashes_verified": true,
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_band_relu_2k_extra/profile_logs_1/j5wydr66g_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_band_relu_2k_extra/profile_logs_2/jp1odmz25_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_band_relu_2k_extra/profile_logs_3/jgd6rm1ep_runtime.log"
+    ]
+  },
+  "haar_soft_level_relu_2k_extra": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_and_checkpoint_hashes_verified": true,
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_level_relu_2k_extra/profile_logs_1/jp4ex2rvg_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_level_relu_2k_extra/profile_logs_2/jpx07zo1p_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/haar_soft_level_relu_2k_extra/profile_logs_3/j5m9wlxwg_runtime.log"
+    ]
+  },
+  "splitternet_2k_extra": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_and_checkpoint_hashes_verified": true,
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_five_extra_20261010/splitternet_2k_extra/profile_logs_1/jp0o1x06p_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/splitternet_2k_extra/profile_logs_2/jp8j3kyx5_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/splitternet_2k_extra/profile_logs_3/jgk6lkx25_runtime.log"
+    ]
+  },
+  "unet_2k_extra": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_and_checkpoint_hashes_verified": true,
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_five_extra_20261010/unet_2k_extra/profile_logs_1/jgn19wvrp_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/unet_2k_extra/profile_logs_2/jprx4739p_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/unet_2k_extra/profile_logs_3/jp2o7zy4g_runtime.log"
+    ]
+  },
+  "nafnet_2k_extra": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_and_checkpoint_hashes_verified": true,
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_five_extra_20261010/nafnet_2k_extra/profile_logs_1/jglw0qm8p_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/nafnet_2k_extra/profile_logs_2/j56o30405_runtime.log",
+      "ref-doc/qaihub_2k_five_extra_20261010/nafnet_2k_extra/profile_logs_3/jp3o4r0lp_runtime.log"
+    ]
+  }
+}

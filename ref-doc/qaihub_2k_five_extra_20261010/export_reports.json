@@ -1,0 +1,671 @@
+{
+  "haar_soft_band_relu_2k_extra": {
+    "config": "configs/deploy/haar_soft_band_relu_2k_extra.yaml",
+    "settings": {
+      "name": "haar_soft_band_relu_2k_extra",
+      "checkpoint": "experiments/npu_2k_five_extra/inputs/haar_soft_band_relu_snapshot.pth",
+      "kind": "haar",
+      "height": 720,
+      "width": 1280,
+      "hf_layout": "band",
+      "hf_formula": "relu",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_2k_five_extra/onnx/haar_soft_band_relu_2k_extra.onnx",
+    "source_sha256": "c0464b674e7be659791e08cab814e93e4cf8dd43abfad70b9f22732f7c9d83e9",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 4,
+      "Split": 3,
+      "Sub": 27,
+      "Relu": 19,
+      "Neg": 9,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Sub": 27,
+      "Relu": 19,
+      "Neg": 9,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.0414821360882343e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 9.604264050722122e-08,
+        "mean_abs": 1.052670217660534e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 8.905744586229503e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 8.905744586229503e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.0957027996028046e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 8.904799564390942e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 86408,
+    "hf_parameter_count": 0
+  },
+  "haar_soft_level_relu_2k_extra": {
+    "config": "configs/deploy/haar_soft_level_relu_2k_extra.yaml",
+    "settings": {
+      "name": "haar_soft_level_relu_2k_extra",
+      "checkpoint": "experiments/npu_2k_five_extra/inputs/haar_soft_level_relu_snapshot.pth",
+      "kind": "haar",
+      "height": 720,
+      "width": 1280,
+      "hf_layout": "level",
+      "hf_formula": "relu",
+      "simplify": true
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_2k_five_extra/onnx/haar_soft_level_relu_2k_extra.onnx",
+    "source_sha256": "f08bb51f52b9f933a07ae14e2fcbae9bd8eea00b7bfae8551925e88d6e164edc",
+    "operators_before": {
+      "Conv": 19,
+      "Constant": 2,
+      "Split": 3,
+      "Sub": 9,
+      "Relu": 7,
+      "Neg": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "Split": 3,
+      "Sub": 9,
+      "Relu": 7,
+      "Neg": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.0409729611637886e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.0710209608078003e-07,
+        "mean_abs": 1.0520089688270673e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 8.905744586229503e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.80447556078434e-08,
+        "mean_abs": 8.905744586229503e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.0957027996028046e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.903428584337234e-08,
+        "mean_abs": 8.904799564390942e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 86408,
+    "hf_parameter_count": 0
+  },
+  "splitternet_2k_extra": {
+    "config": "configs/deploy/splitternet_2k_extra.yaml",
+    "settings": {
+      "kind": "splitternet",
+      "simplify": true,
+      "name": "splitternet_2k_extra",
+      "checkpoint": "experiments/npu_2k_five_extra/inputs/splitternet_snapshot.pth",
+      "height": 720,
+      "width": 1280
+    },
+    "checkpoint_sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "metadata": {
+      "model": "splitternet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "source": "experiments/npu_2k_five_extra/onnx/splitternet_2k_extra.onnx",
+    "source_sha256": "e8c888b63b6e96b67312d3e5b9d6718aa75d7476c3d08572da53f02369a241ae",
+    "operators_before": {
+      "Conv": 96,
+      "Shape": 43,
+      "Constant": 870,
+      "Gather": 43,
+      "Add": 63,
+      "Div": 15,
+      "Mul": 62,
+      "Slice": 140,
+      "ConstantOfShape": 78,
+      "Concat": 109,
+      "Reshape": 156,
+      "Transpose": 78,
+      "Cast": 78,
+      "Pad": 78,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "ReduceMax": 16,
+      "Sigmoid": 16,
+      "ConvTranspose": 15,
+      "Unsqueeze": 28
+    },
+    "operators_after": {
+      "Conv": 96,
+      "Slice": 46,
+      "Pad": 78,
+      "LeakyRelu": 77,
+      "ReduceMean": 32,
+      "Mul": 32,
+      "Add": 48,
+      "ReduceMax": 16,
+      "Concat": 31,
+      "Sigmoid": 16,
+      "ConvTranspose": 15
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.450580596923828e-07,
+        "mean_abs": 8.76069776722943e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.5331974029541016e-07,
+        "mean_abs": 2.572554613777811e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.1525116860866547e-08,
+        "mean_abs": 2.224768147485179e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.1525116860866547e-08,
+        "mean_abs": 2.224768147485179e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 9.5367431640625e-07,
+        "mean_abs": 6.184385625829236e-08,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 1.0989606380462646e-07,
+        "mean_abs": 2.1399984007075545e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 731636,
+    "hf_parameter_count": 0
+  },
+  "unet_2k_extra": {
+    "config": "configs/deploy/unet_2k_extra.yaml",
+    "settings": {
+      "kind": "unet",
+      "simplify": true,
+      "name": "unet_2k_extra",
+      "checkpoint": "experiments/npu_2k_five_extra/inputs/unet_snapshot.pth",
+      "height": 720,
+      "width": 1280
+    },
+    "checkpoint_sha256": "e3bedb967084dbfe5506c2ea9a71b6b61bdece4734ca477bdae45402d8682fbf",
+    "metadata": {
+      "model": "unet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "source": "experiments/npu_2k_five_extra/onnx/unet_2k_extra.onnx",
+    "source_sha256": "a8a315bf6677cb3b5dfe7b9c7465c207436395e43cb4457a4f4067bdfd055e3d",
+    "operators_before": {
+      "Constant": 30,
+      "Mod": 2,
+      "Sub": 3,
+      "Unsqueeze": 4,
+      "Concat": 7,
+      "Shape": 1,
+      "Gather": 1,
+      "Cast": 2,
+      "ConstantOfShape": 1,
+      "Reshape": 2,
+      "Slice": 3,
+      "Transpose": 1,
+      "Pad": 1,
+      "Conv": 19,
+      "LeakyRelu": 18,
+      "MaxPool": 4,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 19,
+      "LeakyRelu": 18,
+      "MaxPool": 4,
+      "ConvTranspose": 4,
+      "Concat": 4,
+      "Slice": 1
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 4.76837158203125e-07,
+        "mean_abs": 6.332247437512706e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 2.1187588572502136e-08,
+        "mean_abs": 2.7813409353427687e-09,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.83936208486557e-08,
+        "mean_abs": 2.634664708622836e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.83936208486557e-08,
+        "mean_abs": 2.634664708622836e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 2.2649765014648438e-06,
+        "mean_abs": 1.0781983661445338e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 1.7881393432617188e-07,
+        "mean_abs": 2.634767959364126e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 7760484,
+    "hf_parameter_count": 0
+  },
+  "nafnet_2k_extra": {
+    "config": "configs/deploy/nafnet_2k_extra.yaml",
+    "settings": {
+      "kind": "nafnet",
+      "simplify": true,
+      "name": "nafnet_2k_extra",
+      "checkpoint": "experiments/npu_2k_five_extra/inputs/nafnet_snapshot.pth",
+      "height": 720,
+      "width": 1280
+    },
+    "checkpoint_sha256": "34694b1f7dd9324182c104c2e4c1d2bdc1b42f09d1c20fd955121e8d150300dc",
+    "metadata": {
+      "model": "nafnet",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 16,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 1,
+      "graph_state": "native",
+      "weight_source": "model"
+    },
+    "source": "experiments/npu_2k_five_extra/onnx/nafnet_2k_extra.onnx",
+    "source_sha256": "303e1259650fecfb321006de72d173b31718a54374e39db5007433b9c42d0ac3",
+    "operators_before": {
+      "Constant": 644,
+      "Mod": 4,
+      "Sub": 75,
+      "Unsqueeze": 76,
+      "Concat": 75,
+      "Shape": 73,
+      "Gather": 73,
+      "Cast": 2,
+      "ConstantOfShape": 1,
+      "Reshape": 74,
+      "Slice": 75,
+      "Transpose": 1,
+      "Pad": 1,
+      "Conv": 118,
+      "ReduceMean": 72,
+      "Pow": 36,
+      "Add": 149,
+      "Sqrt": 36,
+      "Div": 72,
+      "Mul": 198,
+      "GlobalAveragePool": 18,
+      "DepthToSpace": 4
+    },
+    "operators_after": {
+      "Conv": 118,
+      "ReduceMean": 72,
+      "Sub": 36,
+      "Pow": 36,
+      "Add": 113,
+      "Sqrt": 36,
+      "Div": 36,
+      "Mul": 126,
+      "Slice": 73,
+      "GlobalAveragePool": 18,
+      "DepthToSpace": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.152557373046875e-07,
+        "mean_abs": 9.534991107784663e-08,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 3.427267074584961e-07,
+        "mean_abs": 3.577409302124579e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 1.0877847671508789e-05,
+        "mean_abs": 1.8589925048217992e-06,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 1.0877847671508789e-05,
+        "mean_abs": 1.8589925048217992e-06,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 6.198883056640625e-06,
+        "mean_abs": 7.571659921268292e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 2.6404857635498047e-05,
+        "mean_abs": 1.8374352066530264e-06,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 7600228,
+    "hf_parameter_count": 0
+  }
+}

@@ -48,7 +48,7 @@ def main():
             expected = {k:model(x).numpy() for k,x in inputs.items()}
         if config['kind'] == 'haar':
             model.wavelet = HaarSoftExport(model.wavelet, config['hf_layout'], config['hf_formula'])
-        elif config['kind'] not in ('splitternet', 'mrlfn', 'unet', 'haar_hf_cnn', 'learning_dwt_repncb'):
+        elif config['kind'] not in ('splitternet', 'mrlfn', 'unet', 'nafnet', 'haar_hf_cnn', 'learning_dwt_repncb'):
             raise ValueError(config['kind'])
         path = args.output_dir / (config['name']+'.onnx')
         with torch.no_grad():

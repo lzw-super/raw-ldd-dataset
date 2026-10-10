@@ -1,0 +1,6 @@
+kind: unet
+simplify: true
+name: unet_2k_extra
+checkpoint: experiments/npu_2k_five_extra/inputs/unet_snapshot.pth
+height: 720
+width: 1280

@@ -1,0 +1,905 @@
+{
+  "onnx": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_2k.onnx",
+  "node_count": 55,
+  "arithmetic_ops": 28172275200,
+  "conv_macs": 14013619200,
+  "operator_ops": {
+    "Conv": 27811641600,
+    "Split": 0,
+    "Concat": 0,
+    "PRelu": 83750400,
+    "Add": 3628800,
+    "Relu": 460800,
+    "ConvTranspose": 272793600
+  },
+  "hf_cnn_ops": 798336000,
+  "hf_cnn_macs": 391910400,
+  "events": [
+    {
+      "name": "/wavelet/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 117964800,
+      "macs": 58982400,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/wavelet/Split",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/Concat",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/processors.0/block/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "ops": 599961600,
+      "macs": 298598400,
+      "group": 1,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.0/block/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "ops": 5529600,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.0/Add",
+      "operator": "Add",
+      "output_shape": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "ops": 2764800,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/Split_1",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/Conv_1",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "ops": 29491200,
+      "macs": 14745600,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/wavelet/Split_2",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/Concat_1",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/processors.1/block/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "ops": 149990400,
+      "macs": 74649600,
+      "group": 1,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.1/block/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "ops": 1382400,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.1/Add",
+      "operator": "Add",
+      "output_shape": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "ops": 691200,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/Split_3",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/Conv_2",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "ops": 7372800,
+      "macs": 3686400,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/wavelet/Split_4",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/Concat_2",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/processors.2/block/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "ops": 37497600,
+      "macs": 18662400,
+      "group": 1,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.2/block/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "ops": 345600,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/processors.2/Add",
+      "operator": "Add",
+      "output_shape": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "ops": 172800,
+      "macs": 0,
+      "group": null,
+      "category": "hf_cnn"
+    },
+    {
+      "name": "/wavelet/Split_5",
+      "operator": "Split",
+      "output_shape": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.0/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 33638400,
+      "macs": 16588800,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.1/Relu",
+      "operator": "Relu",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 460800,
+      "macs": 0,
+      "group": null,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 265881600,
+      "macs": 132710400,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.2/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 921600,
+      "macs": 0,
+      "group": null,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 265881600,
+      "macs": 132710400,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.3/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 921600,
+      "macs": 0,
+      "group": null,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 265881600,
+      "macs": 132710400,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.4/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "ops": 921600,
+      "macs": 0,
+      "group": null,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/layers/layers.5/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "ops": 33235200,
+      "macs": 16588800,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/Concat",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        8,
+        90,
+        160
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/ll_restorer/fusion/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "ops": 979200,
+      "macs": 460800,
+      "group": 1,
+      "category": "ll_restoration"
+    },
+    {
+      "name": "/wavelet/Concat_3",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/ConvTranspose",
+      "operator": "ConvTranspose",
+      "output_shape": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "ops": 7372800,
+      "macs": 3686400,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/wavelet/Concat_4",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/ConvTranspose_1",
+      "operator": "ConvTranspose",
+      "output_shape": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "ops": 29491200,
+      "macs": 14745600,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/wavelet/Concat_5",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "data_movement"
+    },
+    {
+      "name": "/wavelet/ConvTranspose_2",
+      "operator": "ConvTranspose",
+      "output_shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "ops": 117964800,
+      "macs": 58982400,
+      "group": 1,
+      "category": "fixed_haar"
+    },
+    {
+      "name": "/refiner/s2d/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 117964800,
+      "macs": 58982400,
+      "group": 1,
+      "category": "fixed_space_depth"
+    },
+    {
+      "name": "/refiner/stem/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 2130739200,
+      "macs": 1061683200,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.0/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 4254105600,
+      "macs": 2123366400,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.0/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 14745600,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.1/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 4254105600,
+      "macs": 2123366400,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.1/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 14745600,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.2/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 4254105600,
+      "macs": 2123366400,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.2/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 14745600,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.3/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 4254105600,
+      "macs": 2123366400,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.3/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 14745600,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.4/reparam_conv/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 4254105600,
+      "macs": 2123366400,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/blocks/blocks.4/activation/PRelu",
+      "operator": "PRelu",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 14745600,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/head/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 2127052800,
+      "macs": 1061683200,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/s2d_1/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 117964800,
+      "macs": 58982400,
+      "group": 1,
+      "category": "fixed_space_depth"
+    },
+    {
+      "name": "/refiner/Concat",
+      "operator": "Concat",
+      "output_shape": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "ops": 0,
+      "macs": 0,
+      "group": null,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/fusion/Conv",
+      "operator": "Conv",
+      "output_shape": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "ops": 239616000,
+      "macs": 117964800,
+      "group": 1,
+      "category": "refinement_cnn"
+    },
+    {
+      "name": "/refiner/d2s/ConvTranspose",
+      "operator": "ConvTranspose",
+      "output_shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "ops": 117964800,
+      "macs": 58982400,
+      "group": 1,
+      "category": "fixed_space_depth"
+    }
+  ],
+  "shape": [
+    1,
+    4,
+    720,
+    1280
+  ],
+  "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+  "checkpoint_sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+  "onnx_sha256": "dfb6ff4829bd257ca2e5f4346f4d3302a5514e3a3d06e3d7da6cb2ece4c9e79e",
+  "training_parameters": 292224,
+  "deployment_parameters": 90368,
+  "convolution_flops_2_per_mac": 28027238400,
+  "groups": {
+    "hf_cnn": {
+      "train_parameters": 14328,
+      "deploy_parameters": 3960,
+      "macs": 391910400,
+      "ops": 798336000
+    },
+    "ll_restoration": {
+      "train_parameters": 102024,
+      "deploy_parameters": 30216,
+      "macs": 431769600,
+      "ops": 868723200
+    },
+    "refinement_cnn": {
+      "train_parameters": 175872,
+      "deploy_parameters": 56192,
+      "macs": 12858163200,
+      "ops": 25841664000
+    },
+    "fixed_haar": {
+      "train_parameters": 0,
+      "deploy_parameters": 0,
+      "macs": 154828800,
+      "ops": 309657600
+    },
+    "fixed_space_depth": {
+      "train_parameters": 0,
+      "deploy_parameters": 0,
+      "macs": 176947200,
+      "ops": 353894400
+    },
+    "data_movement": {
+      "train_parameters": 0,
+      "deploy_parameters": 0,
+      "macs": 0,
+      "ops": 0
+    }
+  },
+  "metadata": {
+    "model": "learning_dwt_repncb",
+    "model_width": 32,
+    "encoder_blocks": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "middle_blocks": 2,
+    "decoder_blocks": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "feature_channels": 32,
+    "num_blocks": 5,
+    "model_bias": true,
+    "space_to_depth_factor": 2,
+    "graph_state": "deploy",
+    "weight_source": "model_deploy",
+    "learning_dwt": {
+      "width": 16,
+      "depth": 3,
+      "context": "atlas",
+      "shrink_ll": false,
+      "leak": 0.0,
+      "normalize_bands": true,
+      "pad_input": true,
+      "init_threshold": 0.01,
+      "init_ll_threshold": 0.001,
+      "wavelet": "haar",
+      "levels": 3,
+      "magnitude_input": true,
+      "condition_bands": false,
+      "ll_max_threshold": 0.01,
+      "shrink_mode": "soft",
+      "ll_mode": "ll_only",
+      "ll_width": 32,
+      "ll_depth": 5,
+      "ll_fusion": "concat_1x1",
+      "trainable_haar": false,
+      "haar_share_channels": true,
+      "haar_share_levels": true,
+      "ll_block_type": "repncb",
+      "threshold_mode": "hf_cnn",
+      "ll_normalize": false,
+      "hf_cnn_variant": "repncb_prelu_residual",
+      "hf_cnn_init_bias": 0.0
+    },
+    "refinement": {
+      "s2d_factor": 2,
+      "width": 32,
+      "num_blocks": 5,
+      "skip_source": "noisy",
+      "block_type": "repncb",
+      "input_fusion": "none",
+      "activation": "prelu",
+      "stem_activation": "none",
+      "skip_projection": false,
+      "expand_ratio": 2,
+      "s2d_domain": "packed_raw"
+    }
+  },
+  "counting_convention": "Dense exported Conv/ConvTranspose including fixed Haar/S2D/D2S and zero kernel entries; 1 MAC=2 ops, bias=1/output, PReLU=2/output, ReLU/Add=1/output; data movement=0 arithmetic ops. Not NPU instruction count."
+}
