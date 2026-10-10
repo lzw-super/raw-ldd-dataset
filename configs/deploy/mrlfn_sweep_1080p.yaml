@@ -1,0 +1,6 @@
+kind: mrlfn
+checkpoint: experiments/npu_4k/inputs/mrlfn_snapshot.pth
+simplify: true
+name: mrlfn_sweep_1080p
+height: 544
+width: 960

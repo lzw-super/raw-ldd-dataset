@@ -1,0 +1,102 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    544,
+    960
+  ],
+  "sdk": "0.56.0",
+  "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+  "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+  "calibration": "Platform-generated random calibration; performance only",
+  "models": {
+    "haar_hf_repncb_prelu_residual_sweep_1080p": {
+      "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_1080p.onnx",
+      "source_sha256": "f73cf5401fbb54762a0f0068a391ace6cb10f3e432cf04fbd7a2b83adf7c722f",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+      "compile_job": "jgod1w945",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mnjro45dq",
+      "profile_jobs": [
+        {
+          "id": "jpx07rzjp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jprx4dmvp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp2o7dqxg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "haar_hf_cnn_dw3_residual_sweep_1080p": {
+      "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_cnn_dw3_residual_sweep_1080p.onnx",
+      "source_sha256": "c0d1d1f3ce707a78abdbb54297e340706132cd96d26e12de289b5dadd77daf09",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+      "compile_job": "jgj30y87p",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mn024jy9q",
+      "profile_jobs": [
+        {
+          "id": "jp0o1982p",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgk6l0wy5",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jglw089ep",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    },
+    "mrlfn_sweep_1080p": {
+      "source": "experiments/npu_resolution_sweep_20261010/onnx/mrlfn_sweep_1080p.onnx",
+      "source_sha256": "e7bbc072740ceef873fbd8f08859ff7a17121fc019723735344cabc4facfe76a",
+      "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+      "compile_job": "j5wydzrzg",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mq9ekl0ym",
+      "profile_jobs": [
+        {
+          "id": "j5wydz0zg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jp1od1kk5",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgd6r4ykp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    }
+  }
+}

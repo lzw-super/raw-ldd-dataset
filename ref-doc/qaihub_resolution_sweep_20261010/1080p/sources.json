@@ -1,0 +1,17 @@
+{
+  "haar_hf_repncb_prelu_residual_sweep_1080p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_1080p.onnx",
+    "source_sha256": "f73cf5401fbb54762a0f0068a391ace6cb10f3e432cf04fbd7a2b83adf7c722f",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth"
+  },
+  "haar_hf_cnn_dw3_residual_sweep_1080p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_cnn_dw3_residual_sweep_1080p.onnx",
+    "source_sha256": "c0d1d1f3ce707a78abdbb54297e340706132cd96d26e12de289b5dadd77daf09",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth"
+  },
+  "mrlfn_sweep_1080p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/mrlfn_sweep_1080p.onnx",
+    "source_sha256": "e7bbc072740ceef873fbd8f08859ff7a17121fc019723735344cabc4facfe76a",
+    "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth"
+  }
+}

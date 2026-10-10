@@ -1,0 +1,14 @@
+{
+  "haar_hf_repncb_prelu_residual": {
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+    "sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6"
+  },
+  "haar_hf_cnn_dw3_residual": {
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+    "sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060"
+  },
+  "mrlfn": {
+    "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+    "sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "haar_hf_repncb_prelu_residual_sweep_720p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_720p.onnx",
+    "source_sha256": "5aa7297b9e9eb4051bfe97e9dfb3d39164c0f35b809e72a19c159963074abd8d",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth"
+  },
+  "haar_hf_cnn_dw3_residual_sweep_720p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_cnn_dw3_residual_sweep_720p.onnx",
+    "source_sha256": "462e55c920d85a5627ca6834a682651cb82b551fa234f1906eb482f22050898e",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth"
+  },
+  "mrlfn_sweep_720p": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/mrlfn_sweep_720p.onnx",
+    "source_sha256": "142e90376fdaf5ff0bb33b2b447db3b37e808cea392a94bdbb4b97c9ab8bc1b9",
+    "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth"
+  }
+}

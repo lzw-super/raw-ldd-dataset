@@ -1,0 +1,410 @@
+{
+  "haar_hf_repncb_prelu_residual_sweep_2k": {
+    "config": "configs/deploy/haar_hf_repncb_prelu_residual_sweep_2k.yaml",
+    "settings": {
+      "name": "haar_hf_repncb_prelu_residual_sweep_2k",
+      "kind": "learning_dwt_repncb",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+      "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_repncb_prelu_residual_ll_no_norm.yaml",
+      "height": 736,
+      "width": 1280,
+      "simplify": true
+    },
+    "checkpoint_sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "hf_cnn",
+        "ll_normalize": false,
+        "hf_cnn_variant": "repncb_prelu_residual",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_2k.onnx",
+    "source_sha256": "fc0c48d3d2ad23fd819d6a1d52db1beb084de7195ac85ce1472d98ebc4831105",
+    "operators_before": {
+      "Constant": 8,
+      "Conv": 22,
+      "Split": 6,
+      "Concat": 8,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 6,
+      "Concat": 8,
+      "PRelu": 11,
+      "Add": 3,
+      "Relu": 1,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 8.344650268554688e-07,
+        "mean_abs": 1.0266747096920881e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.3131648302078247e-07,
+        "mean_abs": 1.5619356474871893e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 8.917413651943207e-08,
+        "mean_abs": 1.5657443341865473e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 8.917413651943207e-08,
+        "mean_abs": 1.5657443341865473e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.1718245218617085e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 9.156065061688423e-08,
+        "mean_abs": 1.565789631285952e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      736,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 90368,
+    "hf_parameter_count": 3960
+  },
+  "haar_hf_cnn_dw3_residual_sweep_2k": {
+    "config": "configs/deploy/haar_hf_cnn_dw3_residual_sweep_2k.yaml",
+    "settings": {
+      "name": "haar_hf_cnn_dw3_residual_sweep_2k",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+      "kind": "haar_hf_cnn",
+      "height": 736,
+      "width": 1280,
+      "simplify": true,
+      "hf_cnn_variant": "dw3_residual",
+      "seed": 2026
+    },
+    "checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "band_channel",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw1",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_cnn_dw3_residual_sweep_2k.onnx",
+    "source_sha256": "b90c60a76ea7b488523fcca4fe08f838478950fed699c4d361265d2417c636e1",
+    "operators_before": {
+      "Conv": 22,
+      "Constant": 2,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 22,
+      "Split": 3,
+      "Relu": 4,
+      "Add": 3,
+      "PRelu": 8,
+      "Concat": 5,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.0743510614474872e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 1.0151416063308716e-07,
+        "mean_abs": 1.0675203832022362e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 8.961647424143848e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.705522537231445e-08,
+        "mean_abs": 8.961647424143848e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.7881393432617188e-06,
+        "mean_abs": 1.150358670543028e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 8.940696716308594e-08,
+        "mean_abs": 8.961384523331617e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      736,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "untrained_cnn_variant",
+    "deployed_parameter_count": 86768,
+    "hf_parameter_count": 360
+  },
+  "mrlfn_sweep_2k": {
+    "config": "configs/deploy/mrlfn_sweep_2k.yaml",
+    "settings": {
+      "kind": "mrlfn",
+      "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+      "simplify": true,
+      "name": "mrlfn_sweep_2k",
+      "height": 736,
+      "width": 1280
+    },
+    "checkpoint_sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85",
+    "metadata": {
+      "model": "mrlfn",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 4,
+      "model_bias": true,
+      "space_to_depth_factor": 4,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy"
+    },
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/mrlfn_sweep_2k.onnx",
+    "source_sha256": "ae537096a353b4c7d120c441a2c0a6233e1659bfc640cec03150a7fd2ede142d",
+    "operators_before": {
+      "DepthToSpace": 2,
+      "Constant": 4,
+      "Reshape": 4,
+      "Transpose": 2,
+      "Conv": 20,
+      "Relu": 12,
+      "Add": 8,
+      "Concat": 1
+    },
+    "operators_after": {
+      "DepthToSpace": 2,
+      "Reshape": 4,
+      "Transpose": 2,
+      "Conv": 20,
+      "Relu": 12,
+      "Add": 8,
+      "Concat": 1
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 1.0132789611816406e-06,
+        "mean_abs": 1.0448862752809873e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.731149137020111e-08,
+        "mean_abs": 1.0762271074327145e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.5067419312231323e-08,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.461050361394882e-08,
+        "mean_abs": 1.5067419312231323e-08,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.5497207641601562e-06,
+        "mean_abs": 1.0620356505341988e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 7.450580596923828e-08,
+        "mean_abs": 1.506751523550065e-08,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      736,
+      1280
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 130672,
+    "hf_parameter_count": 0
+  }
+}

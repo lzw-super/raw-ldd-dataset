@@ -1,0 +1,8 @@
+name: haar_hf_cnn_dw3_residual_sweep_720p
+checkpoint: experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth
+kind: haar_hf_cnn
+height: 368
+width: 640
+simplify: true
+hf_cnn_variant: dw3_residual
+seed: 2026

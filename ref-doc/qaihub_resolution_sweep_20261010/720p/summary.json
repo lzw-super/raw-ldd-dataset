@@ -1,0 +1,165 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    368,
+    640
+  ],
+  "time_unit": "milliseconds",
+  "models": {
+    "haar_hf_repncb_prelu_residual_sweep_720p": {
+      "rounds": [
+        {
+          "job": "jp4ex42qg",
+          "reported_ms": 0.896,
+          "sample_count": 100,
+          "mean_ms": 1.03815,
+          "min_ms": 0.896,
+          "max_ms": 8.587,
+          "p50_ms": 0.914,
+          "p95_ms": 1.2018499999999999,
+          "compute_unit_counts": {
+            "NPU": 78
+          }
+        },
+        {
+          "job": "j5m9wklyg",
+          "reported_ms": 0.892,
+          "sample_count": 100,
+          "mean_ms": 0.9454400000000001,
+          "min_ms": 0.892,
+          "max_ms": 1.421,
+          "p50_ms": 0.921,
+          "p95_ms": 1.05325,
+          "compute_unit_counts": {
+            "NPU": 78
+          }
+        },
+        {
+          "job": "jgn19qdvp",
+          "reported_ms": 0.902,
+          "sample_count": 100,
+          "mean_ms": 0.96456,
+          "min_ms": 0.902,
+          "max_ms": 1.471,
+          "p50_ms": 0.9555,
+          "p95_ms": 1.02775,
+          "compute_unit_counts": {
+            "NPU": 78
+          }
+        }
+      ],
+      "reported_mean_ms": 0.8966666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 0.9827166666666667,
+      "sample_p50_ms": 0.9365000000000001,
+      "sample_p95_ms": 1.1299000000000001,
+      "reciprocal_sample_mean_hz": 1017.5873005104896,
+      "dlc_bytes": 189568,
+      "dlc_sha256": "18402c0cc6d0c6b329c44c1533ed964b2fcb8f3faa6a0c6d4643b22b4a2c5be9"
+    },
+    "haar_hf_cnn_dw3_residual_sweep_720p": {
+      "rounds": [
+        {
+          "job": "jpy842krg",
+          "reported_ms": 0.755,
+          "sample_count": 100,
+          "mean_ms": 0.80225,
+          "min_ms": 0.755,
+          "max_ms": 1.582,
+          "p50_ms": 0.767,
+          "p95_ms": 0.8831999999999999,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "jp8j3rdz5",
+          "reported_ms": 0.754,
+          "sample_count": 100,
+          "mean_ms": 0.79745,
+          "min_ms": 0.754,
+          "max_ms": 1.307,
+          "p50_ms": 0.767,
+          "p95_ms": 0.9271,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "j5q471x7g",
+          "reported_ms": 0.753,
+          "sample_count": 100,
+          "mean_ms": 0.78486,
+          "min_ms": 0.753,
+          "max_ms": 1.394,
+          "p50_ms": 0.767,
+          "p95_ms": 0.8581,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        }
+      ],
+      "reported_mean_ms": 0.754,
+      "sample_count": 300,
+      "sample_mean_ms": 0.7948533333333333,
+      "sample_p50_ms": 0.767,
+      "sample_p95_ms": 0.8903500000000001,
+      "reciprocal_sample_mean_hz": 1258.0937363706512,
+      "dlc_bytes": 169808,
+      "dlc_sha256": "82563d1a060a4404d88ce7202795b4b83f3bc15314c869913a8163566df8267b"
+    },
+    "mrlfn_sweep_720p": {
+      "rounds": [
+        {
+          "job": "jgod1w745",
+          "reported_ms": 0.764,
+          "sample_count": 100,
+          "mean_ms": 0.78305,
+          "min_ms": 0.764,
+          "max_ms": 1.326,
+          "p50_ms": 0.7715000000000001,
+          "p95_ms": 0.8073,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jpv21my7g",
+          "reported_ms": 0.767,
+          "sample_count": 100,
+          "mean_ms": 0.79354,
+          "min_ms": 0.767,
+          "max_ms": 1.335,
+          "p50_ms": 0.773,
+          "p95_ms": 0.8476999999999999,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jpe6rx07g",
+          "reported_ms": 0.767,
+          "sample_count": 100,
+          "mean_ms": 0.80717,
+          "min_ms": 0.767,
+          "max_ms": 1.367,
+          "p50_ms": 0.7765,
+          "p95_ms": 0.9404499999999999,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        }
+      ],
+      "reported_mean_ms": 0.766,
+      "sample_count": 300,
+      "sample_mean_ms": 0.7945866666666667,
+      "sample_p50_ms": 0.773,
+      "sample_p95_ms": 0.9176000000000002,
+      "reciprocal_sample_mean_hz": 1258.5159579823471,
+      "dlc_bytes": 196864,
+      "dlc_sha256": "bd5185add7a8348ecd3de387edce9a86a12f8d79fc0d11a7da9395545d66e9a7"
+    }
+  }
+}

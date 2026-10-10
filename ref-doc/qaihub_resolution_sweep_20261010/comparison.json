@@ -1,0 +1,44 @@
+{
+  "720p": {
+    "shape": [
+      1,
+      4,
+      368,
+      640
+    ],
+    "repncb_ms": 0.9827166666666667,
+    "dw3_ms": 0.7948533333333333,
+    "mrlfn_ms": 0.7945866666666667,
+    "repncb_saved_ms": -0.18813000000000002,
+    "repncb_latency_reduction_percent": -23.6764607175219,
+    "repncb_speedup": 0.8085613011549616
+  },
+  "1080p": {
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "repncb_ms": 1.8167866666666665,
+    "dw3_ms": 1.5688133333333334,
+    "mrlfn_ms": 2.2286733333333335,
+    "repncb_saved_ms": 0.41188666666666696,
+    "repncb_latency_reduction_percent": 18.481248934343608,
+    "repncb_speedup": 1.2267116300574643
+  },
+  "2k": {
+    "shape": [
+      1,
+      4,
+      720,
+      1280
+    ],
+    "repncb_ms": 3.4471266666666667,
+    "dw3_ms": 4.22371,
+    "mrlfn_ms": 4.866916666666667,
+    "repncb_saved_ms": 1.4197899999999999,
+    "repncb_latency_reduction_percent": 29.172268547848567,
+    "repncb_speedup": 1.41187636466313
+  }
+}

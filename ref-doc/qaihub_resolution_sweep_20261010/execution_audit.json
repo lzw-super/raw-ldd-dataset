@@ -1,0 +1,161 @@
+{
+  "720p": {
+    "haar_hf_repncb_prelu_residual_sweep_720p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        368,
+        640
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_repncb_prelu_residual_sweep_720p/profile_logs_1/jp4ex42qg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_repncb_prelu_residual_sweep_720p/profile_logs_2/j5m9wklyg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_repncb_prelu_residual_sweep_720p/profile_logs_3/jgn19qdvp_runtime.log"
+      ]
+    },
+    "haar_hf_cnn_dw3_residual_sweep_720p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        368,
+        640
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_cnn_dw3_residual_sweep_720p/profile_logs_1/jpy842krg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_cnn_dw3_residual_sweep_720p/profile_logs_2/jp8j3rdz5_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/haar_hf_cnn_dw3_residual_sweep_720p/profile_logs_3/j5q471x7g_runtime.log"
+      ]
+    },
+    "mrlfn_sweep_720p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        368,
+        640
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/mrlfn_sweep_720p/profile_logs_1/jgod1w745_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/mrlfn_sweep_720p/profile_logs_2/jpv21my7g_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/720p/mrlfn_sweep_720p/profile_logs_3/jpe6rx07g_runtime.log"
+      ]
+    }
+  },
+  "1080p": {
+    "haar_hf_repncb_prelu_residual_sweep_1080p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        544,
+        960
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_repncb_prelu_residual_sweep_1080p/profile_logs_1/jpx07rzjp_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_repncb_prelu_residual_sweep_1080p/profile_logs_2/jprx4dmvp_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_repncb_prelu_residual_sweep_1080p/profile_logs_3/jp2o7dqxg_runtime.log"
+      ]
+    },
+    "haar_hf_cnn_dw3_residual_sweep_1080p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        544,
+        960
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_cnn_dw3_residual_sweep_1080p/profile_logs_1/jp0o1982p_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_cnn_dw3_residual_sweep_1080p/profile_logs_2/jgk6l0wy5_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/haar_hf_cnn_dw3_residual_sweep_1080p/profile_logs_3/jglw089ep_runtime.log"
+      ]
+    },
+    "mrlfn_sweep_1080p": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        544,
+        960
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/mrlfn_sweep_1080p/profile_logs_1/j5wydz0zg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/mrlfn_sweep_1080p/profile_logs_2/jp1od1kk5_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/1080p/mrlfn_sweep_1080p/profile_logs_3/jgd6r4ykp_runtime.log"
+      ]
+    }
+  },
+  "2k": {
+    "haar_hf_repncb_prelu_residual_sweep_2k": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_1/j57ojn1qg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_2/jp4ex46qg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_3/jpx07r8jp_runtime.log"
+      ]
+    },
+    "haar_hf_cnn_dw3_residual_sweep_2k": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_1/j5m9wk1yg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_2/jgn19q4vp_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_3/jprx4drvp_runtime.log"
+      ]
+    },
+    "mrlfn_sweep_2k": {
+      "samples": 300,
+      "npu_only": true,
+      "w8a8_verified": true,
+      "onnx_hash_verified": true,
+      "shape": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "runtime_logs": [
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/mrlfn_sweep_2k/profile_logs_1/jp2o7d1xg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/mrlfn_sweep_2k/profile_logs_2/jpy842lrg_runtime.log",
+        "ref-doc/qaihub_resolution_sweep_20261010/2k/mrlfn_sweep_2k/profile_logs_3/jp8j3rnz5_runtime.log"
+      ]
+    }
+  }
+}
