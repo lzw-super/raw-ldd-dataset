@@ -1,0 +1,37 @@
+{
+  "haar_hf_repncb_prelu_residual": {
+    "source": "experiments/npu_1080p_repncb/inputs/best_snapshot.pth",
+    "snapshot": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+    "sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+    "previous_1080p_checkpoint_sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+    "same_checkpoint_as_1080p": true
+  },
+  "haar_hf_dw3_dual_relu": {
+    "source": "experiments/npu_1080p_dual_dw3/inputs/best_snapshot.pth",
+    "snapshot": "experiments/npu_4k/inputs/haar_hf_dw3_dual_relu_snapshot.pth",
+    "sha256": "92f4ed1f4675d77591a8f15848dabd5de1d9ec761ff045a81ca6d25d1b63c528",
+    "previous_1080p_checkpoint_sha256": "92f4ed1f4675d77591a8f15848dabd5de1d9ec761ff045a81ca6d25d1b63c528",
+    "same_checkpoint_as_1080p": true
+  },
+  "haar_hf_cnn_dw3_residual": {
+    "source": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_static_hf_depth5_soft_ll_no_norm/checkpoints/best.pth",
+    "snapshot": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+    "sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "previous_1080p_checkpoint_sha256": "a55e846e7bb125f8de3d5db1445f147eacafce99eb5bb500459c2a6b088a3060",
+    "same_checkpoint_as_1080p": true
+  },
+  "mrlfn": {
+    "source": "experiments/sid_sony_mrlfn_paper_s2d_k4_n4_d32/checkpoints/best.pth",
+    "snapshot": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+    "sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85",
+    "previous_1080p_checkpoint_sha256": "7aa3bb5fc1c4c9e17616f799d807703162db74027c19e3842d2f4638853a8f85",
+    "same_checkpoint_as_1080p": true
+  },
+  "splitternet": {
+    "source": "experiments/sid_sony_splitternet/checkpoints/best.pth",
+    "snapshot": "experiments/npu_4k/inputs/splitternet_snapshot.pth",
+    "sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "previous_1080p_checkpoint_sha256": "4f7b74f388206b6727726f9cc9f225bdbc883c5b91f495153d104119b4796ab2",
+    "same_checkpoint_as_1080p": true
+  }
+}

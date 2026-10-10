@@ -1,0 +1,27 @@
+{
+  "haar_hf_repncb_prelu_residual_4k": {
+    "source": "experiments/npu_4k_1088/onnx/haar_hf_repncb_prelu_residual_4k.onnx",
+    "source_sha256": "306a3d82aacf3884007d7381e905b95fcdc97538c9e71cd7cda78dc96b5b0440",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth"
+  },
+  "haar_hf_dw3_dual_relu_4k": {
+    "source": "experiments/npu_4k_1088/onnx/haar_hf_dw3_dual_relu_4k.onnx",
+    "source_sha256": "baf90fe2c27b2c2f0e6bb5c64ff34d848fadaffd6e80fe9fa842b43b638ce7b2",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_dw3_dual_relu_snapshot.pth"
+  },
+  "haar_hf_cnn_dw3_residual_4k": {
+    "source": "experiments/npu_4k_1088/onnx/haar_hf_cnn_dw3_residual_4k.onnx",
+    "source_sha256": "cd506f577e649a1760a044d150bdcc0f686dfe7ed95518fd8afca3f996b50292",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth"
+  },
+  "mrlfn_4k": {
+    "source": "experiments/npu_4k_1088/onnx/mrlfn_4k.onnx",
+    "source_sha256": "97c7215cc9bd85bfeac51fa609f4dfab98b83f0884486a239f68656992ebccc1",
+    "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth"
+  },
+  "splitternet_4k": {
+    "source": "experiments/npu_4k_1088/onnx/splitternet_4k.onnx",
+    "source_sha256": "c0cf3e111a16875c9cbafac3b7b9a0c69d3e755edf27d82421d8687796711458",
+    "checkpoint": "experiments/npu_4k/inputs/splitternet_snapshot.pth"
+  }
+}

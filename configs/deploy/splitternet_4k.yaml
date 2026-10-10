@@ -1,0 +1,6 @@
+kind: splitternet
+checkpoint: experiments/npu_4k/inputs/splitternet_snapshot.pth
+simplify: true
+name: splitternet_4k
+height: 1088
+width: 1920

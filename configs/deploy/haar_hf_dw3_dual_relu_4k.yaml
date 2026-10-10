@@ -1,0 +1,7 @@
+name: haar_hf_dw3_dual_relu_4k
+kind: learning_dwt_repncb
+checkpoint: experiments/npu_4k/inputs/haar_hf_dw3_dual_relu_snapshot.pth
+training_config: configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_dual_relu_ll_no_norm.yaml
+height: 1088
+width: 1920
+simplify: true

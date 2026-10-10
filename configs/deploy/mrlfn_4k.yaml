@@ -1,0 +1,6 @@
+kind: mrlfn
+checkpoint: experiments/npu_4k/inputs/mrlfn_snapshot.pth
+simplify: true
+name: mrlfn_4k
+height: 1088
+width: 1920

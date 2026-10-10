@@ -1,0 +1,87 @@
+{
+  "haar_hf_repncb_prelu_residual_4k": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_hash_verified": true,
+    "shape": [
+      1,
+      4,
+      1088,
+      1920
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_repncb_prelu_residual_4k/profile_logs_1/jp0o19m0p_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_repncb_prelu_residual_4k/profile_logs_2/jp8j3req5_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_repncb_prelu_residual_4k/profile_logs_3/j5q471leg_runtime.log"
+    ]
+  },
+  "haar_hf_dw3_dual_relu_4k": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_hash_verified": true,
+    "shape": [
+      1,
+      4,
+      1088,
+      1920
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_dw3_dual_relu_4k/profile_logs_1/jglw08y2p_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_dw3_dual_relu_4k/profile_logs_2/j56o3m8n5_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_dw3_dual_relu_4k/profile_logs_3/jp3o47zmp_runtime.log"
+    ]
+  },
+  "haar_hf_cnn_dw3_residual_4k": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_hash_verified": true,
+    "shape": [
+      1,
+      4,
+      1088,
+      1920
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_cnn_dw3_residual_4k/profile_logs_1/jgod1wl15_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_cnn_dw3_residual_4k/profile_logs_2/jpv21mlzg_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/haar_hf_cnn_dw3_residual_4k/profile_logs_3/jgj30yr1p_runtime.log"
+    ]
+  },
+  "mrlfn_4k": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_hash_verified": true,
+    "shape": [
+      1,
+      4,
+      1088,
+      1920
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_4k_1088_20261010/mrlfn_4k/profile_logs_1/jpe6rx78g_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/mrlfn_4k/profile_logs_2/jgzzxyl4g_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/mrlfn_4k/profile_logs_3/j5wydzl4g_runtime.log"
+    ]
+  },
+  "splitternet_4k": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "source_hash_verified": true,
+    "shape": [
+      1,
+      4,
+      1088,
+      1920
+    ],
+    "runtime_logs": [
+      "ref-doc/qaihub_4k_1088_20261010/splitternet_4k/profile_logs_1/jp1od1nn5_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/splitternet_4k/profile_logs_2/jgd6r4d6p_runtime.log",
+      "ref-doc/qaihub_4k_1088_20261010/splitternet_4k/profile_logs_3/j57ojneng_runtime.log"
+    ]
+  }
+}

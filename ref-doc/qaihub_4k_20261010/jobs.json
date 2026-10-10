@@ -1,0 +1,47 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    1080,
+    1920
+  ],
+  "sdk": "0.56.0",
+  "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+  "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+  "calibration": "Platform-generated random calibration; performance only",
+  "models": {
+    "haar_hf_repncb_prelu_residual_4k": {
+      "source": "experiments/npu_4k/onnx/haar_hf_repncb_prelu_residual_4k.onnx",
+      "source_sha256": "c6367135918bb103d6f30e65e65b15dced8dc33accf01c3c137582c86a6dc8c1",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+      "compile_job": "jglw08x2p",
+      "compile_status": "JobStatus\n---------\ncode    : CREATED\nmessage : \n",
+      "compile_code": "CREATED"
+    },
+    "haar_hf_dw3_dual_relu_4k": {
+      "source": "experiments/npu_4k/onnx/haar_hf_dw3_dual_relu_4k.onnx",
+      "source_sha256": "1a964a13a8e9fec720defc9d640d86c36dd0bc38dbaac6959de6b7d4178f2af2",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_dw3_dual_relu_snapshot.pth",
+      "compile_job": "j56o3m7n5",
+      "compile_status": "JobStatus\n---------\ncode    : CREATED\nmessage : \n",
+      "compile_code": "CREATED"
+    },
+    "haar_hf_cnn_dw3_residual_4k": {
+      "source": "experiments/npu_4k/onnx/haar_hf_cnn_dw3_residual_4k.onnx",
+      "source_sha256": "8b5fa144035002e68e2ff06c24b0701bdb7edf40954f5e1eb10705321564f52a",
+      "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+      "compile_job": "jp3o479mp",
+      "compile_status": "JobStatus\n---------\ncode    : OPTIMIZING_MODEL\nmessage : \n",
+      "compile_code": "OPTIMIZING_MODEL"
+    },
+    "mrlfn_4k": {
+      "source": "experiments/npu_4k/onnx/mrlfn_4k.onnx",
+      "source_sha256": "f410c443feac71711405a3dfb38e1df2fa5c9eb0b014bfc72d6efc348bada891",
+      "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+      "compile_job": "jgod1wr15",
+      "compile_status": "JobStatus\n---------\ncode    : CREATED\nmessage : \n",
+      "compile_code": "CREATED"
+    }
+  }
+}
