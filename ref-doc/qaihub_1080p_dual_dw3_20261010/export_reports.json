@@ -1,0 +1,152 @@
+{
+  "haar_hf_dw3_dual_relu_1080p": {
+    "config": "configs/deploy/haar_hf_dw3_dual_relu_1080p.yaml",
+    "settings": {
+      "name": "haar_hf_dw3_dual_relu_1080p",
+      "kind": "learning_dwt_repncb",
+      "checkpoint": "experiments/npu_1080p_dual_dw3/inputs/best_snapshot.pth",
+      "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_dual_relu_ll_no_norm.yaml",
+      "height": 544,
+      "width": 960,
+      "simplify": true
+    },
+    "checkpoint_sha256": "92f4ed1f4675d77591a8f15848dabd5de1d9ec761ff045a81ca6d25d1b63c528",
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "hf_cnn",
+        "ll_normalize": false,
+        "hf_cnn_variant": "dw3_dual_relu",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "source": "experiments/npu_1080p_dual_dw3/onnx/haar_hf_dw3_dual_relu_1080p.onnx",
+    "source_sha256": "aaaaae43bf60f7be23c4a86ea95f40dd738f03251898a110ccf4e87324b6263c",
+    "operators_before": {
+      "Constant": 8,
+      "Conv": 25,
+      "Split": 6,
+      "Concat": 8,
+      "Relu": 7,
+      "Sub": 3,
+      "PRelu": 8,
+      "ConvTranspose": 4
+    },
+    "operators_after": {
+      "Conv": 25,
+      "Split": 6,
+      "Concat": 8,
+      "Relu": 7,
+      "Sub": 3,
+      "PRelu": 8,
+      "ConvTranspose": 4
+    },
+    "checks": [
+      {
+        "input": "uniform",
+        "max_abs": 7.748603820800781e-07,
+        "mean_abs": 1.078342464211346e-07,
+        "passed": true
+      },
+      {
+        "input": "signed_raw",
+        "max_abs": 8.579809218645096e-08,
+        "mean_abs": 1.0849755760489188e-08,
+        "passed": true
+      },
+      {
+        "input": "zeros",
+        "max_abs": 6.135087460279465e-08,
+        "mean_abs": 9.633993158786325e-09,
+        "passed": true
+      },
+      {
+        "input": "tiny",
+        "max_abs": 6.135087460279465e-08,
+        "mean_abs": 9.633993158786325e-09,
+        "passed": true
+      },
+      {
+        "input": "border_ramp",
+        "max_abs": 1.6689300537109375e-06,
+        "mean_abs": 1.264112370336079e-07,
+        "passed": true
+      },
+      {
+        "input": "corner_impulses",
+        "max_abs": 6.228219717741013e-08,
+        "mean_abs": 9.633381203855151e-09,
+        "passed": true
+      }
+    ],
+    "shape": [
+      1,
+      4,
+      544,
+      960
+    ],
+    "torch_version": "2.1.2",
+    "onnx_version": "1.16.2",
+    "ort_version": "1.18.0",
+    "onnxsim_version": "0.4.36",
+    "reference_kind": "original_checkpoint",
+    "deployed_parameter_count": 87128,
+    "hf_parameter_count": 720
+  }
+}

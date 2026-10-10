@@ -1,0 +1,44 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    544,
+    960
+  ],
+  "sdk": "0.56.0",
+  "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+  "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+  "calibration": "Platform-generated random calibration; performance only",
+  "models": {
+    "haar_hf_dw3_dual_relu_1080p": {
+      "source": "experiments/npu_1080p_dual_dw3/onnx/haar_hf_dw3_dual_relu_1080p.onnx",
+      "source_sha256": "aaaaae43bf60f7be23c4a86ea95f40dd738f03251898a110ccf4e87324b6263c",
+      "checkpoint": "experiments/npu_1080p_dual_dw3/inputs/best_snapshot.pth",
+      "compile_job": "jp8j3ryx5",
+      "compile_status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+      "compile_code": "SUCCESS",
+      "target_model": "mq9ekll4m",
+      "profile_jobs": [
+        {
+          "id": "jpv21mkjg",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jgj30ynxp",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        },
+        {
+          "id": "jpe6rxm1g",
+          "status": "JobStatus\n---------\ncode    : SUCCESS\nmessage : \n",
+          "code": "SUCCESS",
+          "downloaded": true
+        }
+      ]
+    }
+  }
+}

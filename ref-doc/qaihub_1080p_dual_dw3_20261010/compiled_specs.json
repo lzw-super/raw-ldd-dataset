@@ -1,0 +1,41 @@
+{
+  "haar_hf_dw3_dual_relu_1080p": {
+    "input_spec": {
+      "None": [
+        {
+          "name": "noisy_raw",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            544,
+            960
+          ],
+          "scale": 0.0039215655997395515,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "None": [
+        {
+          "name": "output_0",
+          "dtype": "uint8",
+          "shape": [
+            1,
+            4,
+            544,
+            960
+          ],
+          "scale": 0.0027262805961072445,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "metadata": {
+      "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+      "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+      "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_de3sf1d2"
+    }
+  }
+}

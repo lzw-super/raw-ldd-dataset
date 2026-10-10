@@ -549,3 +549,27 @@ done
 ```
 
 相关回归测试27项通过，涵盖反向传播、部署一致性和checkpoint重载；未启动数据集训练或NPU测速。
+
+
+### 8.8 双分支相减：学习Soft收缩函数
+
+沿用不带精修skip1x1的depth5 DW3残差配置，替换高频处理器为两个独立分支相减，不额外加回输入。三级各处理同层拼接的12通道高频，层间、分支间均不共享参数。
+
+| 组别 | 高频函数 | 三级HF参数总数 | 配置 |
+|---|---|---:|---|
+| dw1_dual_relu | ReLU(DW1⁺(z)) − ReLU(DW1⁻(z)) | 144 | [训练配置](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_dual_relu_ll_no_norm.yaml) |
+| dw3_dual_relu | ReLU(DW3⁺(z)) − ReLU(DW3⁻(z)) | 720 | [训练配置](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_dual_relu_ll_no_norm.yaml) |
+| dw1_dual_prelu | PReLU₁(DW1⁺(z)) − PReLU₂(DW1⁻(z)) | 216 | [训练配置](../configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw1_dual_prelu_ll_no_norm.yaml) |
+
+DW均为12→12、groups=12、带bias。DW1权重分别为+1/-1；DW3仅中心元素为+1/-1，其余为0（而不是整个3×3核填±1），确保两路初始输入分别为z和−z。DW3训练后可学习邻域信息。双PReLU各有12个可学习负斜率，初始化为0以与ReLU组具有相同初始函数，相减后不加激活。
+
+新参数 `dwt_hf_cnn_init_bias: 0.0` 控制双分支偏置的共同初始值，训练时两路bias独立更新。默认初始输出为z，即阈值T=0的soft收缩。若想从正阈值T开始，应设置bias=−T，因为 `soft(z,T)=ReLU(z−T)−ReLU(−z−T)`。正bias虽然允许，但不对应正阈值收缩：在|z|<bias时初始输出为2z，外侧为z+sign(z)·bias。
+
+所有权重、偏置及PReLU斜率参与学习，没有强制两路训练后继续反对称，也没有保证最终一定仍是严格soft函数。偏置单位是原始小波系数幅度，未乘band scale。三组均采用独立输出目录，从头训练，保留基线GPU设置。未启动数据集训练或测速。
+
+```bash
+for variant in dw1_dual_relu dw3_dual_relu dw1_dual_prelu; do
+  conda run --no-capture-output -n LED-ICCV23 python train_sid_sony.py \
+    --config "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_${variant}_ll_no_norm.yaml" || break
+done
+```

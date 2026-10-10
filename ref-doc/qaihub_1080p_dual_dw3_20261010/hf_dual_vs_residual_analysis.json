@@ -1,0 +1,63 @@
+{
+  "haar_hf_cnn_dw3_residual_1080p": {
+    "rounds": [
+      {
+        "profile": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_1.json",
+        "entries": 60,
+        "total_cycles": 8110583,
+        "hf_cycles": 408297,
+        "merge_cycles": 342861
+      },
+      {
+        "profile": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_2.json",
+        "entries": 60,
+        "total_cycles": 8101959,
+        "hf_cycles": 408937,
+        "merge_cycles": 342991
+      },
+      {
+        "profile": "ref-doc/qaihub_1080p_20261009/haar_hf_cnn_dw3_residual_1080p/profile_3.json",
+        "entries": 60,
+        "total_cycles": 8167164,
+        "hf_cycles": 408456,
+        "merge_cycles": 342812
+      }
+    ],
+    "mean_cycles": {
+      "total_cycles": 8126568.666666667,
+      "hf_cycles": 408563.3333333333,
+      "merge_cycles": 342888.0
+    }
+  },
+  "haar_hf_dw3_dual_relu_1080p": {
+    "rounds": [
+      {
+        "profile": "ref-doc/qaihub_1080p_dual_dw3_20261010/haar_hf_dw3_dual_relu_1080p/profile_1.json",
+        "entries": 84,
+        "total_cycles": 12003924,
+        "hf_cycles": 1969410,
+        "merge_cycles": 1469885
+      },
+      {
+        "profile": "ref-doc/qaihub_1080p_dual_dw3_20261010/haar_hf_dw3_dual_relu_1080p/profile_2.json",
+        "entries": 84,
+        "total_cycles": 11928945,
+        "hf_cycles": 1953042,
+        "merge_cycles": 1455296
+      },
+      {
+        "profile": "ref-doc/qaihub_1080p_dual_dw3_20261010/haar_hf_dw3_dual_relu_1080p/profile_3.json",
+        "entries": 84,
+        "total_cycles": 12022589,
+        "hf_cycles": 1990708,
+        "merge_cycles": 1492226
+      }
+    ],
+    "mean_cycles": {
+      "total_cycles": 11985152.666666666,
+      "hf_cycles": 1971053.3333333333,
+      "merge_cycles": 1472469.0
+    }
+  },
+  "note": "Instrumented execution_cycles are attribution evidence, not normal latency; fused entries may include other work. Do not convert to milliseconds or interpret as isolated Add/Sub cost."
+}

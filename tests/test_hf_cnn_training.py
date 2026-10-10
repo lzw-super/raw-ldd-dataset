@@ -15,7 +15,8 @@ PREFIX = 'train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb
 
 @pytest.mark.parametrize('variant,hf_params', [('dw1',72), ('dw3',360), ('dw3_pw1',828), ('dw1_residual',72), ('dw3_residual',360), ('dw3_prelu_residual',396),
     ('dw3_skipdw1_residual',432), ('dw3_prelu_skipdw1_residual',468),
-    ('repncb_prelu_residual',14328)])
+    ('repncb_prelu_residual',14328), ('dw1_dual_relu',144),
+    ('dw3_dual_relu',720), ('dw1_dual_prelu',216)])
 def test_training_and_checkpoint_roundtrip(variant, hf_params, tmp_path):
     torch.set_num_threads(2)
     torch.manual_seed(2026)
@@ -32,7 +33,10 @@ def test_training_and_checkpoint_roundtrip(variant, hf_params, tmp_path):
     assert len(wavelet.processors) == 3
     for processor in wavelet.processors:
         assert processor.residual == variant.endswith("_residual")
-        if variant.startswith('repncb'):
+        if '_dual_' in variant:
+            assert len(processor.branches) == 2
+            assert not processor.residual
+        elif variant.startswith('repncb'):
             assert isinstance(processor.block.activation, torch.nn.PReLU)
             assert sum(isinstance(m, torch.nn.PReLU) for m in processor.modules()) == 1
         else:

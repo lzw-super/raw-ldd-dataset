@@ -1,0 +1,24 @@
+{
+  "training_config": "configs/train_sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_dual_relu_ll_no_norm.yaml",
+  "original_checkpoint": "experiments/sid_sony_learning_dwt_haar_l3_d32_atlas_ll3_cnn_concat1x1_repncb_w32_ll_repncb_hf_cnn_depth5_dw3_dual_relu_ll_no_norm/checkpoints/best.pth",
+  "snapshot": "experiments/npu_1080p_dual_dw3/inputs/best_snapshot.pth",
+  "snapshot_sha256": "92f4ed1f4675d77591a8f15848dabd5de1d9ec761ff045a81ca6d25d1b63c528",
+  "epoch": 1000,
+  "checkpoint_keys": [
+    "epoch",
+    "global_step",
+    "best_psnr",
+    "best_epoch",
+    "best_train_l1",
+    "best_train_l1_epoch",
+    "model",
+    "optimizer",
+    "scheduler",
+    "scaler",
+    "args",
+    "checkpoint_format",
+    "training_graph",
+    "model_deploy",
+    "inference_graph"
+  ]
+}

@@ -234,7 +234,7 @@ class LearningDWT(nn.Module):
                  ll_max_threshold: float | None = None, shrink_mode: str = "soft",
                  ll_mode: str = "threshold", ll_width: int = 32, ll_depth: int = 4,
                  ll_fusion: str = "residual", trainable_haar: bool = False,
-                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn", ll_normalize: bool = True, hf_cnn_variant: str = "dw1"):
+                 haar_share_channels: bool = True, haar_share_levels: bool = True, ll_block_type: str = "conv3x3", threshold_mode: str = "cnn", ll_normalize: bool = True, hf_cnn_variant: str = "dw1", hf_cnn_init_bias: float = 0.0):
         super().__init__()
         if context not in ("atlas", "bandwise"):
             raise ValueError("context must be atlas or bandwise")
@@ -288,7 +288,7 @@ class LearningDWT(nn.Module):
             self.band_bias = nn.Parameter(bias)
         elif threshold_mode == "hf_cnn":
             from models.haar_hf_cnn import HighFrequencyCNN
-            self.processors = nn.ModuleList([HighFrequencyCNN(hf_cnn_variant) for _ in range(levels)])
+            self.processors = nn.ModuleList([HighFrequencyCNN(hf_cnn_variant, init_bias=hf_cnn_init_bias) for _ in range(levels)])
         else:
             if shrink_mode in ("firm", "pwl"):
                 from .direct_shrinkage import DirectShrinkage
@@ -472,7 +472,7 @@ DWT_DEFAULTS = dict(dwt_width=64, dwt_depth=4, dwt_context="bandwise",
                     dwt_ll_max_threshold=0.01, dwt_shrink_mode="soft",
                     dwt_ll_mode="threshold", dwt_ll_width=32, dwt_ll_depth=4,
                     dwt_ll_fusion="residual", dwt_trainable_haar=False,
-                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn", dwt_ll_normalize=True, dwt_hf_cnn_variant="dw1")
+                    dwt_haar_share_channels=True, dwt_haar_share_levels=True, dwt_ll_block_type="conv3x3", dwt_threshold_mode="cnn", dwt_ll_normalize=True, dwt_hf_cnn_variant="dw1", dwt_hf_cnn_init_bias=0.0)
 
 
 def learning_dwt_kwargs(options):

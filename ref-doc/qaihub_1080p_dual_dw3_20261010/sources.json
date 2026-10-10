@@ -1,0 +1,7 @@
+{
+  "haar_hf_dw3_dual_relu_1080p": {
+    "source": "experiments/npu_1080p_dual_dw3/onnx/haar_hf_dw3_dual_relu_1080p.onnx",
+    "source_sha256": "aaaaae43bf60f7be23c4a86ea95f40dd738f03251898a110ccf4e87324b6263c",
+    "checkpoint": "experiments/npu_1080p_dual_dw3/inputs/best_snapshot.pth"
+  }
+}
