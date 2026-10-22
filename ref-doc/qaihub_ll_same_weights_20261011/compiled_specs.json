@@ -1,0 +1,72 @@
+{
+  "haar_same_weights_full_2k": {
+    "input_spec": {
+      "None": [
+        {
+          "name": "noisy_raw",
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "dtype": "uint8",
+          "scale": 0.003921568393707275,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "None": [
+        {
+          "name": "output_0",
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "dtype": "uint8",
+          "scale": 0.0036837689112871885,
+          "zero_point": 28.0
+        }
+      ]
+    },
+    "returned_calibration_dataset_id": "d9w5r63k9"
+  },
+  "haar_same_weights_bypass_2k": {
+    "input_spec": {
+      "None": [
+        {
+          "name": "noisy_raw",
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "dtype": "uint8",
+          "scale": 0.003921568393707275,
+          "zero_point": 0.0
+        }
+      ]
+    },
+    "output_spec": {
+      "None": [
+        {
+          "name": "output_0",
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "dtype": "uint8",
+          "scale": 0.0038416380994021893,
+          "zero_point": 27.0
+        }
+      ]
+    },
+    "returned_calibration_dataset_id": "d9w5r63k9"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "haar_same_weights_full_2k": {
+    "source": "experiments/npu_ll_same_weights_20261011/onnx/haar_same_weights_full_2k.onnx",
+    "source_sha256": "dfb6ff4829bd257ca2e5f4346f4d3302a5514e3a3d06e3d7da6cb2ece4c9e79e",
+    "checkpoint": "experiments/npu_ll_same_weights_20261011/inputs/full.pth",
+    "calibration_dataset": "d9w5r63k9"
+  },
+  "haar_same_weights_bypass_2k": {
+    "source": "experiments/npu_ll_same_weights_20261011/onnx/haar_same_weights_bypass_2k.onnx",
+    "source_sha256": "18519701eb79af36d667730300683053dd2793284e4a9af85c0d0d56a70667f3",
+    "checkpoint": "experiments/npu_ll_same_weights_20261011/inputs/bypass.pth",
+    "calibration_dataset": "d9w5r63k9"
+  }
+}

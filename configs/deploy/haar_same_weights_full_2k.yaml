@@ -1,0 +1,6 @@
+name: haar_same_weights_full_2k
+kind: learning_dwt_repncb
+checkpoint: experiments/npu_ll_same_weights_20261011/inputs/full.pth
+height: 720
+width: 1280
+simplify: true

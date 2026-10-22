@@ -1,0 +1,2350 @@
+{
+  "full": {
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "ll_only",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "hf_cnn",
+        "ll_normalize": false,
+        "hf_cnn_variant": "repncb_prelu_residual",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+    "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+    "specs": {
+      "input_spec": {
+        "None": [
+          {
+            "name": "noisy_raw",
+            "dtype": "uint8",
+            "shape": [
+              1,
+              4,
+              720,
+              1280
+            ],
+            "scale": 0.003921568393707275,
+            "zero_point": 0.0
+          }
+        ]
+      },
+      "output_spec": {
+        "None": [
+          {
+            "name": "output_0",
+            "dtype": "uint8",
+            "shape": [
+              1,
+              4,
+              720,
+              1280
+            ],
+            "scale": 0.002601688727736473,
+            "zero_point": 0.0
+          }
+        ]
+      },
+      "metadata": {
+        "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+        "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+        "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_tr1bg0yv"
+      }
+    },
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_repncb_prelu_residual_sweep_2k.onnx",
+    "cycles_per_round": {
+      "/wavelet/Concat_2": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_2_to_slice_3": [
+        65011,
+        65312,
+        64934
+      ],
+      "output_0_0231": [
+        1725329,
+        1780135,
+        1697459
+      ],
+      "/wavelet/processors.0/block/activation/PRelu": [
+        166066,
+        170277,
+        166616
+      ],
+      "/wavelet/Split_1_to_slice_1": [
+        244969,
+        244900,
+        245082
+      ],
+      "/wavelet/Split_2_to_slice_0": [
+        208,
+        142,
+        125
+      ],
+      "/refiner/blocks/blocks.4/activation/PRelu": [
+        211312,
+        211714,
+        209207
+      ],
+      "/wavelet/Split_2_to_slice_1": [
+        65780,
+        65785,
+        65259
+      ],
+      "/wavelet/Concat_5": [
+        886305,
+        890906,
+        888101
+      ],
+      "/wavelet/Split_to_slice_0": [
+        143,
+        150,
+        142
+      ],
+      "/wavelet/Concat_1": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/blocks/blocks.3/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ll_restorer/fusion/Conv": [
+        27598,
+        27391,
+        27167
+      ],
+      "/wavelet/processors.0/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_to_slice_3": [
+        246034,
+        245869,
+        245411
+      ],
+      "/wavelet/ll_restorer/layers/layers.1/Relu": [
+        15905,
+        15065,
+        14901
+      ],
+      "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "noisy_raw_0231": [
+        1621509,
+        1637033,
+        1630406
+      ],
+      "/refiner/blocks/blocks.1/activation/PRelu": [
+        210673,
+        210989,
+        209678
+      ],
+      "Output": [
+        269993,
+        238589,
+        235934
+      ],
+      "/refiner/s2d/Conv": [
+        989393,
+        1006418,
+        992966
+      ],
+      "/wavelet/processors.2/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/Concat": [
+        322664,
+        326014,
+        325611
+      ],
+      "/refiner/blocks/blocks.3/activation/PRelu": [
+        211166,
+        211982,
+        209761
+      ],
+      "/wavelet/Split_4_to_slice_2": [
+        16818,
+        16922,
+        16698
+      ],
+      "/wavelet/Split_4_to_slice_1": [
+        17496,
+        17377,
+        17396
+      ],
+      "/wavelet/Split_to_slice_1": [
+        244355,
+        252673,
+        244666
+      ],
+      "/refiner/fusion/Conv": [
+        38886,
+        40309,
+        39049
+      ],
+      "/wavelet/ll_restorer/Concat": [
+        27024,
+        28030,
+        27220
+      ],
+      "/wavelet/processors.1/Add": [
+        322373,
+        325437,
+        323038
+      ],
+      "/wavelet/processors.1/block/activation/PRelu": [
+        560749,
+        566854,
+        557897
+      ],
+      "/wavelet/Conv_2": [
+        52602,
+        52578,
+        53096
+      ],
+      "/refiner/s2d/Constant_output_0_2310": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/blocks/blocks.4/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ConvTranspose_2": [
+        1609199,
+        1621210,
+        1619586
+      ],
+      "/wavelet/Concat_4": [
+        241785,
+        240486,
+        240511
+      ],
+      "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/s2d_1/Conv": [
+        1243741,
+        1139255,
+        1119657
+      ],
+      "/refiner/blocks/blocks.0/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_5_to_slice_0": [
+        21175,
+        21413,
+        21226
+      ],
+      "/wavelet/ll_restorer/layers/layers.2/activation/PRelu": [
+        19296,
+        19509,
+        18959
+      ],
+      "/wavelet/Split_3_to_slice_0": [
+        78294,
+        78533,
+        78360
+      ],
+      "/wavelet/Split_4_to_slice_0": [
+        162,
+        143,
+        136
+      ],
+      "/wavelet/ConvTranspose": [
+        250809,
+        252384,
+        250335
+      ],
+      "/wavelet/Concat_3": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/processors.2/block/activation/PRelu": [
+        152326,
+        156184,
+        148443
+      ],
+      "/wavelet/Split_5_to_slice_1": [
+        37530,
+        37574,
+        37500
+      ],
+      "/wavelet/Conv": [
+        1426433,
+        1403058,
+        1387924
+      ],
+      "/refiner/d2s/ConvTranspose": [
+        1899451,
+        1876676,
+        1865037
+      ],
+      "/wavelet/Split_4_to_slice_3": [
+        16696,
+        17052,
+        16876
+      ],
+      "/refiner/blocks/blocks.2/activation/PRelu": [
+        211016,
+        211163,
+        209980
+      ],
+      "/wavelet/Conv_1": [
+        199135,
+        197527,
+        200808
+      ],
+      "/wavelet/Split_3_to_slice_2": [
+        140190,
+        140381,
+        140441
+      ],
+      "/wavelet/Split_1_to_slice_2": [
+        242064,
+        242061,
+        242022
+      ],
+      "/wavelet/ConvTranspose_1": [
+        491767,
+        489085,
+        485191
+      ],
+      "/wavelet/Split_1_to_slice_0": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_2_to_slice_2": [
+        65319,
+        65333,
+        64903
+      ],
+      "Input": [
+        153537,
+        150282,
+        152119
+      ],
+      "/wavelet/processors.2/Add": [
+        93341,
+        90746,
+        94375
+      ],
+      "/wavelet/Split_to_slice_2": [
+        246808,
+        246301,
+        246513
+      ],
+      "/wavelet/Constant_output_0_2301": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/processors.0/Add": [
+        445431,
+        446269,
+        444778
+      ],
+      "/refiner/blocks/blocks.2/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Concat": [
+        677733,
+        679808,
+        677783
+      ],
+      "/wavelet/Split_5_to_slice_2": [
+        37522,
+        37600,
+        37504
+      ],
+      "/wavelet/processors.1/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_3_to_slice_1": [
+        140814,
+        141248,
+        140734
+      ],
+      "/refiner/blocks/blocks.0/activation/PRelu": [
+        210454,
+        211066,
+        209352
+      ],
+      "/wavelet/Constant_output_0_2310": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ll_restorer/layers/layers.5/Conv": [
+        9718,
+        9732,
+        9468
+      ],
+      "/wavelet/ll_restorer/layers/layers.4/activation/PRelu": [
+        15593,
+        15590,
+        15244
+      ],
+      "/refiner/blocks/blocks.1/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/s2d/Constant_output_0_2301": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ll_restorer/layers/layers.0/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/head/Conv": [
+        132659,
+        132865,
+        132383
+      ],
+      "/refiner/stem/Conv": [
+        105711,
+        106684,
+        104497
+      ],
+      "/wavelet/ll_restorer/layers/layers.3/activation/PRelu": [
+        18971,
+        19134,
+        18254
+      ]
+    },
+    "mean_cycles": {
+      "/wavelet/Concat_2": 0,
+      "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv": 0,
+      "/wavelet/Split_2_to_slice_3": 65085.666666666664,
+      "output_0_0231": 1734307.6666666667,
+      "/wavelet/processors.0/block/activation/PRelu": 167653,
+      "/wavelet/Split_1_to_slice_1": 244983.66666666666,
+      "/wavelet/Split_2_to_slice_0": 158.33333333333334,
+      "/refiner/blocks/blocks.4/activation/PRelu": 210744.33333333334,
+      "/wavelet/Split_2_to_slice_1": 65608,
+      "/wavelet/Concat_5": 888437.3333333334,
+      "/wavelet/Split_to_slice_0": 145,
+      "/wavelet/Concat_1": 0,
+      "/refiner/blocks/blocks.3/reparam_conv/Conv": 0,
+      "/wavelet/ll_restorer/fusion/Conv": 27385.333333333332,
+      "/wavelet/processors.0/block/reparam_conv/Conv": 0,
+      "/wavelet/Split_to_slice_3": 245771.33333333334,
+      "/wavelet/ll_restorer/layers/layers.1/Relu": 15290.333333333334,
+      "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv": 0,
+      "noisy_raw_0231": 1629649.3333333333,
+      "/refiner/blocks/blocks.1/activation/PRelu": 210446.66666666666,
+      "Output": 248172,
+      "/refiner/s2d/Conv": 996259,
+      "/wavelet/processors.2/block/reparam_conv/Conv": 0,
+      "/refiner/Concat": 324763,
+      "/refiner/blocks/blocks.3/activation/PRelu": 210969.66666666666,
+      "/wavelet/Split_4_to_slice_2": 16812.666666666668,
+      "/wavelet/Split_4_to_slice_1": 17423,
+      "/wavelet/Split_to_slice_1": 247231.33333333334,
+      "/refiner/fusion/Conv": 39414.666666666664,
+      "/wavelet/ll_restorer/Concat": 27424.666666666668,
+      "/wavelet/processors.1/Add": 323616,
+      "/wavelet/processors.1/block/activation/PRelu": 561833.3333333334,
+      "/wavelet/Conv_2": 52758.666666666664,
+      "/refiner/s2d/Constant_output_0_2310": 0,
+      "/refiner/blocks/blocks.4/reparam_conv/Conv": 0,
+      "/wavelet/ConvTranspose_2": 1616665,
+      "/wavelet/Concat_4": 240927.33333333334,
+      "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv": 0,
+      "/refiner/s2d_1/Conv": 1167551,
+      "/refiner/blocks/blocks.0/reparam_conv/Conv": 0,
+      "/wavelet/Split_5_to_slice_0": 21271.333333333332,
+      "/wavelet/ll_restorer/layers/layers.2/activation/PRelu": 19254.666666666668,
+      "/wavelet/Split_3_to_slice_0": 78395.66666666667,
+      "/wavelet/Split_4_to_slice_0": 147,
+      "/wavelet/ConvTranspose": 251176,
+      "/wavelet/Concat_3": 0,
+      "/wavelet/processors.2/block/activation/PRelu": 152317.66666666666,
+      "/wavelet/Split_5_to_slice_1": 37534.666666666664,
+      "/wavelet/Conv": 1405805,
+      "/refiner/d2s/ConvTranspose": 1880388,
+      "/wavelet/Split_4_to_slice_3": 16874.666666666668,
+      "/refiner/blocks/blocks.2/activation/PRelu": 210719.66666666666,
+      "/wavelet/Conv_1": 199156.66666666666,
+      "/wavelet/Split_3_to_slice_2": 140337.33333333334,
+      "/wavelet/Split_1_to_slice_2": 242049,
+      "/wavelet/ConvTranspose_1": 488681,
+      "/wavelet/Split_1_to_slice_0": 0,
+      "/wavelet/Split_2_to_slice_2": 65185,
+      "Input": 151979.33333333334,
+      "/wavelet/processors.2/Add": 92820.66666666667,
+      "/wavelet/Split_to_slice_2": 246540.66666666666,
+      "/wavelet/Constant_output_0_2301": 0,
+      "/wavelet/processors.0/Add": 445492.6666666667,
+      "/refiner/blocks/blocks.2/reparam_conv/Conv": 0,
+      "/wavelet/Concat": 678441.3333333334,
+      "/wavelet/Split_5_to_slice_2": 37542,
+      "/wavelet/processors.1/block/reparam_conv/Conv": 0,
+      "/wavelet/Split_3_to_slice_1": 140932,
+      "/refiner/blocks/blocks.0/activation/PRelu": 210290.66666666666,
+      "/wavelet/Constant_output_0_2310": 0,
+      "/wavelet/ll_restorer/layers/layers.5/Conv": 9639.333333333334,
+      "/wavelet/ll_restorer/layers/layers.4/activation/PRelu": 15475.666666666666,
+      "/refiner/blocks/blocks.1/reparam_conv/Conv": 0,
+      "/refiner/s2d/Constant_output_0_2301": 0,
+      "/wavelet/ll_restorer/layers/layers.0/Conv": 0,
+      "/refiner/head/Conv": 132635.66666666666,
+      "/refiner/stem/Conv": 105630.66666666667,
+      "/wavelet/ll_restorer/layers/layers.3/activation/PRelu": 18786.333333333332
+    },
+    "prelu_parameters": {
+      "/wavelet/processors.0/block/activation/PRelu": {
+        "min": 0.16222594678401947,
+        "max": 0.28619757294654846,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/wavelet/processors.1/block/activation/PRelu": {
+        "min": 0.2765510082244873,
+        "max": 0.7002928853034973,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/wavelet/processors.2/block/activation/PRelu": {
+        "min": 0.22510652244091034,
+        "max": 0.6399625539779663,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/wavelet/ll_restorer/layers/layers.2/activation/PRelu": {
+        "min": 0.21176110208034515,
+        "max": 0.3907663822174072,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/wavelet/ll_restorer/layers/layers.3/activation/PRelu": {
+        "min": 0.2153272181749344,
+        "max": 0.2758597731590271,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/wavelet/ll_restorer/layers/layers.4/activation/PRelu": {
+        "min": 0.19040466845035553,
+        "max": 0.250785768032074,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.0/activation/PRelu": {
+        "min": 0.062383364886045456,
+        "max": 0.3693290054798126,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.1/activation/PRelu": {
+        "min": 0.1773594319820404,
+        "max": 0.4822068512439728,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.2/activation/PRelu": {
+        "min": 0.10846246778964996,
+        "max": 0.42678505182266235,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.3/activation/PRelu": {
+        "min": 0.1672942340373993,
+        "max": 0.3825887441635132,
+        "negative_count": 0,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.4/activation/PRelu": {
+        "min": 0.24214325845241547,
+        "max": 0.8221427202224731,
+        "negative_count": 0,
+        "above_one_count": 0
+      }
+    },
+    "onnx_shapes": {
+      "/wavelet/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_1": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_2": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_3": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Concat_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/block/activation/PRelu_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/Add_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_1": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_2": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Conv_1_output_0": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_1": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_2": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_3": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Concat_1_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/block/activation/PRelu_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/Add_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_1": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_2": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Conv_2_output_0": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_1": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_2": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_3": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Concat_2_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/block/activation/PRelu_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/Add_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_1": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_2": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.0/Conv_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.1/Relu_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.2/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.2/activation/PRelu_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.3/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.3/activation/PRelu_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.4/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.4/activation/PRelu_output_0": [
+        1,
+        32,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/layers/layers.5/Conv_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/Concat_output_0": [
+        1,
+        8,
+        90,
+        160
+      ],
+      "/wavelet/ll_restorer/fusion/Conv_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Concat_3_output_0": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "/wavelet/ConvTranspose_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Concat_4_output_0": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "/wavelet/ConvTranspose_1_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Concat_5_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/wavelet/ConvTranspose_2_output_0": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "/refiner/s2d/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/stem/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.0/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.0/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.1/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.1/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.2/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.2/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.3/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.3/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.4/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.4/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/head/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/s2d_1/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/Concat_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/fusion/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "noisy_raw": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "denoised_raw": [
+        1,
+        4,
+        720,
+        1280
+      ]
+    },
+    "mean_ms": 3.4583633333333332
+  },
+  "bypass": {
+    "metadata": {
+      "model": "learning_dwt_repncb",
+      "model_width": 32,
+      "encoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "middle_blocks": 2,
+      "decoder_blocks": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "feature_channels": 32,
+      "num_blocks": 5,
+      "model_bias": true,
+      "space_to_depth_factor": 2,
+      "graph_state": "deploy",
+      "weight_source": "model_deploy",
+      "learning_dwt": {
+        "width": 16,
+        "depth": 3,
+        "context": "atlas",
+        "shrink_ll": false,
+        "leak": 0.0,
+        "normalize_bands": true,
+        "pad_input": true,
+        "init_threshold": 0.01,
+        "init_ll_threshold": 0.001,
+        "wavelet": "haar",
+        "levels": 3,
+        "magnitude_input": true,
+        "condition_bands": false,
+        "ll_max_threshold": 0.01,
+        "shrink_mode": "soft",
+        "ll_mode": "bypass",
+        "ll_width": 32,
+        "ll_depth": 5,
+        "ll_fusion": "concat_1x1",
+        "trainable_haar": false,
+        "haar_share_channels": true,
+        "haar_share_levels": true,
+        "ll_block_type": "repncb",
+        "threshold_mode": "hf_cnn",
+        "ll_normalize": false,
+        "hf_cnn_variant": "repncb_prelu_residual",
+        "hf_cnn_init_bias": 0.0
+      },
+      "refinement": {
+        "s2d_factor": 2,
+        "width": 32,
+        "num_blocks": 5,
+        "skip_source": "noisy",
+        "block_type": "repncb",
+        "input_fusion": "none",
+        "activation": "prelu",
+        "stem_activation": "none",
+        "skip_projection": false,
+        "expand_ratio": 2,
+        "s2d_domain": "packed_raw"
+      }
+    },
+    "compile_options": "--target_runtime qnn_dlc --quantize_full_type int8 --quantize_io --compute_unit npu --qairt_version 2.50",
+    "profile_options": "--compute_unit npu --qairt_version 2.50 --max_profiler_iterations 100 --max_profiler_time 600",
+    "specs": {
+      "input_spec": {
+        "None": [
+          {
+            "name": "noisy_raw",
+            "shape": [
+              1,
+              4,
+              720,
+              1280
+            ],
+            "dtype": "uint8",
+            "scale": 0.003921566065400839,
+            "zero_point": 0.0
+          }
+        ]
+      },
+      "output_spec": {
+        "None": [
+          {
+            "name": "output_0",
+            "shape": [
+              1,
+              4,
+              720,
+              1280
+            ],
+            "dtype": "uint8",
+            "scale": 0.002944938838481903,
+            "zero_point": 0.0
+          }
+        ]
+      },
+      "metadata": {
+        "ModelMetadataKey.QNN_SDK_VARIANT": "default",
+        "ModelMetadataKey.QAIRT_SDK_VERSION": "2.50.0.260828221209",
+        "ModelMetadataKey.QNN_MODEL_GRAPH_NAMES": "graph_8o3f2cp6"
+      }
+    },
+    "source": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_2k.onnx",
+    "cycles_per_round": {
+      "/wavelet/processors.2/Add": [
+        84687,
+        84980,
+        85050
+      ],
+      "/refiner/s2d/Constant_output_0_2310": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/blocks/blocks.4/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Concat_2": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/ConvTranspose_2": [
+        1586820,
+        1587772,
+        1587330
+      ],
+      "/wavelet/Concat_4": [
+        232272,
+        233487,
+        230261
+      ],
+      "/wavelet/Split_to_slice_2": [
+        241953,
+        243334,
+        241931
+      ],
+      "/wavelet/processors.0/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_to_slice_3": [
+        242057,
+        241933,
+        241337
+      ],
+      "/wavelet/Constant_output_0_2301": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/s2d_1/Conv": [
+        1221306,
+        1289793,
+        1251861
+      ],
+      "/wavelet/Split_2_to_slice_3": [
+        62554,
+        62575,
+        62569
+      ],
+      "output_0_0231": [
+        1250116,
+        1253164,
+        1267919
+      ],
+      "/refiner/blocks/blocks.0/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/processors.0/Add": [
+        450628,
+        453696,
+        453318
+      ],
+      "noisy_raw_0231": [
+        1614472,
+        1635912,
+        1627687
+      ],
+      "/wavelet/Split_5_to_slice_0": [
+        21772,
+        21836,
+        21811
+      ],
+      "/refiner/blocks/blocks.1/activation/PRelu": [
+        211116,
+        210878,
+        211168
+      ],
+      "/wavelet/Split_3_to_slice_0": [
+        79967,
+        79633,
+        79431
+      ],
+      "/wavelet/Split_4_to_slice_0": [
+        688,
+        667,
+        669
+      ],
+      "/refiner/blocks/blocks.2/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Concat": [
+        1001146,
+        1038472,
+        1009210
+      ],
+      "/wavelet/Split_5_to_slice_2": [
+        37172,
+        37115,
+        38182
+      ],
+      "/wavelet/ConvTranspose": [
+        252230,
+        254492,
+        252528
+      ],
+      "/wavelet/processors.1/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_3_to_slice_1": [
+        144468,
+        144036,
+        144424
+      ],
+      "/refiner/blocks/blocks.0/activation/PRelu": [
+        479887,
+        478604,
+        477233
+      ],
+      "/wavelet/Concat_3": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/processors.2/block/activation/PRelu": [
+        148428,
+        146480,
+        146023
+      ],
+      "/wavelet/processors.0/block/activation/PRelu": [
+        610907,
+        669270,
+        634175
+      ],
+      "/wavelet/Split_5_to_slice_1": [
+        37382,
+        37373,
+        37430
+      ],
+      "/wavelet/Split_1_to_slice_1": [
+        245513,
+        244581,
+        244356
+      ],
+      "/wavelet/Conv": [
+        1437828,
+        1472543,
+        1443577
+      ],
+      "/wavelet/Constant_output_0_2310": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/d2s/ConvTranspose": [
+        3363012,
+        3556935,
+        3491688
+      ],
+      "/wavelet/Split_2_to_slice_0": [
+        244,
+        245,
+        228
+      ],
+      "/refiner/blocks/blocks.4/activation/PRelu": [
+        210445,
+        208961,
+        210830
+      ],
+      "/refiner/s2d/Conv": [
+        997334,
+        996412,
+        992359
+      ],
+      "Output": [
+        284017,
+        295276,
+        299851
+      ],
+      "/wavelet/Split_4_to_slice_3": [
+        16600,
+        16604,
+        16565
+      ],
+      "/wavelet/processors.2/block/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_2_to_slice_1": [
+        65222,
+        64847,
+        64642
+      ],
+      "/refiner/blocks/blocks.2/activation/PRelu": [
+        209176,
+        208940,
+        209391
+      ],
+      "/wavelet/Conv_1": [
+        212775,
+        209025,
+        208139
+      ],
+      "/wavelet/Split_3_to_slice_2": [
+        140040,
+        140242,
+        139856
+      ],
+      "/refiner/Concat": [
+        334392,
+        332581,
+        333159
+      ],
+      "/wavelet/Split_1_to_slice_2": [
+        241762,
+        241167,
+        241934
+      ],
+      "/refiner/blocks/blocks.1/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/blocks/blocks.3/activation/PRelu": [
+        209851,
+        209291,
+        210059
+      ],
+      "/wavelet/Concat_5": [
+        914331,
+        915948,
+        911860
+      ],
+      "/wavelet/Split_to_slice_0": [
+        2169,
+        1490,
+        2848
+      ],
+      "/wavelet/Split_4_to_slice_2": [
+        16607,
+        16529,
+        16509
+      ],
+      "/refiner/s2d/Constant_output_0_2301": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_4_to_slice_1": [
+        17535,
+        17141,
+        17576
+      ],
+      "/wavelet/Split_to_slice_1": [
+        242493,
+        243612,
+        243656
+      ],
+      "/refiner/head/Conv": [
+        133029,
+        132455,
+        133065
+      ],
+      "/wavelet/Concat_1": [
+        0,
+        0,
+        0
+      ],
+      "/refiner/fusion/Conv": [
+        38526,
+        38927,
+        40443
+      ],
+      "/refiner/stem/Conv": [
+        107218,
+        106380,
+        108164
+      ],
+      "/wavelet/processors.1/Add": [
+        306694,
+        304328,
+        324929
+      ],
+      "/refiner/blocks/blocks.3/reparam_conv/Conv": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/processors.1/block/activation/PRelu": [
+        540453,
+        540823,
+        542795
+      ],
+      "/wavelet/ConvTranspose_1": [
+        397001,
+        397268,
+        397341
+      ],
+      "/wavelet/Split_1_to_slice_0": [
+        0,
+        0,
+        0
+      ],
+      "/wavelet/Split_2_to_slice_2": [
+        64122,
+        63991,
+        64008
+      ],
+      "/wavelet/Conv_2": [
+        54744,
+        53891,
+        53910
+      ],
+      "Input": [
+        156091,
+        154871,
+        155860
+      ]
+    },
+    "mean_cycles": {
+      "/wavelet/processors.2/Add": 84905.66666666667,
+      "/refiner/s2d/Constant_output_0_2310": 0,
+      "/refiner/blocks/blocks.4/reparam_conv/Conv": 0,
+      "/wavelet/Concat_2": 0,
+      "/wavelet/ConvTranspose_2": 1587307.3333333333,
+      "/wavelet/Concat_4": 232006.66666666666,
+      "/wavelet/Split_to_slice_2": 242406,
+      "/wavelet/processors.0/block/reparam_conv/Conv": 0,
+      "/wavelet/Split_to_slice_3": 241775.66666666666,
+      "/wavelet/Constant_output_0_2301": 0,
+      "/refiner/s2d_1/Conv": 1254320,
+      "/wavelet/Split_2_to_slice_3": 62566,
+      "output_0_0231": 1257066.3333333333,
+      "/refiner/blocks/blocks.0/reparam_conv/Conv": 0,
+      "/wavelet/processors.0/Add": 452547.3333333333,
+      "noisy_raw_0231": 1626023.6666666667,
+      "/wavelet/Split_5_to_slice_0": 21806.333333333332,
+      "/refiner/blocks/blocks.1/activation/PRelu": 211054,
+      "/wavelet/Split_3_to_slice_0": 79677,
+      "/wavelet/Split_4_to_slice_0": 674.6666666666666,
+      "/refiner/blocks/blocks.2/reparam_conv/Conv": 0,
+      "/wavelet/Concat": 1016276,
+      "/wavelet/Split_5_to_slice_2": 37489.666666666664,
+      "/wavelet/ConvTranspose": 253083.33333333334,
+      "/wavelet/processors.1/block/reparam_conv/Conv": 0,
+      "/wavelet/Split_3_to_slice_1": 144309.33333333334,
+      "/refiner/blocks/blocks.0/activation/PRelu": 478574.6666666667,
+      "/wavelet/Concat_3": 0,
+      "/wavelet/processors.2/block/activation/PRelu": 146977,
+      "/wavelet/processors.0/block/activation/PRelu": 638117.3333333334,
+      "/wavelet/Split_5_to_slice_1": 37395,
+      "/wavelet/Split_1_to_slice_1": 244816.66666666666,
+      "/wavelet/Conv": 1451316,
+      "/wavelet/Constant_output_0_2310": 0,
+      "/refiner/d2s/ConvTranspose": 3470545,
+      "/wavelet/Split_2_to_slice_0": 239,
+      "/refiner/blocks/blocks.4/activation/PRelu": 210078.66666666666,
+      "/refiner/s2d/Conv": 995368.3333333334,
+      "Output": 293048,
+      "/wavelet/Split_4_to_slice_3": 16589.666666666668,
+      "/wavelet/processors.2/block/reparam_conv/Conv": 0,
+      "/wavelet/Split_2_to_slice_1": 64903.666666666664,
+      "/refiner/blocks/blocks.2/activation/PRelu": 209169,
+      "/wavelet/Conv_1": 209979.66666666666,
+      "/wavelet/Split_3_to_slice_2": 140046,
+      "/refiner/Concat": 333377.3333333333,
+      "/wavelet/Split_1_to_slice_2": 241621,
+      "/refiner/blocks/blocks.1/reparam_conv/Conv": 0,
+      "/refiner/blocks/blocks.3/activation/PRelu": 209733.66666666666,
+      "/wavelet/Concat_5": 914046.3333333334,
+      "/wavelet/Split_to_slice_0": 2169,
+      "/wavelet/Split_4_to_slice_2": 16548.333333333332,
+      "/refiner/s2d/Constant_output_0_2301": 0,
+      "/wavelet/Split_4_to_slice_1": 17417.333333333332,
+      "/wavelet/Split_to_slice_1": 243253.66666666666,
+      "/refiner/head/Conv": 132849.66666666666,
+      "/wavelet/Concat_1": 0,
+      "/refiner/fusion/Conv": 39298.666666666664,
+      "/refiner/stem/Conv": 107254,
+      "/wavelet/processors.1/Add": 311983.6666666667,
+      "/refiner/blocks/blocks.3/reparam_conv/Conv": 0,
+      "/wavelet/processors.1/block/activation/PRelu": 541357,
+      "/wavelet/ConvTranspose_1": 397203.3333333333,
+      "/wavelet/Split_1_to_slice_0": 0,
+      "/wavelet/Split_2_to_slice_2": 64040.333333333336,
+      "/wavelet/Conv_2": 54181.666666666664,
+      "Input": 155607.33333333334
+    },
+    "prelu_parameters": {
+      "/wavelet/processors.0/block/activation/PRelu": {
+        "min": -0.12303467839956284,
+        "max": 0.8826791644096375,
+        "negative_count": 1,
+        "above_one_count": 0
+      },
+      "/wavelet/processors.1/block/activation/PRelu": {
+        "min": 0.8742417693138123,
+        "max": 1.0489033460617065,
+        "negative_count": 0,
+        "above_one_count": 3
+      },
+      "/wavelet/processors.2/block/activation/PRelu": {
+        "min": -0.06515459716320038,
+        "max": 1.214127779006958,
+        "negative_count": 1,
+        "above_one_count": 4
+      },
+      "/refiner/blocks/blocks.0/activation/PRelu": {
+        "min": -0.1295454502105713,
+        "max": 0.6773690581321716,
+        "negative_count": 2,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.1/activation/PRelu": {
+        "min": -0.1002889946103096,
+        "max": 0.3729085922241211,
+        "negative_count": 3,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.2/activation/PRelu": {
+        "min": -0.24119949340820312,
+        "max": 0.8349002003669739,
+        "negative_count": 6,
+        "above_one_count": 0
+      },
+      "/refiner/blocks/blocks.3/activation/PRelu": {
+        "min": -0.12079500406980515,
+        "max": 1.006495475769043,
+        "negative_count": 2,
+        "above_one_count": 1
+      },
+      "/refiner/blocks/blocks.4/activation/PRelu": {
+        "min": 0.2073339819908142,
+        "max": 1.1865928173065186,
+        "negative_count": 0,
+        "above_one_count": 2
+      }
+    },
+    "onnx_shapes": {
+      "/wavelet/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_1": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_2": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_output_3": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Concat_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/block/activation/PRelu_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/processors.0/Add_output_0": [
+        1,
+        12,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_1": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Split_1_output_2": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Conv_1_output_0": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_1": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_2": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_2_output_3": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Concat_1_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/block/activation/PRelu_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/processors.1/Add_output_0": [
+        1,
+        12,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_1": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Split_3_output_2": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Conv_2_output_0": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_1": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_2": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_4_output_3": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Concat_2_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/block/reparam_conv/Conv_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/block/activation/PRelu_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/processors.2/Add_output_0": [
+        1,
+        12,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_0": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_1": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Split_5_output_2": [
+        1,
+        4,
+        90,
+        160
+      ],
+      "/wavelet/Concat_3_output_0": [
+        1,
+        16,
+        90,
+        160
+      ],
+      "/wavelet/ConvTranspose_output_0": [
+        1,
+        4,
+        180,
+        320
+      ],
+      "/wavelet/Concat_4_output_0": [
+        1,
+        16,
+        180,
+        320
+      ],
+      "/wavelet/ConvTranspose_1_output_0": [
+        1,
+        4,
+        360,
+        640
+      ],
+      "/wavelet/Concat_5_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/wavelet/ConvTranspose_2_output_0": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "/refiner/s2d/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/stem/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.0/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.0/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.1/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.1/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.2/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.2/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.3/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.3/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.4/reparam_conv/Conv_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/blocks/blocks.4/activation/PRelu_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/head/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/s2d_1/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "/refiner/Concat_output_0": [
+        1,
+        32,
+        360,
+        640
+      ],
+      "/refiner/fusion/Conv_output_0": [
+        1,
+        16,
+        360,
+        640
+      ],
+      "noisy_raw": [
+        1,
+        4,
+        720,
+        1280
+      ],
+      "denoised_raw": [
+        1,
+        4,
+        720,
+        1280
+      ]
+    },
+    "mean_ms": 4.334743333333333
+  },
+  "common_conv_checks": {
+    "/refiner/blocks/blocks.0/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/blocks/blocks.1/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/blocks/blocks.2/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/blocks/blocks.3/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/blocks/blocks.4/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/d2s/ConvTranspose": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          4,
+          720,
+          1280
+        ]
+      ]
+    },
+    "/refiner/fusion/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        16,
+        32,
+        1,
+        1
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/head/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        16,
+        32,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/s2d/Conv": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/s2d_1/Conv": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          360,
+          640
+        ]
+      ]
+    },
+    "/refiner/stem/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        32,
+        16,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          32,
+          360,
+          640
+        ]
+      ]
+    },
+    "/wavelet/Conv": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          360,
+          640
+        ]
+      ]
+    },
+    "/wavelet/ConvTranspose": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          4,
+          180,
+          320
+        ]
+      ]
+    },
+    "/wavelet/ConvTranspose_1": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          4,
+          360,
+          640
+        ]
+      ]
+    },
+    "/wavelet/ConvTranspose_2": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          4,
+          720,
+          1280
+        ]
+      ]
+    },
+    "/wavelet/Conv_1": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          180,
+          320
+        ]
+      ]
+    },
+    "/wavelet/Conv_2": {
+      "weights_equal": true,
+      "weight_shape": [
+        16,
+        4,
+        2,
+        2
+      ],
+      "output_shapes": [
+        [
+          1,
+          16,
+          90,
+          160
+        ]
+      ]
+    },
+    "/wavelet/processors.0/block/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        12,
+        12,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          12,
+          360,
+          640
+        ]
+      ]
+    },
+    "/wavelet/processors.1/block/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        12,
+        12,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          12,
+          180,
+          320
+        ]
+      ]
+    },
+    "/wavelet/processors.2/block/reparam_conv/Conv": {
+      "weights_equal": false,
+      "weight_shape": [
+        12,
+        12,
+        3,
+        3
+      ],
+      "output_shapes": [
+        [
+          1,
+          12,
+          90,
+          160
+        ]
+      ]
+    }
+  }
+}

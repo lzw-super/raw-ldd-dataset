@@ -54,6 +54,7 @@ NAFNet本次三轮均值为181.2058、182.3106、183.6898 ms，较高延迟在�
 | 模型 | 同shape均值 / ms |
 |---|---:|
 | Rep-NCB3×3＋PReLU＋输入残差 | 3.4471 |
+| Rep-NCB3×3＋PReLU＋输入残差（完整LL） | 3.4471 | **3.4584** | +0.33% | 3.3715 | 3.8512 | 3.3980 / 3.4132 / 3.5639 |
 | DW3×3＋ReLU＋输入残差 | 4.2237 |
 | MRLFN | 4.8669 |
 
@@ -320,3 +321,278 @@ ll_bypass：[summary.json](qaihub_2k_ll_bypass_20261010/ll_bypass/summary.json)�
 bayes_soft：[summary.json](qaihub_2k_ll_bypass_20261010/bayes_soft/summary.json)、[jobs.json](qaihub_2k_ll_bypass_20261010/bayes_soft/jobs.json)、[sources.json](qaihub_2k_ll_bypass_20261010/bayes_soft/sources.json)、[export_reports.json](qaihub_2k_ll_bypass_20261010/bayes_soft/export_reports.json)、[compiled_specs.json](qaihub_2k_ll_bypass_20261010/bayes_soft/compiled_specs.json)。
 
 [执行核对记录](qaihub_2k_ll_bypass_20261010/execution_audit.json)。各模型目录保存DLC、profile和编译/运行日志。ONNX位于 `experiments/npu_2k_ll_bypass/onnx/`。
+
+## 8. 八模型2K独立复测（七模型＋Rep-NCB补测）
+
+提交日期：2026-10-10；完成日期：2026-10-11（北京时间）。为验证重复性，本次复用此前相同的W8A8编译产物，首批重新提交21个profile任务，再补测Rep-NCB完整LL模型3轮，共24个任务，每模型3轮×100次。输入为 `[1,4,720,1280]`；设备型号为Samsung Galaxy S24 / SM-S921U1 / SM8650，QAIRT 2.50.0.260828221209，NPU执行、量化IO。平台不保证同一台实体手机。没有重新校准或训练，也未新增效果指标。
+
+DLC SHA256逐一与上次结果一致；首批2100次及补测300次、共2400次样本纳入统计，不剔除极值，均值/P50/P95来自逐次测量，包含模型内部操作，不含外部上传、排队或预处理。各轮执行条目均标为NPU。
+
+| 模型 | 上次均值/ms | 本次均值/ms | 变化 | P50/ms | P95/ms | 三轮均值/ms |
+|---|---:|---:|---:|---:|---:|---|
+| Rep-NCB3×3＋PReLU＋输入残差（完整LL） | 3.4471 | **3.4584** | +0.33% | 3.3715 | 3.8512 | 3.3980 / 3.4132 / 3.5639 |
+| DW3×3＋ReLU＋输入残差 | 4.2237 | **4.1760** | -1.13% | 4.0005 | 4.9098 | 4.2325 / 4.1833 / 4.1121 |
+| MRLFN | 4.8669 | **4.8992** | +0.66% | 4.7605 | 5.5550 | 4.9162 / 4.9307 / 4.8508 |
+| SplitterNet | 8.0197 | **8.0159** | -0.05% | 7.9030 | 8.6992 | 8.0134 / 7.9968 / 8.0375 |
+| U-Net | 13.9222 | **13.8950** | -0.20% | 13.7960 | 14.6698 | 14.0142 / 14.0037 / 13.6672 |
+| NAFNet | 182.4021 | **182.0083** | -0.22% | 181.8970 | 183.7070 | 181.1409 / 182.4620 / 182.4219 |
+| LL bypass＋Rep-NCB高频CNN | 4.3075 | **4.3347** | +0.63% | 4.2425 | 4.7930 | 4.3369 / 4.2924 / 4.3749 |
+| LL bypass＋Bayes Soft | 158.8691 | **160.4279** | +0.98% | 159.6420 | 164.4140 | 158.9978 / 159.1098 / 163.1761 |
+
+变化为相对上次均值，正值表示更慢。参数量与计算量沿用前文：本次DLC一致，因此不重复计数。短时延模型的固定开销、设备负载及频率状态可能导致相对较大的波动；这些因素没有被单独控制或测量，因此不将轮次差异直接归因于网络结构变化。Bayes Soft仍包含精确非零中位数的TopK导出路径，不能只按卷积MAC预测耗时。
+
+本次八个模型的均值相对上次变化为−1.13%～+0.98%，速度排序保持一致，支持此前结果的可重复性。Bayes Soft第三轮为163.1761 ms，高于前两轮约159 ms，仍完整计入统计；不能根据本次未测量的温度、负载等信息断定其原因。
+
+### 8.1 复测任务与证据
+
+| 模型 | 三轮新测速任务 |
+|---|---|
+| DW3×3＋ReLU＋输入残差 | [j56ovllv5](https://workbench.aihub.qualcomm.com/jobs/j56ovllv5) / [jpv24xx7g](https://workbench.aihub.qualcomm.com/jobs/jpv24xx7g) / [jg9o8eeqg](https://workbench.aihub.qualcomm.com/jobs/jg9o8eeqg) |
+| MRLFN | [j5q4zqq7g](https://workbench.aihub.qualcomm.com/jobs/j5q4zqq7g) / [jp3ox00xp](https://workbench.aihub.qualcomm.com/jobs/jp3ox00xp) / [jgj3onn7p](https://workbench.aihub.qualcomm.com/jobs/jgj3onn7p) |
+| SplitterNet | [jgd6811lp](https://workbench.aihub.qualcomm.com/jobs/jgd6811lp) / [j57okryrg](https://workbench.aihub.qualcomm.com/jobs/j57okryrg) / [jgn1ov6mp](https://workbench.aihub.qualcomm.com/jobs/jgn1ov6mp) |
+| U-Net | [j56or4y75](https://workbench.aihub.qualcomm.com/jobs/j56or4y75) / [jp3ox0jzp](https://workbench.aihub.qualcomm.com/jobs/jp3ox0jzp) / [jgodo62d5](https://workbench.aihub.qualcomm.com/jobs/jgodo62d5) |
+| NAFNet | [jg9oknlvg](https://workbench.aihub.qualcomm.com/jobs/jg9oknlvg) / [jp4emrnlg](https://workbench.aihub.qualcomm.com/jobs/jp4emrnlg) / [jpx03o99p](https://workbench.aihub.qualcomm.com/jobs/jpx03o99p) |
+| LL bypass＋Rep-NCB高频CNN | [jp2o4yxmg](https://workbench.aihub.qualcomm.com/jobs/jp2o4yxmg) / [jp0od04ep](https://workbench.aihub.qualcomm.com/jobs/jp0od04ep) / [jp8j6y285](https://workbench.aihub.qualcomm.com/jobs/jp8j6y285) |
+| LL bypass＋Bayes Soft | [j56or4275](https://workbench.aihub.qualcomm.com/jobs/j56or4275) / [jgj3ond8p](https://workbench.aihub.qualcomm.com/jobs/jgj3ond8p) / [jpe68mo0g](https://workbench.aihub.qualcomm.com/jobs/jpe68mo0g) |
+
+原始记录：[summary.json](qaihub_2k_seven_retest_20261010/summary.json)、[previous_results.json](qaihub_2k_seven_retest_20261010/previous_results.json)、[sources.json](qaihub_2k_seven_retest_20261010/sources.json)、[jobs.json](qaihub_2k_seven_retest_20261010/jobs.json)、[execution_audit.json](qaihub_2k_seven_retest_20261010/execution_audit.json)。各模型子目录包含DLC、逐轮profile和设备运行日志。
+
+复测命令（`QAI_HUB_API_TOKEN`由环境提供；使用新的结果目录才会提交新任务）：
+
+```bash
+PYTHONPATH=/tmp/sid-qai-hub python tools/benchmark_sid_qaihub.py \
+  --watch --height 720 --width 1280 --rounds 3 \
+  --sources-json ref-doc/qaihub_2k_seven_retest_20261010/sources.json \
+  --output-dir ref-doc/qaihub_2k_seven_retest_20261010
+
+python tools/summarize_sid_qaihub.py \
+  --output-dir ref-doc/qaihub_2k_seven_retest_20261010
+```
+
+### 8.2 Rep-NCB完整LL模型补测
+
+日期：2026-10-11。补测模型为 **Rep-NCB3×3＋PReLU＋输入残差（保留LL恢复网络）**，区别于表中的LL bypass消融模型。输入、设备型号、量化与profile设置同第8节，沿用原编译任务 `j56o3m9v5`，DLC哈希与原结果一致；全部300次样本及三轮NPU执行记录已核对。
+
+本次均值 **3.4584 ms**，上次为 **3.4471 ms**，变化 **+0.33%**。参数量与计算量仍为前文的90,368和14.0136 GMAC。
+
+三轮新测速任务：[j56or22v5](https://workbench.aihub.qualcomm.com/jobs/j56or22v5) / [jpv2eqq7g](https://workbench.aihub.qualcomm.com/jobs/jpv2eqq7g) / [j5wy8wwzg](https://workbench.aihub.qualcomm.com/jobs/j5wy8wwzg)。
+
+补测证据：[summary.json](qaihub_2k_repncb_retest_20261011/summary.json)、[previous_results.json](qaihub_2k_repncb_retest_20261011/previous_results.json)、[sources.json](qaihub_2k_repncb_retest_20261011/sources.json)、[jobs.json](qaihub_2k_repncb_retest_20261011/jobs.json)、[execution_audit.json](qaihub_2k_repncb_retest_20261011/execution_audit.json)。
+
+## 9. 为什么LL bypass反而更慢：配置、量化和算子核对
+
+本节为受控实验前的分析；后续同权重、同校准样本的验证结果见第10节。
+
+分析日期：2026-10-11。结论是：**目前没有发现模型导出错误、W8A8/W8A16混用或CPU回退；但两者并不是“相同权重、相同量化编码，只删除LL模块”的严格受控比较。现有证据支持不同训练权重/激活分布与图结构共同影响后端执行开销，尚不能唯一归因于LL结构或量化编码。**
+
+### 9.1 哪些条件已对齐，哪些没有
+
+| 核对项 | 结果 |
+|---|---|
+| 输入 | 两者均为NCHW `[1,4,720,1280]`，没有外部736行补齐差异 |
+| 硬件和运行时 | Galaxy S24、SM-S921U1、SM8650、QAIRT 2.50.0.260828221209；平台不保证同一台实体手机 |
+| 编译和profile选项 | 字符串完全一致：W8A8目标、量化IO、NPU、3×100次 |
+| 实际量化调用 | 两份日志均包含 `--weights_bitwidth 8 --act_bitwidth 8` |
+| 模型IO类型 | 两者均为uint8；W8A8表示8bit目标，不应理解为所有边界都使用有符号int8 |
+| 执行位置 | 所有profile执行条目均为NPU，没有观测到CPU/GPU回退 |
+| 结构设置 | 导出metadata除 `learning_dwt.ll_mode` 的 `ll_only` / `bypass` 外一致 |
+| 共同ONNX节点 | 44个共同节点的算子类型、属性、输出shape逐一一致；完整模型额外11个LL相关节点 |
+| 权重 | 不同训练实验的checkpoint；高频、精修权重也不同，并非只移除同一模型的LL网络 |
+| 校准数据 | 同为平台随机校准，但没有保存相同校准样本的哈希，不能证明校准样本完全一致 |
+| 量化编码 | 并非完全一致，输出scale已直接证实不同；尚未取得并逐张量核对DLC内部编码和实际kernel选择 |
+
+完整模型输出scale为 `0.002601688727736473`，bypass为 `0.002944938838481903`，输出zero point均为0。输入scale分别为 `0.003921568393707275` 与 `0.003921566065400839`，差异极小。输出scale不同本身是不同权重/输出分布下可能出现的正常结果，**不能单凭这一点断定量化出错或造成25%的耗时差**。
+
+编译日志里的 `[QNN_CPU]` 出现在离线校准阶段，不是手机推理CPU回退的证据；运行归属应看profile执行记录。量化的位宽目标和逐张量编码是不同层面的概念，参见[Qualcomm量化说明](https://workbench.aihub.qualcomm.com/docs/hub/quantize_examples.html)及[编译API参数](https://workbench.aihub.qualcomm.com/docs/hub/api.html)。当前记录不足以证明每个内部算子均使用完全相同的8bit kernel。
+
+### 9.2 删除LL只节省了很小一部分计算
+
+| 项目 | 完整LL | LL bypass | 变化 |
+|---|---:|---:|---:|
+| 部署参数 | 90,368 | 60,152 | −33.44% |
+| 卷积GMAC | 14.0136 | 13.5818 | −3.08% |
+| ONNX节点 | 55 | 44 | 删除11个LL相关节点 |
+| 复测均值/ms | 3.4584 | 4.3347 | **+25.34%（+0.8764 ms）** |
+
+LL网络工作在三级分解后的 `90×160`，面积仅为原packed输入的1/64；删除它可以显著减少参数，却只省约3.08%的卷积MAC。删除它不会省掉全分辨率的Haar变换/重建、精修S2D/D2S和主要数据搬运。
+
+三轮profile中，完整模型所有 `ll_restorer` 条目的平均周期合计仅约0.1333百万。这个值只是工具归属到这些节点的周期，不能直接当作其独立墙钟时间，但说明没有证据支持“LL本来占了很大一块推理时间”。
+
+### 9.3 差异实际集中在哪里
+
+下表使用各模型三轮对应节点的 `execution_cycles` 均值，单位为百万周期。它们是工具记录的算子归属，不可直接相加换算端到端毫秒或耗时占比。
+
+| profile节点/区域 | 完整LL | bypass | bypass/完整 |
+|---|---:|---:|---:|
+| `/refiner/d2s/ConvTranspose` | 1.8804 | 3.4705 | **1.85×** |
+| 高频第一级 `processors.0/.../PRelu` | 0.1677 | 0.6381 | **3.81×** |
+| 精修第一块 `blocks.0/.../PRelu` | 0.2103 | 0.4786 | **2.28×** |
+| 第一级高频拼接 `/wavelet/Concat` | 0.6784 | 1.0163 | **1.50×** |
+| 输出布局转换条目 `output_0_0231` | 1.7343 | 1.2571 | 0.72× |
+| 被移除的全部LL条目 | 0.1333 | 0 | — |
+
+对应Rep-NCB卷积节点记录为0周期，而其PReLU条目记录非零周期，因此**不能将上表PReLU条目解释为单独激活的成本，也不能将0周期解释为卷积没有执行**；它可能包含融合或后端归属到激活节点的处理，现有profile没有提供更细的kernel映射。
+
+特别是末尾D2S：两者都是权重shape `[16,4,2,2]` 的固定ConvTranspose，ONNX核值完全一致，输出均为 `[1,4,720,1280]`，但记录周期明显不同。这排除了“bypass把该层通道或空间尺寸意外放大”的解释。它提示量化重缩放、后端融合/布局/分块或调度上下文值得检查，但当前没有内部编码和kernel trace，不能断言是哪一个因素。
+
+### 9.4 PReLU参数确实发生了明显变化，但因果尚未验证
+
+| 层 | 完整LL斜率范围 | bypass斜率范围 |
+|---|---|---|
+| 高频第一级 | 0.1622～0.2862 | **−0.1230～0.8827** |
+| 高频第二级 | 0.2766～0.7003 | 0.8742～1.0489 |
+| 高频第三级 | 0.2251～0.6400 | **−0.0652～1.2141** |
+| 精修第一块 | 0.0624～0.3693 | **−0.1295～0.6774** |
+
+完整模型所有PReLU斜率都在0～1内；bypass多个层包含负值或大于1的值。第一层高频和精修第一块的这种差异，与上表较大的周期差同时出现，是值得验证的线索。负斜率是无约束PReLU可以学到的合法参数，不等于模型实现错误。
+
+不过，bypass精修第2～4块也存在负斜率，其记录周期仍与完整模型接近。因此不能简单断言“只要出现负PReLU就慢”，更不能在没有实测前声称约束斜率就能恢复原速度。权重变化也会改变中间激活范围，即使校准输入完全相同，各模型的量化编码仍可能不同。
+
+### 9.5 下一步如何严格区分结构与量化因素
+
+建议按下面顺序做受控验证，本节仅分析现有证据，未执行新的模型修改或校准实验：
+
+1. **同权重结构消融**：取完整模型同一checkpoint，仅在导出图中绕过LL恢复，保留所有HF、PReLU、精修权重。与原完整图使用同一份固定校准数据、相同工具版本编译。若仍明显变慢，更支持图拓扑/激活编码/后端执行变化；若不慢，现有独立训练权重就是重要混杂因素。由于LL旁路改变了下游数值，即使这样也不是完全固定下游量化编码的比较。
+2. **固定校准样本**：显式上传并复用同一批packed RAW校准数据，保存数据哈希。排除不同随机样本的影响，但不要强迫两个不同分布模型使用不合适的同一scale并将其作为正式部署方案。
+3. **PReLU单因素诊断**：在bypass副本中只替换指定层的斜率，或约束到0～1后重新校准，先观察上述两个热点是否变化。此操作会改变函数，只能作为测速诊断；若用于正式模型，需要训练或微调及效果复核。
+4. **D2S路径诊断**：检查输入/输出量化编码与compiled kernel；必要时对比原生DepthToSpace与当前固定ConvTranspose，或单独抽取D2S测试，判断额外开销是否随重缩放/布局改变。不能预设原生算子一定更快。
+
+所以，对用户问题更准确的回答是：**宏观测试条件已对齐，也没有发现LL bypass实现多做计算；但训练权重、逐张量量化编码和编译后的具体执行路径没有完全受控对齐。当前是“两个实际部署产物”的公平速度比较，还不足以得出“删除LL结构本身必然变慢”的因果结论。** 单纯再次profile相同DLC可以证明差距可重复，无法消除这些混杂因素。
+
+核对结果、逐轮周期和PReLU参数范围保存在 [comparison.json](qaihub_ll_bypass_analysis_20261011/comparison.json)。原始profile、编译日志及量化IO specs可通过第7、8节证据链接追溯。
+
+## 10. 同权重、同校准数据的LL旁路受控测速
+
+日期：2026-10-11。按照用户要求，两组均使用完整 **Rep-NCB3×3＋PReLU＋输入残差** 模型的同一份部署权重。完整组保留LL恢复；bypass组仅移除 `wavelet.ll_restorer.*` 的15个参数张量，其余30个部署张量严格加载且逐值相同。没有训练或微调，没有使用独立训练的bypass权重。
+
+原始权重为 `experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth`（epoch 50）。两份新checkpoint的哈希不同，因为bypass删除了LL权重和修改了结构元数据；共同权重完全一致。两份导出ONNX的44个共同节点属性及45对常量输入逐一核对通过。
+
+### 10.1 测试控制
+
+- 输入 `[1,4,720,1280]`；Galaxy S24 / SM-S921U1 / SM8650，QAIRT 2.50.0.260828221209。平台不保证同一台实体手机。
+- 两组均重新编译为W8A8目标、量化IO，未复用旧DLC；编译日志均确认权重/激活8bit。所有profile执行条目为NPU。
+- 显式共用校准数据集 `d9w5r63k9`：固定seed=20261011，3个 `[1,4,720,1280]` float32均匀随机[0,1)样本。数据只上传一次，并将同一个Dataset对象对应ID用于两组编译；文件和各样本哈希见provenance。此数据用于控制速度实验，不作为真实RAW效果校准结论。
+- 各3轮×100次，全部600次样本纳入统计，无极值剔除；不含上传/排队/外部预处理。
+- 相同校准输入不意味着相同激活量化编码：LL旁路会改变下游数值，编码由各自模型校准得到。此次同时控制权重和校准样本，但没有强制共享内部量化scale。
+
+### 10.2 结果
+
+| 同权重模型 | 参数量 | 卷积GMAC | 均值/ms | P50/ms | P95/ms | 三轮均值/ms |
+|---|---:|---:|---:|---:|---:|---|
+| 完整LL | 90,368 | 14.0136 | **3.7927** | 3.7330 | 4.0430 | 3.7997 / 3.7799 / 3.7984 |
+| LL bypass | 60,152 | 13.5818 | **4.3768** | 4.2740 | 4.8853 | 4.3735 / 4.3805 / 4.3762 |
+
+本次同权重bypass相对完整模型耗时变化为 **+15.40%**，绝对变化 **+0.5841 ms**（正值更慢）。此前独立训练权重对比为4.3347 vs 3.4584 ms、bypass慢25.34%；它与本节不是同一种受控比较。
+
+在共同权重和校准样本一致后，bypass仍存在额外耗时，支持LL旁路造成的图拓扑/激活分布及后端执行变化值得进一步检查；但尚未固定内部量化编码，因此不能区分纯拓扑和量化路径的贡献。
+
+### 10.3 对应热点的周期记录
+
+| profile条目 | 完整LL/百万周期 | bypass/百万周期 | 比值 |
+|---|---:|---:|---:|
+| `/refiner/d2s/ConvTranspose` | 1.9405 | 3.3934 | 1.75× |
+| `/wavelet/processors.0/block/activation/PRelu` | 0.1623 | 0.5816 | 3.58× |
+| `/refiner/blocks/blocks.0/activation/PRelu` | 0.2113 | 0.5116 | 2.42× |
+| `/wavelet/Concat` | 0.6714 | 0.9993 | 1.49× |
+
+周期为三轮对应条目均值，不等于独立算子墙钟时间；PReLU条目可能包含融合卷积的归属，不能解释为单独激活耗时。未新增PSNR/SSIM：直接旁路LL会改变模型输出，本次仅用于速度消融。
+
+**对第9节推测的更新**：即使PReLU斜率及其余共同权重完全相同，bypass仍慢15.40%，且此前的几个热点仍存在。因此，负PReLU斜率或独立训练权重差异并不是该慢速现象出现的必要条件，不能将其视为已证明的根因。可以确认LL旁路这一改动及其后续校准/编译结果会在本次流程中产生额外耗时；尚不能将纯图结构、内部量化编码和后端kernel选择的贡献分开。
+
+本次两组输入编码完全一致（scale `0.003921568393707275`、zero point 0）；输出编码仍有差异：完整组scale `0.0036837689112871885`、zero point 28，bypass为 `0.0038416380994021893`、zero point 27。这符合旁路LL后输出分布改变的情况，并不说明位宽未对齐。下一步若要继续定位，需要检查DLC内部编码和编译后的kernel/布局，或对D2S路径做进一步受控实验。
+
+新完整组3.7927 ms与旧完整DLC的3.4584 ms也不同；此次重新校准、重新编译，且设备实体未固定，因此不能把这部分差额全部归于校准。对LL消融应使用本节两组新编译结果配对比较。
+
+### 10.4 复现与原始证据
+
+部署配置：[完整组](../configs/deploy/haar_same_weights_full_2k.yaml)、[bypass组](../configs/deploy/haar_same_weights_bypass_2k.yaml)。[权重准备脚本](qaihub_ll_same_weights_20261011/prepare_models.py)在仓库根目录运行；只生成独立副本，不修改原训练权重。
+
+| 模型 | 新编译任务 | 三轮测速任务 |
+|---|---|---|
+| full | [jgzz82yxg](https://workbench.aihub.qualcomm.com/jobs/jgzz82yxg) | [jp1o72175](https://workbench.aihub.qualcomm.com/jobs/jp1o72175) / [jgd68n4zp](https://workbench.aihub.qualcomm.com/jobs/jgd68n4zp) / [j57ok2n9g](https://workbench.aihub.qualcomm.com/jobs/j57ok2n9g) |
+| bypass | [j5wy8wzmg](https://workbench.aihub.qualcomm.com/jobs/j5wy8wzmg) | [jp4emn41g](https://workbench.aihub.qualcomm.com/jobs/jp4emn41g) / [jpx039rlp](https://workbench.aihub.qualcomm.com/jobs/jpx039rlp) / [j5m9oek9g](https://workbench.aihub.qualcomm.com/jobs/j5m9oek9g) |
+
+记录：[summary.json](qaihub_ll_same_weights_20261011/summary.json)、[provenance.json](qaihub_ll_same_weights_20261011/provenance.json)、[sources.json](qaihub_ll_same_weights_20261011/sources.json)、[jobs.json](qaihub_ll_same_weights_20261011/jobs.json)、[export_reports.json](qaihub_ll_same_weights_20261011/export_reports.json)、[onnx_weight_audit.json](qaihub_ll_same_weights_20261011/onnx_weight_audit.json)、[compiled_specs.json](qaihub_ll_same_weights_20261011/compiled_specs.json)、[execution_audit.json](qaihub_ll_same_weights_20261011/execution_audit.json)、[mean_operator_cycles.json](qaihub_ll_same_weights_20261011/mean_operator_cycles.json)。ONNX和权重副本位于 `experiments/npu_ll_same_weights_20261011/`。
+
+测速命令（环境变量提供token；已有目录恢复已有任务）：
+
+```bash
+PYTHONPATH=/tmp/sid-qai-hub python tools/benchmark_sid_qaihub.py \
+  --watch --height 720 --width 1280 --rounds 3 \
+  --sources-json ref-doc/qaihub_ll_same_weights_20261011/sources.json \
+  --output-dir ref-doc/qaihub_ll_same_weights_20261011
+```
+
+## 11. LL旁路慢速的进一步定位：相同浮点子图仍出现周期差
+
+日期：2026-10-11。基于第10节同权重、同校准实验继续分析。本节没有新增云端测速或修改训练模型；新增的是本地中间张量核对。
+
+### 11.1 “少一个CNN应更快”的前提
+
+如果删除LL网络后，其余算子仍使用相同kernel、相同数据布局、相同量化转换和相同内存调度，那么删除它确实应减少工作量。但重新编译后的整体执行方案未必保持不变：
+
+```text
+完整图耗时 = 共同部分在方案A下的耗时 + LL分支的增量成本
+旁路图耗时 = 共同部分在方案B下的耗时
+```
+
+这是解释成本变化的概念分解，不假设实际分支完全串行。此次旁路移除了约0.4318 GMAC，只减少总卷积MAC的3.08%，而共同部分仍有13.5818 GMAC。只要共同部分出现更大的额外搬运/转换/执行开销，就可能抵消删除LL的收益。实际总耗时为3.7927→4.3768 ms，多约0.5841 ms。
+
+LL处理分辨率为90×160，原图为720×1280；LL面积仅为原图的1/64。参数少30,216个并不等于全图耗时能减少三分之一。
+
+### 11.2 新验证：高频网络的浮点输入输出没有变化
+
+为两个原始浮点ONNX临时增加中间输出，用CPU ONNX Runtime关闭图优化运行同一份校准数据的3个样本，对对应张量逐值比较。临时诊断图未用于NPU测速，没有改变部署产物。
+
+| 位置 | 三个校准样本的full/bypass比较 |
+|---|---|
+| 第一级高频Concat输出 | 全部逐值完全相同 |
+| 第一级高频Conv输出 | 全部逐值完全相同 |
+| 第一级高频PReLU输出 | 全部逐值完全相同 |
+| 第一级高频残差Add输出 | 全部逐值完全相同 |
+| 第二、三级高频残差Add输出 | 全部逐值完全相同 |
+| 小波最终重建、精修第一块、最终输出 | 不同，符合LL处理改变后的预期 |
+
+因此，对于高频部分，“删了LL导致高频输入更难处理”“PReLU数值变了”均不是这次测试中的解释。高频子图的形状、权重、浮点输入输出相同，但其NPU profile归属周期仍不同。这是应优先检查整图编译上下文而非CNN数学计算量的重要证据。
+
+**边界**：这里只核对浮点源图；它不能证明两份DLC中高频张量的量化编码也相同。后端量化与图重写可能结合整个图处理。
+
+数据见 [intermediate_float_audit.json](qaihub_ll_same_weights_20261011/intermediate_float_audit.json)，包含shape、范围、逐样本哈希和最大差值。
+
+### 11.3 最值得怀疑的两类机制
+
+**机制A：量化重缩放和图边界变化（待验证）。** 一个张量按 `x ≈ s(q−z)` 表示。如果连接算子需要将不同输入转换到共同编码，可能产生如下整数重缩放：
+
+```text
+q_out = round((s_in / s_out) × (q_in − z_in)) + z_out
+```
+
+这里的比例是编译期常数，不代表网络又出现逐像素浮点除法。问题是转换是否需要额外遍历、是否能融合、能否只搬运而不用改变数值。
+
+LL恢复CNN提供一个独立的输出张量；直接旁路则将DWT的LL输出接入重建拼接。这样的图边界变化可能影响Concat/重建路径的编码协调与融合选择。该机制可以解释为何模型位宽一致，搬运或转换成本仍不同；但目前没有DLC内部逐张量编码，尚未证实后端具体在哪条边插入了转换。
+
+末尾D2S尤其值得检查：数学上它是元素重排，固定2×2 ConvTranspose只是表达方式。如果输入输出编码相同，可以设想纯重排；如果编码不同，则可能还需重缩放，或被当作通用反卷积处理。两组D2S固定权重完全相同，但记录周期1.9405→3.3934百万，约1.75倍；这是已观测事实，而“多了重缩放”仍是待验证解释，不能仅由模型最终output scale推断D2S内部编码。
+
+**机制B：分块、布局、缓冲区和算子调度变化（待验证）。** 删除节点会改变拓扑及张量使用关系。后端可能重新选择分块尺寸、缓冲区复用、融合或数据布局；共同节点的ONNX属性相同并不能保证设备kernel相同。第一级高频Concat和CNN位于LL恢复之前，其浮点张量完全一样仍出现周期差，使这种整图相关机制更值得优先调查。
+
+数据遍历成本不能忽略：第一级高频有 `12×360×640=2,764,800` 个元素，INT8下约2.64 MiB；一次额外完整读写至少约5.27 MiB。D2S输入和输出各有3,686,400个元素，INT8下约3.52 MiB，完整读写约7.03 MiB。这只是张量有效数据量，不包含通道填充、缓存、布局中间缓冲和真实DRAM流量，也不能直接换算成耗时。相比90×160处的LL CNN，多出几次大特征遍历完全可能比省下低分辨率计算更贵。
+
+Qualcomm文档给出了HTP张量布局和分块优化机制，但这只是上述解释的技术背景，不是本模型已经发生某个具体优化的证据：[Tensors and Memory Layout](https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-10/tensors_and_memory_layout.html)、[HTP分块优化示例](https://docs.qualcomm.com/nav/home/common_optimization_utility_funcs_usage_examples.html?product=924033590759186372)。
+
+### 11.4 哪些结论现在还不能下
+
+- 不能断言是负PReLU、CPU回退或W8A16混入：共同PReLU权重已相同，记录均为NPU，编译目标同为W8A8。
+- 不能断言“LL网络帮助缓存预热所以更快”：现有数据没有证明这种具体机制。
+- 不能把PReLU条目的周期全部解释成激活耗时：对应卷积条目为0周期，存在融合/归属问题。
+- 不能把算子周期差直接加总换算成0.5841 ms：Workbench逐层分析是额外一次运行，和多轮端到端计时不是同一个采样过程。[官方测量说明](https://workbench.aihub.qualcomm.com/docs/hub/howitworks-inference.html)
+- 不能用 `estimated_inference_peak_memory` 判断是否发生HTP VTCM溢出：官方说明通用内存统计针对应用进程，HTP内存需看HTP Analysis。当前保存的JSON没有完整的kernel、VTCM和DDR spill/fill明细。
+- 不能将运行日志里的 `No registered op ... crouton_to_vtcm` 警告直接认定为根因；两组日志均有类似信息，任务均成功，且没有与具体热点建立映射。
+
+### 11.5 下一步最有区分力的验证
+
+1. **检查两份图的HTP Analysis与内部编码**：重点对比D2S、第一层高频Concat/Conv/PReLU的kernel、输入输出scale、布局转换、VTCM/DDR读写。此项最可能直接解释“同一个算子为何变慢”。当前本地记录不足以完成这一层归因。
+2. **做D2S表达方式对照**：同权重、同校准，将固定ConvTranspose替换为原生DepthToSpace，两个模型都测。若差距显著收敛，说明末尾表达方式/布局/量化路径贡献较大；不保证原生算子必然更快。
+3. **抽取相同高频子图单独编译测速**：两组该子图的函数与输入已证实相同，使用同一个子图产物可建立独立基线。若整图差距仍只出现在原集成环境，支持整图编译/调度影响。独立子图边界会改变优化，不能把独立耗时直接相加预测整网耗时。
+4. **增加明确的LL输出边界进行诊断**：例如固定恒等1×1卷积，但必须检查它是否被编译器消掉；若保留后更快，只能说明图表达/优化策略发生变化，不能将“多加算子更快”当成普遍规律。
+
+当前最准确的解释是：**LL bypass确实减少了数学计算，但部署后的共同部分执行效率下降，抵消了省掉LL CNN的收益。证据已将问题收窄到整图量化/编译/执行上下文；具体是编码转换还是布局、分块和内存调度，仍需要更底层的HTP记录或针对性对照确认。**

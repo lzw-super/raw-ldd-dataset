@@ -38,6 +38,8 @@ def main():
  ROOT.mkdir(parents=True,exist_ok=True);manifest=ROOT/'jobs.json'
  state=json.loads(manifest.read_text()) if manifest.exists() else dict(device=device.name,shape=[1,4,a.height,a.width],sdk=str(hub.__version__),compile_options=COMPILE,profile_options=PROFILE,calibration='Platform-generated random calibration; performance only',models={})
  if state['shape'] != [1,4,a.height,a.width]:raise ValueError('Existing benchmark shape differs; use a new output directory')
+ if sources and any(item.get('calibration_dataset') for item in sources.values()):
+  state['calibration']='Explicit dataset IDs recorded per model; see sources and provenance for calibration content'
  def save():
   temp=manifest.with_suffix('.tmp');temp.write_text(json.dumps(state,indent=2)+'\n');temp.replace(manifest)
  for label,exp in EXPERIMENTS.items():
@@ -57,10 +59,14 @@ def main():
    digest=hashlib.sha256(source.read_bytes()).hexdigest()
    if item.get('source_sha256',digest)!=digest:raise RuntimeError(f'{label}: source hash changed')
    record.update(source=str(source),source_sha256=digest,checkpoint=checkpoint)
+   calibration_dataset=item.get('calibration_dataset')
+   if calibration_dataset:
+    record['calibration_dataset']=calibration_dataset
    if item.get('compile_job'):
     record['compile_job']=item['compile_job'];record['reused_compile']=True
    else:
-    job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_{a.height}x{a.width}',options=COMPILE)
+    calibration=client.get_dataset(calibration_dataset) if calibration_dataset else None
+    job=client.submit_compile_job(str(source),device=device,name=f'SID_W8A8_{label}_{a.height}x{a.width}',options=COMPILE,calibration_data=calibration)
     record['compile_job']=job.job_id
    save();print(label,'compile job',record['compile_job'],flush=True)
   job=client.get_job(record['compile_job']);status=job.get_status();record['compile_status']=str(status);record['compile_code']=status.code;save()

@@ -1,0 +1,731 @@
+{
+  "measurements": {
+    "full": {
+      "sample_0": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.9716856479644775,
+          "max": 0.9833937883377075,
+          "sha256": "e8fa6b1d4614d85d3e5a25723c104b3266f27165be3a4e15277c624ea9ac17a4"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.238037109375,
+          "max": 2.9808263778686523,
+          "sha256": "4b1b653f86252ef21febc43667dc1be2c22caf5b6e21bdc867cee40759dc5778"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.7928625345230103,
+          "max": 2.9808263778686523,
+          "sha256": "ce1b6084dd75a0bbaa0de23a36a01da0b08b8d1cc92730fabd18a02ae4f5d34f"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.3870222568511963,
+          "max": 3.108867883682251,
+          "sha256": "af018980f96cd0423064a2911e31e8dea0afc4034d68467096092721043147c2"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -1.88397216796875,
+          "max": 2.4469828605651855,
+          "sha256": "2a9bcd54c50bc34a8bbe1d9bb9c6d0ad95b861d831d3328c963208f35335a019"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.706303596496582,
+          "max": 2.099137306213379,
+          "sha256": "f7e397cd33b776c4813757225a3f2f8f183929e3511203723241e981af2a484a"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -2.0181126594543457,
+          "max": 3.058058261871338,
+          "sha256": "c53313702a95fddfba71937975c836ee1853be73d2f39c85b5101a9b95dc7e39"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8186953067779541,
+          "max": 2.7521896362304688,
+          "sha256": "2adbf87cc96eea36b00936efba7e7b4dc5cdec23931f3ad9d4fb6cc0cb115607"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.03238144889473915,
+          "max": 0.6763700246810913,
+          "sha256": "af3f3b9805fbdd427338c61f66c395a4e06109e99c49d860c0b34e9f6490cb60"
+        }
+      },
+      "sample_1": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.9721430540084839,
+          "max": 0.9743983745574951,
+          "sha256": "4fd57c4b511ce7bd0c3eba5534d46cabb74c43df4b2814c1a17667272590206a"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.2956838607788086,
+          "max": 3.243373394012451,
+          "sha256": "7e4d9f2a6e6fd425be381c6b0da152ba64645cc5c1a51ab86d3118ee8414f0d9"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.8069778084754944,
+          "max": 3.243373394012451,
+          "sha256": "97d3fe4b814b115ebb42d6d25f72183e2b74ac5a278402a7755a1266a309bd56"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.3417541980743408,
+          "max": 3.3279030323028564,
+          "sha256": "a5d8624f02355916e4b5d0f1eb36dfd1d27d0c2560c71ca6001102b9eff611c9"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -1.8486766815185547,
+          "max": 2.4271280765533447,
+          "sha256": "88c6b48d5e53b16c26af8f0e63129fb7949d1baa27af8e9d8aa932df173f7fe0"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.4455347061157227,
+          "max": 1.528220295906067,
+          "sha256": "4cf6835ac62cec3e193aa2e5e281e2165d12d2ae67361ba040da3bcbbe29ef3f"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -2.0119216442108154,
+          "max": 2.971022605895996,
+          "sha256": "cd6fe8d927055653865c56f05bfe87a8d8501da076233e9faed3970c5aae654b"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8129767775535583,
+          "max": 2.6993675231933594,
+          "sha256": "2de4e48311d118baaee10654dbb2d28728d1feccd1b7e166d1a42b8899dee9bb"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.03265673667192459,
+          "max": 0.6962181925773621,
+          "sha256": "9c0996bc312601eb7c5883fbf785032f3713aa7dbf15910a9c3ac297e1c7f1ca"
+        }
+      },
+      "sample_2": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.96933913230896,
+          "max": 0.9674332141876221,
+          "sha256": "2a5be1922c14aecdb0d4b52649a80784cc56b265dde205fc007f288ebc273aa3"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.2990059852600098,
+          "max": 2.9540319442749023,
+          "sha256": "1b8a0e537cc6aa66b11872357cc3c6eebec5932084ff05f40761e683210ea89b"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.8077741861343384,
+          "max": 2.9540319442749023,
+          "sha256": "aba4c959a1d2079d74a4287cf7217a7f0c9959716ec38d541ccd80238ef69026"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.4182618856430054,
+          "max": 3.3511414527893066,
+          "sha256": "9088fa0cfbdb188f2ca523b9676dbc12b3075a4b20a80a1d02cb7c70cd2b5fa0"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -2.2033228874206543,
+          "max": 2.634272336959839,
+          "sha256": "b2f82640c91887907201454fd499ae16130171c8a3085ae91a34eb398e91d620"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.5047235488891602,
+          "max": 1.464526653289795,
+          "sha256": "d5b969a70933a36ac38ad999572ecf246c9509a96968ac524f61eb743ec1b858"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -1.9176653623580933,
+          "max": 2.7965469360351562,
+          "sha256": "97a077e58ea5cb35dabbca0a91b150532a4455742661e3d940764b7369bcb8fe"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8200997710227966,
+          "max": 2.722630262374878,
+          "sha256": "815e7569836d33668973b7415a2e4e5471a758841201d08ee179411782307ab2"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.029408298432826996,
+          "max": 0.6972388625144958,
+          "sha256": "e126572c240b7cfc80e7ed30519291db230f1debcaf5d30267f241163dc3b42d"
+        }
+      }
+    },
+    "bypass": {
+      "sample_0": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.9716856479644775,
+          "max": 0.9833937883377075,
+          "sha256": "e8fa6b1d4614d85d3e5a25723c104b3266f27165be3a4e15277c624ea9ac17a4"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.238037109375,
+          "max": 2.9808263778686523,
+          "sha256": "4b1b653f86252ef21febc43667dc1be2c22caf5b6e21bdc867cee40759dc5778"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.7928625345230103,
+          "max": 2.9808263778686523,
+          "sha256": "ce1b6084dd75a0bbaa0de23a36a01da0b08b8d1cc92730fabd18a02ae4f5d34f"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.3870222568511963,
+          "max": 3.108867883682251,
+          "sha256": "af018980f96cd0423064a2911e31e8dea0afc4034d68467096092721043147c2"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -1.88397216796875,
+          "max": 2.4469828605651855,
+          "sha256": "2a9bcd54c50bc34a8bbe1d9bb9c6d0ad95b861d831d3328c963208f35335a019"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.706303596496582,
+          "max": 2.099137306213379,
+          "sha256": "f7e397cd33b776c4813757225a3f2f8f183929e3511203723241e981af2a484a"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -2.0030245780944824,
+          "max": 3.099837303161621,
+          "sha256": "8bc15abc85187b498caf9b4a4118969b5100fd2b01277c76653b244f1f0f74fd"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8749189376831055,
+          "max": 2.8038227558135986,
+          "sha256": "c04f4e315d1303f5c4cb22c0c40000c5feffa124075246e407a552b63a7e90df"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.03270066902041435,
+          "max": 0.6872297525405884,
+          "sha256": "97d5e191b5db6ee1f8febdca6ed7a59de109e6c21aaa1ab5ce1842e916122ca8"
+        }
+      },
+      "sample_1": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.9721430540084839,
+          "max": 0.9743983745574951,
+          "sha256": "4fd57c4b511ce7bd0c3eba5534d46cabb74c43df4b2814c1a17667272590206a"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.2956838607788086,
+          "max": 3.243373394012451,
+          "sha256": "7e4d9f2a6e6fd425be381c6b0da152ba64645cc5c1a51ab86d3118ee8414f0d9"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.8069778084754944,
+          "max": 3.243373394012451,
+          "sha256": "97d3fe4b814b115ebb42d6d25f72183e2b74ac5a278402a7755a1266a309bd56"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.3417541980743408,
+          "max": 3.3279030323028564,
+          "sha256": "a5d8624f02355916e4b5d0f1eb36dfd1d27d0c2560c71ca6001102b9eff611c9"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -1.8486766815185547,
+          "max": 2.4271280765533447,
+          "sha256": "88c6b48d5e53b16c26af8f0e63129fb7949d1baa27af8e9d8aa932df173f7fe0"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.4455347061157227,
+          "max": 1.528220295906067,
+          "sha256": "4cf6835ac62cec3e193aa2e5e281e2165d12d2ae67361ba040da3bcbbe29ef3f"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -1.969336986541748,
+          "max": 3.015763759613037,
+          "sha256": "955a1be62740ff8dd7814ae780437f8d8004aa35cb5a5c93ee4d175c14bac2e0"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8615002036094666,
+          "max": 2.837320327758789,
+          "sha256": "d92737d0bda6a35c87e9f9869f2c5612473f45b64459ec520f74fde0d7a404c9"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.032688092440366745,
+          "max": 0.7049342393875122,
+          "sha256": "0fb8cb7f576b8c28347123aa7651a36fabf207a053974d5593155313e964361b"
+        }
+      },
+      "sample_2": {
+        "/wavelet/Concat": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.96933913230896,
+          "max": 0.9674332141876221,
+          "sha256": "2a5be1922c14aecdb0d4b52649a80784cc56b265dde205fc007f288ebc273aa3"
+        },
+        "/wavelet/processors.0/block/reparam_conv/Conv": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -3.2990059852600098,
+          "max": 2.9540319442749023,
+          "sha256": "1b8a0e537cc6aa66b11872357cc3c6eebec5932084ff05f40761e683210ea89b"
+        },
+        "/wavelet/processors.0/block/activation/PRelu": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -0.8077741861343384,
+          "max": 2.9540319442749023,
+          "sha256": "aba4c959a1d2079d74a4287cf7217a7f0c9959716ec38d541ccd80238ef69026"
+        },
+        "/wavelet/processors.0/Add": {
+          "shape": [
+            1,
+            12,
+            360,
+            640
+          ],
+          "min": -1.4182618856430054,
+          "max": 3.3511414527893066,
+          "sha256": "9088fa0cfbdb188f2ca523b9676dbc12b3075a4b20a80a1d02cb7c70cd2b5fa0"
+        },
+        "/wavelet/processors.1/Add": {
+          "shape": [
+            1,
+            12,
+            180,
+            320
+          ],
+          "min": -2.2033228874206543,
+          "max": 2.634272336959839,
+          "sha256": "b2f82640c91887907201454fd499ae16130171c8a3085ae91a34eb398e91d620"
+        },
+        "/wavelet/processors.2/Add": {
+          "shape": [
+            1,
+            12,
+            90,
+            160
+          ],
+          "min": -1.5047235488891602,
+          "max": 1.464526653289795,
+          "sha256": "d5b969a70933a36ac38ad999572ecf246c9509a96968ac524f61eb743ec1b858"
+        },
+        "/wavelet/ConvTranspose_2": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": -1.8788859844207764,
+          "max": 2.8380675315856934,
+          "sha256": "fd0e4087b0ad5a4cf6da372a5083d629ffcb32f13b83a4126f9d077b0144d1b7"
+        },
+        "/refiner/blocks/blocks.0/activation/PRelu": {
+          "shape": [
+            1,
+            32,
+            360,
+            640
+          ],
+          "min": -0.8770685791969299,
+          "max": 2.842366933822632,
+          "sha256": "b17d7927e983fe5eeda1c7b77361c1c784cca3b67d5f0a68b5fe2590521b14c6"
+        },
+        "/refiner/d2s/ConvTranspose": {
+          "shape": [
+            1,
+            4,
+            720,
+            1280
+          ],
+          "min": 0.02963138557970524,
+          "max": 0.7110245227813721,
+          "sha256": "01907bc0ebefc1e422225f4a6ca238ac622cea1845c41c6447e8b01cf1a6ed44"
+        }
+      }
+    }
+  },
+  "comparison": {
+    "sample_0": {
+      "/wavelet/Concat": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/reparam_conv/Conv": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/activation/PRelu": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.1/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.2/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/ConvTranspose_2": {
+        "equal": false,
+        "max_abs_diff": 0.0889672040939331
+      },
+      "/refiner/blocks/blocks.0/activation/PRelu": {
+        "equal": false,
+        "max_abs_diff": 0.31359338760375977
+      },
+      "/refiner/d2s/ConvTranspose": {
+        "equal": false,
+        "max_abs_diff": 0.08601516485214233
+      }
+    },
+    "sample_1": {
+      "/wavelet/Concat": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/reparam_conv/Conv": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/activation/PRelu": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.1/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.2/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/ConvTranspose_2": {
+        "equal": false,
+        "max_abs_diff": 0.08286524564027786
+      },
+      "/refiner/blocks/blocks.0/activation/PRelu": {
+        "equal": false,
+        "max_abs_diff": 0.3386302590370178
+      },
+      "/refiner/d2s/ConvTranspose": {
+        "equal": false,
+        "max_abs_diff": 0.08428773283958435
+      }
+    },
+    "sample_2": {
+      "/wavelet/Concat": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/reparam_conv/Conv": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/block/activation/PRelu": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.0/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.1/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/processors.2/Add": {
+        "equal": true,
+        "max_abs_diff": 0.0
+      },
+      "/wavelet/ConvTranspose_2": {
+        "equal": false,
+        "max_abs_diff": 0.07665407657623291
+      },
+      "/refiner/blocks/blocks.0/activation/PRelu": {
+        "equal": false,
+        "max_abs_diff": 0.26394230127334595
+      },
+      "/refiner/d2s/ConvTranspose": {
+        "equal": false,
+        "max_abs_diff": 0.08175298571586609
+      }
+    }
+  },
+  "note": "CPU ORT float source graph, not quantized NPU tensors; added outputs only for diagnostics"
+}

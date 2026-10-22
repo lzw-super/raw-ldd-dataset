@@ -1,0 +1,52 @@
+{
+  "source": "experiments/npu_4k/inputs/haar_hf_repncb_prelu_residual_snapshot.pth",
+  "source_sha256": "30be13297ff656c3f567258c57f49abadec7e926126740407312ff0a41e0cff6",
+  "epoch": 50,
+  "variants": {
+    "full": {
+      "checkpoint": "experiments/npu_ll_same_weights_20261011/inputs/full.pth",
+      "sha256": "3a532b24ffacd9bd0ae71b444f083c4977106935ed9b6f472b23f6a61f3d7b21",
+      "all_retained_tensors_equal_source": true,
+      "retained_tensor_count": 45,
+      "removed_keys": [],
+      "deployed_parameters": 90368
+    },
+    "bypass": {
+      "checkpoint": "experiments/npu_ll_same_weights_20261011/inputs/bypass.pth",
+      "sha256": "7449714562d0c34f4a84cc965f8e5211e43e947b5588476323b4dc605f29c6a0",
+      "all_retained_tensors_equal_source": true,
+      "retained_tensor_count": 30,
+      "removed_keys": [
+        "wavelet.ll_restorer.layers.0.weight",
+        "wavelet.ll_restorer.layers.0.bias",
+        "wavelet.ll_restorer.layers.2.activation.weight",
+        "wavelet.ll_restorer.layers.2.reparam_conv.weight",
+        "wavelet.ll_restorer.layers.2.reparam_conv.bias",
+        "wavelet.ll_restorer.layers.3.activation.weight",
+        "wavelet.ll_restorer.layers.3.reparam_conv.weight",
+        "wavelet.ll_restorer.layers.3.reparam_conv.bias",
+        "wavelet.ll_restorer.layers.4.activation.weight",
+        "wavelet.ll_restorer.layers.4.reparam_conv.weight",
+        "wavelet.ll_restorer.layers.4.reparam_conv.bias",
+        "wavelet.ll_restorer.layers.5.weight",
+        "wavelet.ll_restorer.layers.5.bias",
+        "wavelet.ll_restorer.fusion.weight",
+        "wavelet.ll_restorer.fusion.bias"
+      ],
+      "deployed_parameters": 60152
+    }
+  },
+  "calibration": {
+    "path": "experiments/npu_ll_same_weights_20261011/inputs/calibration.npz",
+    "seed": 20261011,
+    "samples": 3,
+    "distribution": "uniform [0,1), float32; speed-only",
+    "sha256": "1db7a5a24bf431ed686148df6cc905270e3fc42be47f7d922121a03346b3ad94",
+    "tensor_sha256": [
+      "a5b0bf3bc356a047364479f81695c77532d497451dd145f71d81bf6d93afc648",
+      "a5d150d6ee95f5dc649d3e607ed1bd4182f2389f754152ab9f914e46cef1bb84",
+      "1e3d37351aaa9ca1d6bce09d58e28bd111608abdb4298daf0395b0bf1faf449e"
+    ],
+    "dataset_id": "d9w5r63k9"
+  }
+}

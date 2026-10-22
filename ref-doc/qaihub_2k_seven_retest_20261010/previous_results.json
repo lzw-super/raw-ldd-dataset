@@ -1,0 +1,380 @@
+{
+  "haar_hf_cnn_dw3_residual_sweep_2k": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "j5m9wk1yg",
+          "reported_ms": 3.942,
+          "sample_count": 100,
+          "mean_ms": 4.10312,
+          "min_ms": 3.942,
+          "max_ms": 4.838,
+          "p50_ms": 3.9844999999999997,
+          "p95_ms": 4.642099999999999,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "jgn19q4vp",
+          "reported_ms": 3.936,
+          "sample_count": 100,
+          "mean_ms": 4.3491,
+          "min_ms": 3.936,
+          "max_ms": 5.012,
+          "p50_ms": 4.402,
+          "p95_ms": 4.86615,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "jprx4drvp",
+          "reported_ms": 4.015,
+          "sample_count": 100,
+          "mean_ms": 4.21891,
+          "min_ms": 4.015,
+          "max_ms": 5.115,
+          "p50_ms": 4.1105,
+          "p95_ms": 4.66135,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        }
+      ],
+      "reported_mean_ms": 3.9643333333333333,
+      "sample_count": 300,
+      "sample_mean_ms": 4.22371,
+      "sample_p50_ms": 4.1080000000000005,
+      "sample_p95_ms": 4.707650000000001,
+      "reciprocal_sample_mean_hz": 236.75867898127478,
+      "dlc_bytes": 169808,
+      "dlc_sha256": "789fcfeedf80f6ba6ac3757ca306d64b4a8468ed24030cd3238edfdcdfe4d019"
+    },
+    "source_directory": "ref-doc/qaihub_resolution_sweep_20261010/2k"
+  },
+  "mrlfn_sweep_2k": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jp2o7d1xg",
+          "reported_ms": 4.689,
+          "sample_count": 100,
+          "mean_ms": 4.90463,
+          "min_ms": 4.689,
+          "max_ms": 5.909,
+          "p50_ms": 4.7620000000000005,
+          "p95_ms": 5.4373000000000005,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jpy842lrg",
+          "reported_ms": 4.669,
+          "sample_count": 100,
+          "mean_ms": 4.86341,
+          "min_ms": 4.669,
+          "max_ms": 5.987,
+          "p50_ms": 4.726,
+          "p95_ms": 5.45815,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jp8j3rnz5",
+          "reported_ms": 4.675,
+          "sample_count": 100,
+          "mean_ms": 4.83271,
+          "min_ms": 4.675,
+          "max_ms": 5.719,
+          "p50_ms": 4.727,
+          "p95_ms": 5.2578,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        }
+      ],
+      "reported_mean_ms": 4.677666666666666,
+      "sample_count": 300,
+      "sample_mean_ms": 4.866916666666667,
+      "sample_p50_ms": 4.7385,
+      "sample_p95_ms": 5.4373000000000005,
+      "reciprocal_sample_mean_hz": 205.46889714569457,
+      "dlc_bytes": 196864,
+      "dlc_sha256": "e25a294b4753cfdd895d8be4086eaba47c2b4d3a7a5490171f9ff0ff89c45311"
+    },
+    "source_directory": "ref-doc/qaihub_resolution_sweep_20261010/2k"
+  },
+  "splitternet_2k_extra": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jp0o1x06p",
+          "reported_ms": 7.823,
+          "sample_count": 100,
+          "mean_ms": 8.01206,
+          "min_ms": 7.823,
+          "max_ms": 9.534,
+          "p50_ms": 7.896,
+          "p95_ms": 8.729099999999999,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        },
+        {
+          "job": "jp8j3kyx5",
+          "reported_ms": 7.841,
+          "sample_count": 100,
+          "mean_ms": 8.01496,
+          "min_ms": 7.841,
+          "max_ms": 8.871,
+          "p50_ms": 7.906499999999999,
+          "p95_ms": 8.73535,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        },
+        {
+          "job": "jgk6lkx25",
+          "reported_ms": 7.84,
+          "sample_count": 100,
+          "mean_ms": 8.03216,
+          "min_ms": 7.84,
+          "max_ms": 9.065,
+          "p50_ms": 7.924,
+          "p95_ms": 8.65385,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        }
+      ],
+      "reported_mean_ms": 7.834666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 8.019726666666667,
+      "sample_p50_ms": 7.9094999999999995,
+      "sample_p95_ms": 8.7311,
+      "reciprocal_sample_mean_hz": 124.69252900556044,
+      "dlc_bytes": 1183376,
+      "dlc_sha256": "bf3b9e1875768e284ece8ec33662df01c21e79f32e28ad056eadc6a6bce5d615"
+    },
+    "source_directory": "ref-doc/qaihub_2k_five_extra_20261010"
+  },
+  "unet_2k_extra": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jgn19wvrp",
+          "reported_ms": 13.265,
+          "sample_count": 100,
+          "mean_ms": 13.78574,
+          "min_ms": 13.265,
+          "max_ms": 14.643,
+          "p50_ms": 13.7405,
+          "p95_ms": 14.25525,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        },
+        {
+          "job": "jprx4739p",
+          "reported_ms": 13.411,
+          "sample_count": 100,
+          "mean_ms": 14.07808,
+          "min_ms": 13.411,
+          "max_ms": 15.239,
+          "p50_ms": 14.017,
+          "p95_ms": 14.7487,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        },
+        {
+          "job": "jp2o7zy4g",
+          "reported_ms": 13.268,
+          "sample_count": 100,
+          "mean_ms": 13.90284,
+          "min_ms": 13.268,
+          "max_ms": 14.571,
+          "p50_ms": 13.8705,
+          "p95_ms": 14.344149999999999,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        }
+      ],
+      "reported_mean_ms": 13.314666666666668,
+      "sample_count": 300,
+      "sample_mean_ms": 13.92222,
+      "sample_p50_ms": 13.873000000000001,
+      "sample_p95_ms": 14.5254,
+      "reciprocal_sample_mean_hz": 71.82762519195933,
+      "dlc_bytes": 7839816,
+      "dlc_sha256": "c50ae3d13c0f47d4b64169583160efd1efe7af2c035b379134e51fcc43bcd63e"
+    },
+    "source_directory": "ref-doc/qaihub_2k_five_extra_20261010"
+  },
+  "nafnet_2k_extra": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jglw0qm8p",
+          "reported_ms": 179.39,
+          "sample_count": 100,
+          "mean_ms": 181.20584,
+          "min_ms": 179.39,
+          "max_ms": 185.668,
+          "p50_ms": 181.0805,
+          "p95_ms": 182.42115,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        },
+        {
+          "job": "j56o30405",
+          "reported_ms": 180.114,
+          "sample_count": 100,
+          "mean_ms": 182.31056,
+          "min_ms": 180.114,
+          "max_ms": 187.283,
+          "p50_ms": 182.33249999999998,
+          "p95_ms": 183.33315,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        },
+        {
+          "job": "jp3o4r0lp",
+          "reported_ms": 182.131,
+          "sample_count": 100,
+          "mean_ms": 183.68976,
+          "min_ms": 182.131,
+          "max_ms": 199.88,
+          "p50_ms": 183.449,
+          "p95_ms": 184.7561,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        }
+      ],
+      "reported_mean_ms": 180.545,
+      "sample_count": 300,
+      "sample_mean_ms": 182.40205333333333,
+      "sample_p50_ms": 182.377,
+      "sample_p95_ms": 184.27685,
+      "reciprocal_sample_mean_hz": 5.482394423337632,
+      "dlc_bytes": 8187752,
+      "dlc_sha256": "e769df0c6c7b74f2f7d225c99cfa6d91c2219e28d4b2b31b34c321dfbd3f7240"
+    },
+    "source_directory": "ref-doc/qaihub_2k_five_extra_20261010"
+  },
+  "haar_ll_bypass_2k": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jpx0mw61p",
+          "reported_ms": 4.151,
+          "sample_count": 100,
+          "mean_ms": 4.34676,
+          "min_ms": 4.151,
+          "max_ms": 5.485,
+          "p50_ms": 4.2065,
+          "p95_ms": 5.2182,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jgn1xjmrp",
+          "reported_ms": 4.154,
+          "sample_count": 100,
+          "mean_ms": 4.2916,
+          "min_ms": 4.154,
+          "max_ms": 5.35,
+          "p50_ms": 4.191000000000001,
+          "p95_ms": 4.8922,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jp2oj294g",
+          "reported_ms": 4.153,
+          "sample_count": 100,
+          "mean_ms": 4.28412,
+          "min_ms": 4.153,
+          "max_ms": 4.828,
+          "p50_ms": 4.198499999999999,
+          "p95_ms": 4.68285,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        }
+      ],
+      "reported_mean_ms": 4.152666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 4.307493333333333,
+      "sample_p50_ms": 4.2,
+      "sample_p95_ms": 4.831000000000001,
+      "reciprocal_sample_mean_hz": 232.15358042728639,
+      "dlc_bytes": 142696,
+      "dlc_sha256": "776817227583c035c2725baf6ff78188a0697eec36ba081b1c9747f02c1ecabb"
+    },
+    "source_directory": "ref-doc/qaihub_2k_ll_bypass_20261010/ll_bypass"
+  },
+  "haar_ll_bypass_bayes_soft_2k": {
+    "summary": {
+      "rounds": [
+        {
+          "job": "jpv24jwkg",
+          "reported_ms": 156.516,
+          "sample_count": 100,
+          "mean_ms": 158.92179,
+          "min_ms": 156.516,
+          "max_ms": 165.01,
+          "p50_ms": 158.839,
+          "p95_ms": 160.7358,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        },
+        {
+          "job": "jpe62jvog",
+          "reported_ms": 155.882,
+          "sample_count": 100,
+          "mean_ms": 158.76697,
+          "min_ms": 155.882,
+          "max_ms": 162.339,
+          "p50_ms": 158.5895,
+          "p95_ms": 160.3775,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        },
+        {
+          "job": "jgzzw17og",
+          "reported_ms": 156.286,
+          "sample_count": 100,
+          "mean_ms": 158.91848,
+          "min_ms": 156.286,
+          "max_ms": 162.279,
+          "p50_ms": 158.79000000000002,
+          "p95_ms": 160.54335,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        }
+      ],
+      "reported_mean_ms": 156.228,
+      "sample_count": 300,
+      "sample_mean_ms": 158.86908,
+      "sample_p50_ms": 158.77949999999998,
+      "sample_p95_ms": 160.60805,
+      "reciprocal_sample_mean_hz": 6.294491036267095,
+      "dlc_bytes": 206192,
+      "dlc_sha256": "7a0d00d919e25551537fe98c3fd4ad870967b07f72efd4c7b729972161cc983f"
+    },
+    "source_directory": "ref-doc/qaihub_2k_ll_bypass_20261010/bayes_soft"
+  }
+}

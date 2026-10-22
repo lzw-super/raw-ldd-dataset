@@ -1,0 +1,16 @@
+{
+  "full": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "calibration_dataset": "d9w5r63k9",
+    "source_and_checkpoint_hashes_verified": true
+  },
+  "bypass": {
+    "samples": 300,
+    "npu_only": true,
+    "w8a8_verified": true,
+    "calibration_dataset": "d9w5r63k9",
+    "source_and_checkpoint_hashes_verified": true
+  }
+}

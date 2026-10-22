@@ -1,0 +1,44 @@
+{
+  "haar_hf_cnn_dw3_residual_sweep_2k": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/haar_hf_cnn_dw3_residual_sweep_2k.onnx",
+    "source_sha256": "8d60993b4411bb1b7ca317642301352c801068b51931846b74a51a6e811ae8aa",
+    "checkpoint": "experiments/npu_4k/inputs/haar_hf_cnn_dw3_residual_snapshot.pth",
+    "compile_job": "jgj30y67p"
+  },
+  "mrlfn_sweep_2k": {
+    "source": "experiments/npu_resolution_sweep_20261010/onnx/mrlfn_sweep_2k.onnx",
+    "source_sha256": "ad6b042094df4d40b81735b86fd15da1befa2f5de6cca0ef3ecd0461e2004257",
+    "checkpoint": "experiments/npu_4k/inputs/mrlfn_snapshot.pth",
+    "compile_job": "jgzzxyqzg"
+  },
+  "splitternet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/splitternet_2k_extra.onnx",
+    "source_sha256": "e8c888b63b6e96b67312d3e5b9d6718aa75d7476c3d08572da53f02369a241ae",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/splitternet_snapshot.pth",
+    "compile_job": "jpe6rx30g"
+  },
+  "unet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/unet_2k_extra.onnx",
+    "source_sha256": "a8a315bf6677cb3b5dfe7b9c7465c207436395e43cb4457a4f4067bdfd055e3d",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/unet_snapshot.pth",
+    "compile_job": "jgzzxyk6g"
+  },
+  "nafnet_2k_extra": {
+    "source": "experiments/npu_2k_five_extra/onnx/nafnet_2k_extra.onnx",
+    "source_sha256": "303e1259650fecfb321006de72d173b31718a54374e39db5007433b9c42d0ac3",
+    "checkpoint": "experiments/npu_2k_five_extra/inputs/nafnet_snapshot.pth",
+    "compile_job": "jg9o32evg"
+  },
+  "haar_ll_bypass_2k": {
+    "source": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_2k.onnx",
+    "source_sha256": "893065421527a21ec3e1c0ecbef747ae7ab8b1ab326d10d823846f4e3bd3c696",
+    "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_best_snapshot.pth",
+    "compile_job": "jpe62jo1g"
+  },
+  "haar_ll_bypass_bayes_soft_2k": {
+    "source": "experiments/npu_2k_ll_bypass/onnx/haar_ll_bypass_bayes_soft_2k.onnx",
+    "source_sha256": "835de22cff0f875769840705ebae30b7a68925b2e01ff7f86c10ce2157f72512",
+    "checkpoint": "experiments/npu_2k_ll_bypass/inputs/ll_bypass_bayes_soft_best_snapshot.pth",
+    "compile_job": "j5m94j6wg"
+  }
+}

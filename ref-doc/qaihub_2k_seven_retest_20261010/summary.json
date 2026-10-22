@@ -1,0 +1,369 @@
+{
+  "device": "Samsung Galaxy S24",
+  "shape": [
+    1,
+    4,
+    720,
+    1280
+  ],
+  "time_unit": "milliseconds",
+  "models": {
+    "haar_hf_cnn_dw3_residual_sweep_2k": {
+      "rounds": [
+        {
+          "job": "j56ovllv5",
+          "reported_ms": 3.942,
+          "sample_count": 100,
+          "mean_ms": 4.23254,
+          "min_ms": 3.942,
+          "max_ms": 5.183,
+          "p50_ms": 4.0125,
+          "p95_ms": 4.9251,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "jpv24xx7g",
+          "reported_ms": 3.937,
+          "sample_count": 100,
+          "mean_ms": 4.18329,
+          "min_ms": 3.937,
+          "max_ms": 5.353,
+          "p50_ms": 3.993,
+          "p95_ms": 5.0794999999999995,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        },
+        {
+          "job": "jg9o8eeqg",
+          "reported_ms": 3.922,
+          "sample_count": 100,
+          "mean_ms": 4.11215,
+          "min_ms": 3.922,
+          "max_ms": 5.361,
+          "p50_ms": 3.9875,
+          "p95_ms": 4.595299999999999,
+          "compute_unit_counts": {
+            "NPU": 60
+          }
+        }
+      ],
+      "reported_mean_ms": 3.933666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 4.1759933333333334,
+      "sample_p50_ms": 4.000500000000001,
+      "sample_p95_ms": 4.9098,
+      "reciprocal_sample_mean_hz": 239.4639838186204,
+      "dlc_bytes": 169808,
+      "dlc_sha256": "789fcfeedf80f6ba6ac3757ca306d64b4a8468ed24030cd3238edfdcdfe4d019"
+    },
+    "mrlfn_sweep_2k": {
+      "rounds": [
+        {
+          "job": "j5q4zqq7g",
+          "reported_ms": 4.707,
+          "sample_count": 100,
+          "mean_ms": 4.91621,
+          "min_ms": 4.707,
+          "max_ms": 5.807,
+          "p50_ms": 4.7955000000000005,
+          "p95_ms": 5.5103,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jp3ox00xp",
+          "reported_ms": 4.696,
+          "sample_count": 100,
+          "mean_ms": 4.93071,
+          "min_ms": 4.696,
+          "max_ms": 6.413,
+          "p50_ms": 4.7524999999999995,
+          "p95_ms": 5.7075000000000005,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        },
+        {
+          "job": "jgj3onn7p",
+          "reported_ms": 4.675,
+          "sample_count": 100,
+          "mean_ms": 4.85078,
+          "min_ms": 4.675,
+          "max_ms": 5.938,
+          "p50_ms": 4.734500000000001,
+          "p95_ms": 5.3979,
+          "compute_unit_counts": {
+            "NPU": 49
+          }
+        }
+      ],
+      "reported_mean_ms": 4.692666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 4.899233333333333,
+      "sample_p50_ms": 4.7605,
+      "sample_p95_ms": 5.555,
+      "reciprocal_sample_mean_hz": 204.1135687896746,
+      "dlc_bytes": 196864,
+      "dlc_sha256": "e25a294b4753cfdd895d8be4086eaba47c2b4d3a7a5490171f9ff0ff89c45311"
+    },
+    "splitternet_2k_extra": {
+      "rounds": [
+        {
+          "job": "jgd6811lp",
+          "reported_ms": 7.833,
+          "sample_count": 100,
+          "mean_ms": 8.01342,
+          "min_ms": 7.833,
+          "max_ms": 9.155,
+          "p50_ms": 7.896,
+          "p95_ms": 8.77485,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        },
+        {
+          "job": "j57okryrg",
+          "reported_ms": 7.831,
+          "sample_count": 100,
+          "mean_ms": 7.99684,
+          "min_ms": 7.831,
+          "max_ms": 8.896,
+          "p50_ms": 7.8975,
+          "p95_ms": 8.62635,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        },
+        {
+          "job": "jgn1ov6mp",
+          "reported_ms": 7.826,
+          "sample_count": 100,
+          "mean_ms": 8.03755,
+          "min_ms": 7.826,
+          "max_ms": 9.189,
+          "p50_ms": 7.9115,
+          "p95_ms": 8.70115,
+          "compute_unit_counts": {
+            "NPU": 491
+          }
+        }
+      ],
+      "reported_mean_ms": 7.83,
+      "sample_count": 300,
+      "sample_mean_ms": 8.015936666666667,
+      "sample_p50_ms": 7.903,
+      "sample_p95_ms": 8.69925,
+      "reciprocal_sample_mean_hz": 124.75148464662686,
+      "dlc_bytes": 1183376,
+      "dlc_sha256": "bf3b9e1875768e284ece8ec33662df01c21e79f32e28ad056eadc6a6bce5d615"
+    },
+    "unet_2k_extra": {
+      "rounds": [
+        {
+          "job": "j56or4y75",
+          "reported_ms": 13.36,
+          "sample_count": 100,
+          "mean_ms": 14.01417,
+          "min_ms": 13.36,
+          "max_ms": 15.274,
+          "p50_ms": 13.952,
+          "p95_ms": 14.61295,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        },
+        {
+          "job": "jp3ox0jzp",
+          "reported_ms": 13.58,
+          "sample_count": 100,
+          "mean_ms": 14.00373,
+          "min_ms": 13.58,
+          "max_ms": 16.004,
+          "p50_ms": 13.814499999999999,
+          "p95_ms": 15.3858,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        },
+        {
+          "job": "jgodo62d5",
+          "reported_ms": 13.253,
+          "sample_count": 100,
+          "mean_ms": 13.66718,
+          "min_ms": 13.253,
+          "max_ms": 14.653,
+          "p50_ms": 13.625,
+          "p95_ms": 14.06105,
+          "compute_unit_counts": {
+            "NPU": 54
+          }
+        }
+      ],
+      "reported_mean_ms": 13.397666666666666,
+      "sample_count": 300,
+      "sample_mean_ms": 13.895026666666666,
+      "sample_p50_ms": 13.796,
+      "sample_p95_ms": 14.6698,
+      "reciprocal_sample_mean_hz": 71.96819581490549,
+      "dlc_bytes": 7839816,
+      "dlc_sha256": "c50ae3d13c0f47d4b64169583160efd1efe7af2c035b379134e51fcc43bcd63e"
+    },
+    "nafnet_2k_extra": {
+      "rounds": [
+        {
+          "job": "jg9oknlvg",
+          "reported_ms": 179.448,
+          "sample_count": 100,
+          "mean_ms": 181.14093,
+          "min_ms": 179.448,
+          "max_ms": 182.329,
+          "p50_ms": 181.1035,
+          "p95_ms": 182.04295,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        },
+        {
+          "job": "jp4emrnlg",
+          "reported_ms": 180.098,
+          "sample_count": 100,
+          "mean_ms": 182.46197,
+          "min_ms": 180.098,
+          "max_ms": 184.887,
+          "p50_ms": 182.523,
+          "p95_ms": 184.06230000000002,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        },
+        {
+          "job": "jpx03o99p",
+          "reported_ms": 180.587,
+          "sample_count": 100,
+          "mean_ms": 182.42193,
+          "min_ms": 180.587,
+          "max_ms": 184.523,
+          "p50_ms": 182.289,
+          "p95_ms": 183.70875,
+          "compute_unit_counts": {
+            "NPU": 492
+          }
+        }
+      ],
+      "reported_mean_ms": 180.04433333333333,
+      "sample_count": 300,
+      "sample_mean_ms": 182.00827666666666,
+      "sample_p50_ms": 181.897,
+      "sample_p95_ms": 183.70704999999998,
+      "reciprocal_sample_mean_hz": 5.494255636689636,
+      "dlc_bytes": 8187752,
+      "dlc_sha256": "e769df0c6c7b74f2f7d225c99cfa6d91c2219e28d4b2b31b34c321dfbd3f7240"
+    },
+    "haar_ll_bypass_2k": {
+      "rounds": [
+        {
+          "job": "jp2o4yxmg",
+          "reported_ms": 4.19,
+          "sample_count": 100,
+          "mean_ms": 4.33691,
+          "min_ms": 4.19,
+          "max_ms": 5.03,
+          "p50_ms": 4.2425,
+          "p95_ms": 4.7122,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jp0od04ep",
+          "reported_ms": 4.157,
+          "sample_count": 100,
+          "mean_ms": 4.2924,
+          "min_ms": 4.157,
+          "max_ms": 5.039,
+          "p50_ms": 4.205500000000001,
+          "p95_ms": 4.6977,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        },
+        {
+          "job": "jp8j6y285",
+          "reported_ms": 4.15,
+          "sample_count": 100,
+          "mean_ms": 4.37492,
+          "min_ms": 4.15,
+          "max_ms": 5.116,
+          "p50_ms": 4.3475,
+          "p95_ms": 4.8211,
+          "compute_unit_counts": {
+            "NPU": 67
+          }
+        }
+      ],
+      "reported_mean_ms": 4.165666666666667,
+      "sample_count": 300,
+      "sample_mean_ms": 4.334743333333333,
+      "sample_p50_ms": 4.2425,
+      "sample_p95_ms": 4.793,
+      "reciprocal_sample_mean_hz": 230.69416643661333,
+      "dlc_bytes": 142696,
+      "dlc_sha256": "776817227583c035c2725baf6ff78188a0697eec36ba081b1c9747f02c1ecabb"
+    },
+    "haar_ll_bypass_bayes_soft_2k": {
+      "rounds": [
+        {
+          "job": "j56or4275",
+          "reported_ms": 156.942,
+          "sample_count": 100,
+          "mean_ms": 158.99785,
+          "min_ms": 156.942,
+          "max_ms": 162.628,
+          "p50_ms": 158.94400000000002,
+          "p95_ms": 160.67235000000002,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        },
+        {
+          "job": "jgj3ond8p",
+          "reported_ms": 156.285,
+          "sample_count": 100,
+          "mean_ms": 159.10977,
+          "min_ms": 156.285,
+          "max_ms": 161.699,
+          "p50_ms": 159.087,
+          "p95_ms": 160.74125,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        },
+        {
+          "job": "jpe68mo0g",
+          "reported_ms": 161.406,
+          "sample_count": 100,
+          "mean_ms": 163.17613,
+          "min_ms": 161.406,
+          "max_ms": 166.091,
+          "p50_ms": 162.9075,
+          "p95_ms": 165.12425000000002,
+          "compute_unit_counts": {
+            "NPU": 221
+          }
+        }
+      ],
+      "reported_mean_ms": 158.211,
+      "sample_count": 300,
+      "sample_mean_ms": 160.42791666666668,
+      "sample_p50_ms": 159.642,
+      "sample_p95_ms": 164.41404999999997,
+      "reciprocal_sample_mean_hz": 6.23332909120659,
+      "dlc_bytes": 206192,
+      "dlc_sha256": "7a0d00d919e25551537fe98c3fd4ad870967b07f72efd4c7b729972161cc983f"
+    }
+  }
+}

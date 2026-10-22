@@ -1,0 +1,11 @@
+{
+  "same_dlc_as_previous": true,
+  "source_hash_verified": true,
+  "samples": 300,
+  "npu_only": true,
+  "runtime_logs": [
+    "ref-doc/qaihub_2k_repncb_retest_20261011/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_3/j5wy8wwzg_runtime.log",
+    "ref-doc/qaihub_2k_repncb_retest_20261011/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_2/jpv2eqq7g_runtime.log",
+    "ref-doc/qaihub_2k_repncb_retest_20261011/haar_hf_repncb_prelu_residual_sweep_2k/profile_logs_1/j56or22v5_runtime.log"
+  ]
+}

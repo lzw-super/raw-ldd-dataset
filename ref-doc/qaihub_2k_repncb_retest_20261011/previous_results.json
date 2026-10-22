@@ -1,0 +1,53 @@
+{
+  "haar_hf_repncb_prelu_residual_sweep_2k": {
+    "rounds": [
+      {
+        "job": "j57ojn1qg",
+        "reported_ms": 3.318,
+        "sample_count": 100,
+        "mean_ms": 3.40739,
+        "min_ms": 3.318,
+        "max_ms": 4.02,
+        "p50_ms": 3.367,
+        "p95_ms": 3.57385,
+        "compute_unit_counts": {
+          "NPU": 78
+        }
+      },
+      {
+        "job": "jp4ex46qg",
+        "reported_ms": 3.319,
+        "sample_count": 100,
+        "mean_ms": 3.55012,
+        "min_ms": 3.319,
+        "max_ms": 4.481,
+        "p50_ms": 3.401,
+        "p95_ms": 4.0212,
+        "compute_unit_counts": {
+          "NPU": 78
+        }
+      },
+      {
+        "job": "jpx07r8jp",
+        "reported_ms": 3.293,
+        "sample_count": 100,
+        "mean_ms": 3.38387,
+        "min_ms": 3.293,
+        "max_ms": 4.017,
+        "p50_ms": 3.335,
+        "p95_ms": 3.5908499999999997,
+        "compute_unit_counts": {
+          "NPU": 78
+        }
+      }
+    ],
+    "reported_mean_ms": 3.31,
+    "sample_count": 300,
+    "sample_mean_ms": 3.4471266666666667,
+    "sample_p50_ms": 3.357,
+    "sample_p95_ms": 3.9548500000000004,
+    "reciprocal_sample_mean_hz": 290.0966795534058,
+    "dlc_bytes": 189568,
+    "dlc_sha256": "a41eb8acb0b3a72a21b0a7e177d65437278e40320e6e1c626ea3a3297ca4ab10"
+  }
+}

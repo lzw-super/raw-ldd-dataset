@@ -1,0 +1,79 @@
+{
+  "haar_hf_cnn_dw3_residual_sweep_2k": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_3/jg9o8eeqg_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_2/jpv24xx7g_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_hf_cnn_dw3_residual_sweep_2k/profile_logs_1/j56ovllv5_runtime.log"
+    ]
+  },
+  "mrlfn_sweep_2k": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/mrlfn_sweep_2k/profile_logs_3/jgj3onn7p_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/mrlfn_sweep_2k/profile_logs_2/jp3ox00xp_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/mrlfn_sweep_2k/profile_logs_1/j5q4zqq7g_runtime.log"
+    ]
+  },
+  "splitternet_2k_extra": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/splitternet_2k_extra/profile_logs_3/jgn1ov6mp_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/splitternet_2k_extra/profile_logs_2/j57okryrg_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/splitternet_2k_extra/profile_logs_1/jgd6811lp_runtime.log"
+    ]
+  },
+  "unet_2k_extra": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/unet_2k_extra/profile_logs_3/jgodo62d5_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/unet_2k_extra/profile_logs_2/jp3ox0jzp_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/unet_2k_extra/profile_logs_1/j56or4y75_runtime.log"
+    ]
+  },
+  "nafnet_2k_extra": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/nafnet_2k_extra/profile_logs_3/jpx03o99p_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/nafnet_2k_extra/profile_logs_2/jp4emrnlg_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/nafnet_2k_extra/profile_logs_1/jg9oknlvg_runtime.log"
+    ]
+  },
+  "haar_ll_bypass_2k": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_2k/profile_logs_3/jp8j6y285_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_2k/profile_logs_2/jp0od04ep_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_2k/profile_logs_1/jp2o4yxmg_runtime.log"
+    ]
+  },
+  "haar_ll_bypass_bayes_soft_2k": {
+    "same_dlc_as_previous": true,
+    "source_hash_verified": true,
+    "npu_only": true,
+    "samples": 300,
+    "runtime_logs": [
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_bayes_soft_2k/profile_logs_3/jpe68mo0g_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_bayes_soft_2k/profile_logs_2/jgj3ond8p_runtime.log",
+      "ref-doc/qaihub_2k_seven_retest_20261010/haar_ll_bypass_bayes_soft_2k/profile_logs_1/j56or4275_runtime.log"
+    ]
+  }
+}
