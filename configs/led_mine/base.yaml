@@ -1,0 +1,23 @@
+# Paths below are relative to --led-root, not this repository.
+base:
+  - options/base/dataset/pretrain/SID_raw_gt.yaml
+  - options/base/dataset/test/SID_SonyA7S2_val_split.yaml
+  - options/base/noise_g/noise_g_virtual.yaml
+  - options/base/pretrain/CVPR20_ELD.yaml
+  - options/base/val_and_logger.yaml
+model_type: RAWImageDenoisingModel
+scale: 1
+num_gpu: 1
+manual_seed: 2022
+model_complexity:
+  input_shape: [1, 4, 512, 512]
+  raw_pixel_scale: 2
+path:
+  pretrain_network_g: null
+  # Saved five-camera state; same hash across the existing LED runs.
+  predefined_noise_g: experiments/LED_Pretrain_MRLFN_CVPR26_Paper_Setting/noise_g.pth
+  strict_load_g: true
+  resume_state: null
+  CRF: datasets/EMoR
+val:
+  illumination_correct: true

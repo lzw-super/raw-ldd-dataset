@@ -1,0 +1,22 @@
+# Use run_led_mine.py; this is a nested LED config. Train from scratch.
+base: ./led_mine/base.yaml
+name: ledmine_sid_nafnet
+# GPU visibility: CLI > existing CUDA_VISIBLE_DEVICES > this value.
+cuda_visible_devices: "1"
+network_g:
+  type: CurrentRepoDenoiser
+  architecture: nafnet
+  settings:
+    img_channel: 4
+    width: 32
+    enc_blk_nums:
+    - 2
+    - 2
+    - 2
+    - 2
+    middle_blk_num: 2
+    dec_blk_nums:
+    - 2
+    - 2
+    - 2
+    - 2

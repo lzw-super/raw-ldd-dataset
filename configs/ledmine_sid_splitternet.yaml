@@ -1,0 +1,9 @@
+# Use run_led_mine.py; this is a nested LED config. Train from scratch.
+base: ./led_mine/base.yaml
+name: ledmine_sid_splitternet
+# GPU visibility: CLI > existing CUDA_VISIBLE_DEVICES > this value.
+cuda_visible_devices: "1"
+network_g:
+  type: CurrentRepoDenoiser
+  architecture: splitternet
+  settings: {}

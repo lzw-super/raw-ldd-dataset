@@ -1,0 +1,36 @@
+# Use run_led_mine.py; this is a nested LED config. Train from scratch.
+base: ./led_mine/base.yaml
+name: ledmine_sid_repncb
+# GPU visibility: CLI > existing CUDA_VISIBLE_DEVICES > this value.
+cuda_visible_devices: "0"
+network_g:
+  type: CurrentRepoDenoiser
+  architecture: repncb
+  settings:
+    dwt_width: 16
+    dwt_depth: 3
+    dwt_context: atlas
+    dwt_shrink_ll: false
+    dwt_leak: 0.0
+    dwt_normalize_bands: true
+    dwt_pad_input: true
+    dwt_init_threshold: 0.01
+    dwt_init_ll_threshold: 0.001
+    dwt_wavelet: haar
+    dwt_levels: 3
+    dwt_magnitude_input: true
+    dwt_condition_bands: false
+    dwt_ll_max_threshold: 0.01
+    dwt_shrink_mode: soft
+    dwt_ll_mode: ll_only
+    dwt_ll_width: 32
+    dwt_ll_depth: 5
+    dwt_ll_fusion: concat_1x1
+    refine_s2d_factor: 2
+    refine_width: 32
+    refine_num_blocks: 5
+    refine_skip_source: noisy
+    dwt_ll_block_type: repncb
+    dwt_threshold_mode: hf_cnn
+    dwt_hf_cnn_variant: repncb_prelu_residual
+    dwt_ll_normalize: false

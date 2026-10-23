@@ -1,0 +1,15 @@
+# Use run_led_mine.py; this is a nested LED config. Train from scratch.
+base: ./led_mine/base.yaml
+name: ledmine_sid_mrlfn
+# GPU visibility: CLI > existing CUDA_VISIBLE_DEVICES > this value.
+cuda_visible_devices: "0"
+network_g:
+  type: CurrentRepoDenoiser
+  architecture: mrlfn
+  settings:
+    in_channels: 4
+    out_channels: 4
+    feature_channels: 32
+    num_blocks: 4
+    bias: true
+    space_to_depth_factor: 4
