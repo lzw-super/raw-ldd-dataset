@@ -127,3 +127,41 @@ conda run --no-capture-output -n LED-ICCV23 python run_led_mine.py \
 ```
 
 训练、测试和 `--check-only` 均采用此选择。该参数应写在四个实验 YAML 的顶层；不要通过 LED 的 `--force_yml` 修改设备可见性，因为那时 CUDA 初始化可能已完成。填写多个编号只控制可见性，不会自动启用多卡训练。
+
+## Latest 权重指标归档（2026-10-23，首次子集评估）
+
+注意：本节记录首次 93 对子集评估，现入口默认已改为完整测试集；复现本节需增加 `--split led-valid`。完整测试命令见下一节。
+
+新增 `evaluate_led_mine.py`，复用 LED 原生 `model.validation`，将指标保存到权重所在实验的 `evaluation_latest/`。输出包含 `metrics.json`、`指标汇总.md`、`test.log`；JSON 记录权重 SHA256、配对列表、三档完整精度指标、三档等权平均以及按样本数加权的平均。只有所有档位成功后才标记 `status: complete`。
+
+```bash
+for model in repncb mrlfn splitternet nafnet; do
+  conda run --no-capture-output -n LED-ICCV23 python evaluate_led_mine.py \
+    --config "configs/ledmine_sid_${model}.yaml" \
+    --checkpoint "experiments/ledmine_sid_${model}/models/net_g_latest.pth" \
+    --cuda-visible-devices 0
+done
+```
+
+使用完整图像 FP32 推理、不分块。这里评估的是 LED 原有 `valid_100/250/300`（29/29/35 对），亮度校正开启，RAW 域 PSNR/SSIM，裁边 2 像素。重复执行会更新同名结果文件。
+
+## 更正与完整 SID 测试集评估（2026-10-23）
+
+核对配对文件后确认：LED 自带的 `valid_100/250/300.txt` 共 93 对，**全部是 `Sony_test_list.txt` 的子集**。此前 `evaluation_latest/` 中的数据只覆盖这个子集，不能代表完整 SID 测试集。
+
+完整测试列表位于 `../../Datasets/SID-sub/Sony_test_list.txt`，共 598 对，100×/250×/300× 分别 182/180/236 对。所需全部图像均已存在于 LED 的 `Sony_npy` 目录。LED 本地选项目录没有另一个完整 SID test 配置，因此新评估入口按原始列表生成三档 LED 格式配对列表，不修改训练配置。
+
+```bash
+for model in repncb mrlfn splitternet nafnet; do
+  conda run --no-capture-output -n LED-ICCV23 python evaluate_led_mine.py \
+    --config "configs/ledmine_sid_${model}.yaml" \
+    --checkpoint "experiments/ledmine_sid_${model}/models/net_g_latest.pth" \
+    --cuda-visible-devices 0 --split sid-test
+done
+```
+
+结果单独保存到各模型的 `evaluation_latest_sid_test/`，包含 `metrics.json`、`指标汇总.md`、`test.log` 和实际使用的 `sid_test_100/250/300.txt`。`--sid-test-list` 可以指定完整列表的位置。评估入口默认使用 `sid-test` 完整测试集；只有显式传入 `--split led-valid` 才评估原 LED valid 子集。
+
+JSON 中 `val_100/250/300` 是复用 LED 评估接口的键名，不代表数据来源：应以 `split: sid-test`、`source_test_list`、各档数量和 `pair_list` 为准。指标口径仍为 LED RAW PSNR/SSIM、亮度校正开启、裁边 2、完整图像 FP32 推理。
+
+由于上述 93 对在这些训练中被用于验证，完整 SID 测试结果包含训练时用于监测的子集，应披露这一点，不能称其完全未用于模型开发。此次评估指定 latest 权重，没有根据测试结果重新选择权重。
